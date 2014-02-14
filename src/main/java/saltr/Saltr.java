@@ -288,7 +288,7 @@ public class Saltr implements ObservableSaltr {
             tempMap = new HashMap<String, String>();
             feature = featureList.get(i);
             tempMap.put("token", feature.getToken());
-            tempMap.put("value", feature.getValue().toString());
+            tempMap.put("value", feature.getDefaultProperties().toString());
             list.add(tempMap.toString());
         }
         urlVars.put("data", list.toString());

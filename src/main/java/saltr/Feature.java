@@ -10,18 +10,29 @@ import java.util.Map;
 
 public class Feature {
     private String token;
-    private Map<String, String> value;
+    private Map<String, String> properties;
+    private Map<String, String> defaultProperties;
 
-    public Feature(String token, Map<String, String> data) {
+    public Feature(String token, Map<String, String> properties) {
         this.token = token;
-        this.value = data;
+        this.properties = properties;
+    }
+
+    public Feature(String token, Map<String, String> properties, Map<String, String> defaultProperties) {
+        this.token = token;
+        this.properties = properties;
+        this.defaultProperties = defaultProperties;
     }
 
     public String getToken() {
         return token;
     }
 
-    public Map<String, String> getValue() {
-        return value;
+    public Map<String, String> getDefaultProperties() {
+        return defaultProperties;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties == null ? defaultProperties : properties;
     }
 }
