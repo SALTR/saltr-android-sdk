@@ -17,12 +17,12 @@ public class HttpConnection {
     private String urlParameters;
     private String targetURL;
 
-    public HttpConnection(String targetURL, Map<String, String> urlParameters) throws UnsupportedEncodingException {
+    public HttpConnection(String targetURL, Map<String, String> urlParameters) {
         this.targetURL = targetURL;
         this.urlParameters = convertUrlParameters(urlParameters);
     }
 
-    public void setUrlParameters(Map<String, String> urlParameters) throws UnsupportedEncodingException {
+    public void setUrlParameters(Map<String, String> urlParameters) {
         this.urlParameters = convertUrlParameters(urlParameters);
     }
 
@@ -79,10 +79,11 @@ public class HttpConnection {
 
     }
 
-    private String convertUrlParameters(Map<String, String> paramsMap) throws UnsupportedEncodingException {
+    private String convertUrlParameters(Map<String, String> paramsMap) {
         String params = "";
         for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
             params += entry.getKey().replaceAll("\\\\", "") + "=" + entry.getValue().replaceAll("\\\\", "") + "&";
+//            params += entry.getKey() + "=" + entry.getValue() + "&";
         }
         return params;
     }

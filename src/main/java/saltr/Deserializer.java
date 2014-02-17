@@ -8,44 +8,13 @@ package saltr;
 
 import saltr.parser.response.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Deserializer {
-    private List<Feature> features;
-    private List<Experiment> experiments;
-    private List<LevelPackStructure> levelPackStructures;
 
-    public Deserializer() {
-        features = new ArrayList<Feature>();
-        experiments = new ArrayList<Experiment>();
-    }
+    public List<Experiment> decodeExperimentInfo(AppData data) {
+        List<Experiment> experiments = new ArrayList<Experiment>();
 
-    public List<Feature> getFeatures() {
-        return features;
-    }
-
-    public List<Experiment> getExperiments() {
-        return experiments;
-    }
-
-    public List<LevelPackStructure> getLevelPackStructures() {
-        return levelPackStructures;
-    }
-
-    public void decode(AppData data) {
-        if (data == null) {
-            return;
-        }
-
-        clearData();
-        decodeFeatures(data);
-        decodeExperimentInfo(data);
-        decodeLevels(data);
-    }
-
-    private void decodeExperimentInfo(AppData data) {
         if (data.getExperiment() != null) {
             for (ResponseExperiment item: data.getExperiment()) {
                 Experiment experiment = new Experiment();
@@ -56,11 +25,12 @@ public class Deserializer {
                 experiments.add(experiment);
             }
         }
+        return experiments;
     }
 
-    private void decodeLevels(AppData data) {
+    public List<LevelPackStructure> decodeLevels(AppData data) {
+        List<LevelPackStructure> levelPackStructures = new ArrayList<LevelPackStructure>();;
         List<ResponsePack> levelPacksObject = data.getLevelPackList();
-        levelPackStructures = new ArrayList<LevelPackStructure>();
         List<LevelStructure> levelStructures;
         List<ResponseLevel> levelsObject;
         for (ResponsePack levelPack: levelPacksObject) {
@@ -73,28 +43,19 @@ public class Deserializer {
             levelPackStructures.add(new LevelPackStructure(levelPack.getToken(), levelPack.getOrder().intValue(), levelStructures));
         }
         Collections.sort(levelPackStructures);
+        return levelPackStructures;
     }
 
-    private void decodeFeatures(AppData data) {
+    public Map<String, Feature> decodeFeatures(AppData data) {
+        Map<String, Feature> features = new HashMap<String, Feature>();
         List<ResponseFeature> featuresList = data.getFeatureList();
         if (featuresList != null) {
             Feature feature;
             for (ResponseFeature featureObj: featuresList) {
                 feature = new Feature(featureObj.getToken(), featureObj.getData());
-                features.add(feature);
+                features.put(featureObj.getToken(), feature);
             }
         }
-    }
-
-    private void clearData() {
-        if (features != null) {
-            features = new ArrayList<Feature>();
-        }
-        if (experiments != null) {
-            experiments = new ArrayList<Experiment>();
-        }
-        if (levelPackStructures != null) {
-            levelPackStructures = new ArrayList<LevelPackStructure>();
-        }
+        return features;
     }
 }

@@ -35,4 +35,16 @@ public class Feature {
     public Map<String, String> getProperties() {
         return properties == null ? defaultProperties : properties;
     }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void setDefaultProperties(Map<String, String> defaultProperties) {
+        this.defaultProperties = defaultProperties;
+    }
 }

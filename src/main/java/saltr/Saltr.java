@@ -18,9 +18,10 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class Saltr implements ObservableSaltr {
-//    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
-    protected static final String SALTR_API_URL = "http://localhost.:8081/httpjson.action";
-    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+    //    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
+    protected static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
+//    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+    protected static final String SALTR_URL = "http://localhost:8085/httpjson.action";
     protected static final String COMMAND_APP_DATA = "APPDATA";
     protected static final String COMMAND_ADD_PROPERTY = "ADDPROP";
     protected static final String COMMAND_SAVE_OR_UPDATE_FEATURE = "SOUFTR";
@@ -45,26 +46,39 @@ public class Saltr implements ObservableSaltr {
 
     protected Deserializer deserializer;
     protected String instanceKey;
-    protected List<Feature> features;
+    protected Map<String, Feature> features;
     protected List<LevelPackStructure> levelPackStructures;
     protected List<Experiment> experiments;
     protected Device device;
+    private String appVersion;
+    private Boolean isInDevMode;
 
     private List<SaltrObserver> observers;
 
     public Saltr(String instanceKey) {
+        features = new HashMap<String, Feature>();
         this.instanceKey = instanceKey;
-        this.deserializer = new Deserializer();
-        this.isLoading = false;
-        this.ready = false;
-        this.observers = new ArrayList<SaltrObserver>();
+        deserializer = new Deserializer();
+        isLoading = false;
+        ready = false;
+        isInDevMode = true;
+
+        observers = new ArrayList<SaltrObserver>();
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public void setRepository(IRepository repository) {
+        this.repository = repository;
     }
 
     public Boolean getReady() {
         return ready;
     }
 
-    public List<Feature> getFeatures() {
+    public Map<String, Feature> getFeatures() {
         return features;
     }
 
@@ -76,13 +90,8 @@ public class Saltr implements ObservableSaltr {
         return experiments;
     }
 
-    public Feature getFeatureByToken(String token) {
-        for (Feature feature: features) {
-            if (feature.getToken().equals(token)) {
-                return feature;
-            }
-        }
-        return null;
+    public Feature getFeature(String token) {
+        return features.get(token);
     }
 
     public void initPartner(String partnerId, String partnerType) {
@@ -93,6 +102,18 @@ public class Saltr implements ObservableSaltr {
         this.device = new Device(deviceId, deviceType);
     }
 
+    /**
+     * If you want to have a feature synced with SALTR you should call define before getAppData call.
+     */
+    public void defineFeature(String token, Map<String, String> properties) {
+        Feature feature = features.get(token);
+        if (feature == null) {
+            features.put(token, new Feature(token, null, properties));
+        } else {
+            feature.setDefaultProperties(properties);
+        }
+    }
+
     public void getAppData() {
         loadAppData();
     }
@@ -101,11 +122,26 @@ public class Saltr implements ObservableSaltr {
         this.isLoading = false;
         this.ready = true;
         this.saltUserId = appData.getSaltId().toString();
-        this.deserializer.decode(appData);
-        this.features = this.deserializer.getFeatures();
-        this.levelPackStructures = this.deserializer.getLevelPackStructures();
-        this.experiments = this.deserializer.getExperiments();
-        System.out.println("[SaltClient] packs=" + this.deserializer.getLevelPackStructures().size());
+
+        this.experiments = deserializer.decodeExperimentInfo(appData);
+        this.levelPackStructures = deserializer.decodeLevels(appData);
+        Map<String, Feature> saltrFeatures = deserializer.decodeFeatures(appData);
+        //merging with defaults...
+        for (Map.Entry<String, Feature> entry : saltrFeatures.entrySet()) {
+            Feature saltrFeature = entry.getValue();
+            Feature defaultFeature = features.get(entry.getKey());
+            if (defaultFeature != null) {
+                saltrFeature.setDefaultProperties(defaultFeature.getDefaultProperties());
+            }
+            features.put(entry.getKey(), saltrFeature);
+        }
+
+        System.out.println("[SaltClient] packs=" + levelPackStructures.size());
+        fireAppDataSuccess();
+
+        if (isInDevMode) {
+            syncFeatures();
+        }
     }
 
     private void loadAppDataFailHandler() {
@@ -120,14 +156,12 @@ public class Saltr implements ObservableSaltr {
         if (data != null) {
             System.out.println("[SaltClient] Loading App data from Cache folder.");
             loadAppDataSuccessHandler(data);
-        }
-        else {
+        } else {
             System.out.println("[SaltClient] Loading App data from application folder.");
             data = (AppData) repository.getObjectFromApplication(APP_DATA_URL_INTERNAL);
             if (data != null) {
                 loadAppDataSuccessHandler(data);
-            }
-            else {
+            } else {
                 loadAppDataFailHandler();
             }
         }
@@ -193,8 +227,7 @@ public class Saltr implements ObservableSaltr {
 
             if (data == null) {
                 loadLevelDataLocally(levelPackData, levelData, cachedFileName);
-            }
-            else {
+            } else {
                 Gson gson = new Gson();
                 levelLoadSuccessHandler(levelData, gson.fromJson(data, LevelData.class));
                 repository.cacheObject(cachedFileName, levelData.getVersion(), data);
@@ -215,8 +248,7 @@ public class Saltr implements ObservableSaltr {
         LevelData data = (LevelData) repository.getObjectFromApplication(url);
         if (data != null) {
             levelLoadSuccessHandler(levelData, data);
-        }
-        else {
+        } else {
             levelLoadErrorHandler();
         }
     }
@@ -228,8 +260,9 @@ public class Saltr implements ObservableSaltr {
         isLoading = true;
         ready = false;
         HttpConnection connection = createAppDataConnection();
-        Gson gson = new Gson();
-        SaltrResponse response = gson.fromJson(connection.excutePost(), SaltrResponse.class);
+//        Gson gson = new Gson();
+//        gson.fromJson(connection.excutePost(), SaltrResponse.class)
+        System.out.println(connection.excutePost());
     }
 
     private void appDataAssetLoadErrorHandler() {
@@ -244,73 +277,57 @@ public class Saltr implements ObservableSaltr {
         System.out.println("[SaltClient] Loaded App data. json=" + data);
         if (response.getResponseData() == null || response.getStatus() != Saltr.RESULT_SUCCEED) {
             loadAppDataInternal();
-        }
-        else {
+        } else {
             loadAppDataSuccessHandler(response.getResponseData());
             repository.cacheObject(APP_DATA_URL_CACHE, "0", response.getResponseData());
         }
     }
 
     private HttpConnection createAppDataConnection() {
-        try {
-            Gson gson = new Gson();
-            Map<String, Object> args = new HashMap<String, Object>();
-            if (device != null) {
-                args.put("device", device);
-            }
-            if (partner != null) {
-                args.put("partner", partner);
-            }
-            args.put("instanceKey", instanceKey);
-
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("arguments", gson.toJson(args));
-            params.put("command", Saltr.COMMAND_APP_DATA);
-
-            return new HttpConnection(Saltr.SALTR_API_URL, params);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        Gson gson = new Gson();
+        Map<String, Object> args = new HashMap<String, Object>();
+        if (device != null) {
+            args.put("device", device);
         }
-        return null;
+        if (partner != null) {
+            args.put("partner", partner);
+        }
+        args.put("instanceKey", instanceKey);
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("arguments", gson.toJson(args));
+        params.put("command", Saltr.COMMAND_APP_DATA);
+
+        return new HttpConnection(Saltr.SALTR_API_URL, params);
     }
 
-    public void saveOrUpdateFeature(List<Feature> featureList) {
+    public void syncFeatures() {
+        Gson gson = new Gson();
         Map<String, String> urlVars = new HashMap<String, String>();
         urlVars.put("command", Saltr.COMMAND_SAVE_OR_UPDATE_FEATURE);
         urlVars.put("instanceKey", instanceKey);
 
-        List<String> list = new ArrayList<String>();
-        Feature feature;
-        int len = featureList.size();
-        Map<String, String> tempMap;
-        for (int i = 0; i < len; ++i) {
-            tempMap = new HashMap<String, String>();
-            feature = featureList.get(i);
-            tempMap.put("token", feature.getToken());
-            tempMap.put("value", feature.getDefaultProperties().toString());
-            list.add(tempMap.toString());
+        if (appVersion != null) {
+            urlVars.put("appVersion", appVersion);
         }
-        urlVars.put("data", list.toString());
-//        var ticket:ResourceURLTicket = new ResourceURLTicket(Saltr.SALTR_URL, urlVars);
-//        var resource:Resource = new Resource("saveOrUpdateFeature", ticket, saveOrUpdateFeatureLoadCompleteHandler, saveOrUpdateFeatureLoadErrorHandler);
-//        resource.load();
+
+        List<String> featureList = new ArrayList<String>();
+        Map<String, String> tempMap;
+        Feature feature;
+        for (Map.Entry<String, Feature> entry : features.entrySet()) {
+            feature = entry.getValue();
+            if (feature.getDefaultProperties() != null) {
+                tempMap = new HashMap<String, String>();
+                tempMap.put("token", feature.getToken());
+                tempMap.put("value", gson.toJson(feature.getDefaultProperties()));
+                featureList.add(gson.toJson(tempMap));
+            }
+        }
+        urlVars.put("data", gson.toJson(featureList));
+
+        HttpConnection connection = new HttpConnection(SALTR_URL, urlVars);
+        System.out.println(connection.excutePost());
     }
-
-    private void saveOrUpdateFeatureLoadCompleteHandler() {
-        System.out.println("[Saltr] Feature saved or updated.");
-
-    }
-
-    private void saveOrUpdateFeatureLoadErrorHandler() {
-        System.out.println("[Saltr] Feature save or update error.");
-
-    }
-
-    public void setRepository(IRepository repository) {
-        this.repository = repository;
-    }
-
 
     @Override
     public void addObserver(SaltrObserver o) {
@@ -322,9 +339,39 @@ public class Saltr implements ObservableSaltr {
         observers.remove(o);
     }
 
-    private void appDataLoaded() {
+    private void fireAppDataSuccess() {
         for (SaltrObserver observer : observers) {
             observer.onGetAppDataSuccess(this);
+        }
+    }
+
+    private void fireAppDataFail() {
+        for (SaltrObserver observer : observers) {
+            observer.onGetAppDataFail(this);
+        }
+    }
+
+    private void fireLevelDataBodySuccess() {
+        for (SaltrObserver observer : observers) {
+            observer.onGetLevelDataBodySuccess(this);
+        }
+    }
+
+    private void fireLevelDataBodyFail() {
+        for (SaltrObserver observer : observers) {
+            observer.onGetLevelDataBodyFail(this);
+        }
+    }
+
+    private void fireSyncFeatureSuccess() {
+        for (SaltrObserver observer : observers) {
+            observer.onSaveOrUpdateFeatureSuccess(this);
+        }
+    }
+
+    private void fireSyncFeatureFail() {
+        for (SaltrObserver observer : observers) {
+            observer.onSaveOrUpdateFeatureFail(this);
         }
     }
 }
