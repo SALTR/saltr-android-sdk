@@ -6,10 +6,12 @@
  */
 package saltr.resource;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.FluentStringsMap;
+import com.ning.http.client.Response;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -77,6 +79,23 @@ public class HttpConnection {
                 connection.disconnect();
             }
         }
+
+    }
+
+    public void call(String url, FluentStringsMap params) throws IOException {
+        AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+        asyncHttpClient.preparePost(url).setQueryParameters(params).execute(new AsyncCompletionHandler<Response>() {
+            @Override
+            public Response onCompleted(Response response) throws Exception {
+                System.out.println("success");
+                return response;
+            }
+
+            @Override
+            public void onThrowable(Throwable t) {
+                System.out.println("failure");
+            }
+        });
 
     }
 

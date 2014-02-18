@@ -7,6 +7,7 @@
 package saltr;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import saltr.parser.response.AppData;
 import saltr.parser.response.SaltrResponse;
 import saltr.parser.response.level.LevelData;
@@ -282,7 +283,8 @@ public class Saltr implements ObservableSaltr {
     private void appDataAssetLoadCompleteHandler(String data) {
         System.out.println("[SaltAPI] App data is loaded.");
         Gson gson = new Gson();
-        SaltrResponse<AppData> response = gson.fromJson(data, SaltrResponse.class);
+        SaltrResponse<AppData> response = gson.fromJson(data, new TypeToken<SaltrResponse<AppData>>() {
+        }.getType());
         System.out.println("[SaltClient] Loaded App data. json=" + data);
         if (data == null || !response.getStatus().equals(Saltr.RESULT_SUCCEED)) {
             loadAppDataInternal();

@@ -1,10 +1,18 @@
+import com.ning.http.client.FluentStringsMap;
 import org.junit.Test;
 import saltr.ObservableSaltr;
 import saltr.Saltr;
 import saltr.SaltrObserver;
+import saltr.resource.HttpConnection;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * Copyright Teoken LLC. (c) 2013. All rights reserved.
@@ -43,6 +51,16 @@ public class SaltrTest implements SaltrObserver {
         saltr.defineFeature("token2", data);
 
         saltr.syncFeatures();
+    }
+
+    @Test
+    public void asynchCall() throws IOException, ExecutionException, InterruptedException {
+        HttpConnection connection = new HttpConnection("http://localadmin.saltr.com:8085/", new HashMap<String, String>());
+        FluentStringsMap map = new FluentStringsMap();
+        map.put("command", new ArrayList<String>());
+        map.put("instanceKey", new ArrayList<String>());
+        map.put("data", new ArrayList<String>());
+        connection.call("http://localadmin.saltr.com:8085/", map);
     }
 
     @Override
