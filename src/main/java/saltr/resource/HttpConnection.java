@@ -6,11 +6,12 @@
  */
 package saltr.resource;
 
-import com.google.gson.Gson;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 
 public class HttpConnection {
@@ -82,8 +83,8 @@ public class HttpConnection {
     private String convertUrlParameters(Map<String, String> paramsMap) {
         String params = "";
         for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-            params += entry.getKey().replaceAll("\\\\", "") + "=" + entry.getValue().replaceAll("\\\\", "") + "&";
-//            params += entry.getKey() + "=" + entry.getValue() + "&";
+//            params += entry.getKey().replaceAll("\\\\", "") + "=" + entry.getValue().replaceAll("\\\\", "") + "&";
+            params += entry.getKey() + "=" + entry.getValue() + "&";
         }
         return params;
     }

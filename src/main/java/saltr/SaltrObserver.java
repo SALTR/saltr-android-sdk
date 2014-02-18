@@ -8,9 +8,14 @@ package saltr;
 
 public interface SaltrObserver {
     public void onGetAppDataSuccess(ObservableSaltr saltr);
+
     public void onGetAppDataFail(ObservableSaltr saltr);
+
     public void onGetLevelDataBodySuccess(ObservableSaltr saltr);
+
     public void onGetLevelDataBodyFail(ObservableSaltr saltr);
+
     public void onSaveOrUpdateFeatureSuccess(ObservableSaltr saltr);
+
     public void onSaveOrUpdateFeatureFail(ObservableSaltr saltr);
 }

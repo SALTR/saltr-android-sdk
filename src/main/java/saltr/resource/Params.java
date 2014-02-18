@@ -6,6 +6,7 @@ package saltr.resource;
 public class Params {
     private String command;
     private String arguments;
+
     public Params(String command, String arguments) {
         this.command = command;
         this.arguments = arguments;

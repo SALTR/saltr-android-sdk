@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface IAssetTemplate {
     public Object getKeys();
+
     public String getType();
+
     public List getShifts();
 }

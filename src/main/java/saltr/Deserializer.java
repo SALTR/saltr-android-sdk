@@ -16,7 +16,7 @@ public class Deserializer {
         List<Experiment> experiments = new ArrayList<Experiment>();
 
         if (data.getExperiment() != null) {
-            for (ResponseExperiment item: data.getExperiment()) {
+            for (ResponseExperiment item : data.getExperiment()) {
                 Experiment experiment = new Experiment();
                 experiment.setToken(item.getToken());
                 experiment.setPartition(item.getPartitionName());
@@ -29,14 +29,15 @@ public class Deserializer {
     }
 
     public List<LevelPackStructure> decodeLevels(AppData data) {
-        List<LevelPackStructure> levelPackStructures = new ArrayList<LevelPackStructure>();;
+        List<LevelPackStructure> levelPackStructures = new ArrayList<LevelPackStructure>();
+        ;
         List<ResponsePack> levelPacksObject = data.getLevelPackList();
         List<LevelStructure> levelStructures;
         List<ResponseLevel> levelsObject;
-        for (ResponsePack levelPack: levelPacksObject) {
+        for (ResponsePack levelPack : levelPacksObject) {
             levelsObject = levelPack.getLevelList();
             levelStructures = new ArrayList<LevelStructure>();
-            for (ResponseLevel level: levelsObject) {
+            for (ResponseLevel level : levelsObject) {
                 levelStructures.add(new LevelStructure(level.getId().toString(), level.getOrder(), level.getUrl(), level.getProperties(), level.getVersion().toString()));
             }
             Collections.sort(levelStructures);
@@ -51,7 +52,7 @@ public class Deserializer {
         List<ResponseFeature> featuresList = data.getFeatureList();
         if (featuresList != null) {
             Feature feature;
-            for (ResponseFeature featureObj: featuresList) {
+            for (ResponseFeature featureObj : featuresList) {
                 feature = new Feature(featureObj.getToken(), featureObj.getData());
                 features.put(featureObj.getToken(), feature);
             }

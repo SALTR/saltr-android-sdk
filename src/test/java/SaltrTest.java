@@ -1,13 +1,10 @@
 import org.junit.Test;
-import saltr.Feature;
 import saltr.ObservableSaltr;
 import saltr.Saltr;
 import saltr.SaltrObserver;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Copyright Teoken LLC. (c) 2013. All rights reserved.
@@ -19,6 +16,7 @@ import java.util.Observer;
 public class SaltrTest implements SaltrObserver {
 
     private String instanceKey = "d7c3d370-6238-60f6-d8c5-0ed6a6c745f2";
+
     @Test
     public void gettingAppData() {
 //        Saltr saltr = new Saltr("2dc1e2cf-5ed2-54ae-91c4-e781233b9db1");
@@ -41,7 +39,7 @@ public class SaltrTest implements SaltrObserver {
         data.put("2", "2");
         saltr.defineFeature("token1", data);
 
-        data.put("3", "3");
+        data.put("3", "5");
         saltr.defineFeature("token2", data);
 
         saltr.syncFeatures();
@@ -49,31 +47,31 @@ public class SaltrTest implements SaltrObserver {
 
     @Override
     public void onGetAppDataSuccess(ObservableSaltr saltr) {
-
+        System.out.println("onGetAppDataSuccess");
     }
 
     @Override
     public void onGetAppDataFail(ObservableSaltr saltr) {
-
+        System.out.println("onGetAppDataFail");
     }
 
     @Override
     public void onGetLevelDataBodySuccess(ObservableSaltr saltr) {
-
+        System.out.println("onGetLevelDataBodySuccess");
     }
 
     @Override
     public void onGetLevelDataBodyFail(ObservableSaltr saltr) {
-
+        System.out.println("onGetLevelDataBodyFail");
     }
 
     @Override
     public void onSaveOrUpdateFeatureSuccess(ObservableSaltr saltr) {
-
+        System.out.println("onSaveOrUpdateFeatureSuccess");
     }
 
     @Override
     public void onSaveOrUpdateFeatureFail(ObservableSaltr saltr) {
-
+        System.out.println("onSaveOrUpdateFeatureFail");
     }
 }

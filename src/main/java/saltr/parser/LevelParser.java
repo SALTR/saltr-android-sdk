@@ -16,7 +16,6 @@ import saltr.parser.gameeditor.composite.CompositeAssetTemplate;
 import saltr.parser.gameeditor.simple.SimpleAssetTemplate;
 import saltr.parser.response.level.*;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +35,13 @@ public class LevelParser {
     }
 
     private static void generateChunks(Map<String, Chunk> chunks) {
-        for (Map.Entry<String, Chunk> entry:chunks.entrySet()) {
+        for (Map.Entry<String, Chunk> entry : chunks.entrySet()) {
             entry.getValue().generate();
         }
     }
 
     private static void generateComposites(Map<String, Composite> composites) {
-        for (Map.Entry<String, Composite> entry:composites.entrySet()) {
+        for (Map.Entry<String, Composite> entry : composites.entrySet()) {
             entry.getValue().generate();
         }
     }
@@ -66,15 +65,15 @@ public class LevelParser {
         List<BoardChunkAsset> assetsPrototype;
         List<List<Integer>> cellsPrototype;
         Map<String, Chunk> chunks = new HashMap<String, Chunk>();
-        for (BoardChunk chunkPrototype: chunksPrototype) {
+        for (BoardChunk chunkPrototype : chunksPrototype) {
             chunk = new Chunk(chunkPrototype.getChunkId(), outputBoard, boardData);
             assetsPrototype = chunkPrototype.getAssets();
-            for (BoardChunkAsset assetPrototype: assetsPrototype) {
+            for (BoardChunkAsset assetPrototype : assetsPrototype) {
                 chunkAsset = new AssetInChunk(assetPrototype.getAssetId(), assetPrototype.getCount(), assetPrototype.getStateId());
                 chunk.addChunkAsset(chunkAsset);
             }
             cellsPrototype = chunkPrototype.getCells();
-            for (List<Integer> cellPrototype: cellsPrototype) {
+            for (List<Integer> cellPrototype : cellsPrototype) {
                 chunk.addCell(new Cell(cellPrototype.get(0), cellPrototype.get(1)));
             }
             chunks.put(chunk.getId(), chunk);
@@ -86,7 +85,7 @@ public class LevelParser {
     private static Map<String, Composite> parseComposites(List<BoardCompositeAsset> composites, Vector2D outputBoard, BoardData boardData) {
         Composite composite;
         Map<String, Composite> compositesMap = new HashMap<String, Composite>();
-        for (BoardCompositeAsset compositePrototype: composites) {
+        for (BoardCompositeAsset compositePrototype : composites) {
             composite = new Composite(compositePrototype.getAssetId(), new Cell(compositePrototype.getPosition().get(0), compositePrototype.getPosition().get(1)), outputBoard, boardData);
             compositesMap.put(composite.getId(), composite);
         }

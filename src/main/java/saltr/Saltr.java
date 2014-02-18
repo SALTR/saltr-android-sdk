@@ -13,14 +13,13 @@ import saltr.parser.response.level.LevelData;
 import saltr.repository.IRepository;
 import saltr.resource.HttpConnection;
 
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
 
 public class Saltr implements ObservableSaltr {
     //    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
     protected static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
-//    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+    //    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
     protected static final String SALTR_URL = "http://localhost:8085/httpjson.action";
     protected static final String COMMAND_APP_DATA = "APPDATA";
     protected static final String COMMAND_ADD_PROPERTY = "ADDPROP";
@@ -36,7 +35,7 @@ public class Saltr implements ObservableSaltr {
     public static final String PROPERTY_OPERATIONS_SET = "set";
 
     protected static final String RESULT_SUCCEED = "SUCCEED";
-    protected static final String RESULT_ERROR = "ERROR";
+    protected static final String RESULT_ERROR = "FAILURE";
 
     protected IRepository repository;
     protected String saltUserId;
@@ -109,7 +108,8 @@ public class Saltr implements ObservableSaltr {
         Feature feature = features.get(token);
         if (feature == null) {
             features.put(token, new Feature(token, null, properties));
-        } else {
+        }
+        else {
             feature.setDefaultProperties(properties);
         }
     }
@@ -156,12 +156,14 @@ public class Saltr implements ObservableSaltr {
         if (data != null) {
             System.out.println("[SaltClient] Loading App data from Cache folder.");
             loadAppDataSuccessHandler(data);
-        } else {
+        }
+        else {
             System.out.println("[SaltClient] Loading App data from application folder.");
             data = (AppData) repository.getObjectFromApplication(APP_DATA_URL_INTERNAL);
             if (data != null) {
                 loadAppDataSuccessHandler(data);
-            } else {
+            }
+            else {
                 loadAppDataFailHandler();
             }
         }
@@ -184,7 +186,8 @@ public class Saltr implements ObservableSaltr {
         String cachedFileName = MessageFormat.format(LEVEL_DATA_URL_CACHE_TEMPLATE, values);
         if (levelData.getVersion().equals(repository.getObjectVersion(cachedFileName))) {
             loadLevelDataCached(levelData, cachedFileName);
-        } else {
+        }
+        else {
             loadLevelDataFromServer(levelPackData, levelData, false);
         }
 
@@ -227,7 +230,8 @@ public class Saltr implements ObservableSaltr {
 
             if (data == null) {
                 loadLevelDataLocally(levelPackData, levelData, cachedFileName);
-            } else {
+            }
+            else {
                 Gson gson = new Gson();
                 levelLoadSuccessHandler(levelData, gson.fromJson(data, LevelData.class));
                 repository.cacheObject(cachedFileName, levelData.getVersion(), data);
@@ -248,7 +252,8 @@ public class Saltr implements ObservableSaltr {
         LevelData data = (LevelData) repository.getObjectFromApplication(url);
         if (data != null) {
             levelLoadSuccessHandler(levelData, data);
-        } else {
+        }
+        else {
             levelLoadErrorHandler();
         }
     }
@@ -260,9 +265,13 @@ public class Saltr implements ObservableSaltr {
         isLoading = true;
         ready = false;
         HttpConnection connection = createAppDataConnection();
-//        Gson gson = new Gson();
-//        gson.fromJson(connection.excutePost(), SaltrResponse.class)
-        System.out.println(connection.excutePost());
+        try {
+            String response = connection.excutePost();
+            appDataAssetLoadCompleteHandler(response);
+        }
+        catch (Exception e) {
+            appDataAssetLoadErrorHandler();
+        }
     }
 
     private void appDataAssetLoadErrorHandler() {
@@ -275,9 +284,10 @@ public class Saltr implements ObservableSaltr {
         Gson gson = new Gson();
         SaltrResponse<AppData> response = gson.fromJson(data, SaltrResponse.class);
         System.out.println("[SaltClient] Loaded App data. json=" + data);
-        if (response.getResponseData() == null || response.getStatus() != Saltr.RESULT_SUCCEED) {
+        if (data == null || !response.getStatus().equals(Saltr.RESULT_SUCCEED)) {
             loadAppDataInternal();
-        } else {
+        }
+        else {
             loadAppDataSuccessHandler(response.getResponseData());
             repository.cacheObject(APP_DATA_URL_CACHE, "0", response.getResponseData());
         }
@@ -311,7 +321,7 @@ public class Saltr implements ObservableSaltr {
             urlVars.put("appVersion", appVersion);
         }
 
-        List<String> featureList = new ArrayList<String>();
+        List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
         Map<String, String> tempMap;
         Feature feature;
         for (Map.Entry<String, Feature> entry : features.entrySet()) {
@@ -320,7 +330,7 @@ public class Saltr implements ObservableSaltr {
                 tempMap = new HashMap<String, String>();
                 tempMap.put("token", feature.getToken());
                 tempMap.put("value", gson.toJson(feature.getDefaultProperties()));
-                featureList.add(gson.toJson(tempMap));
+                featureList.add(tempMap);
             }
         }
         urlVars.put("data", gson.toJson(featureList));

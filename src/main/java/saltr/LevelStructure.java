@@ -6,15 +6,12 @@
  */
 package saltr;
 
-import com.google.gson.Gson;
 import saltr.parser.LevelParser;
-import saltr.parser.data.Vector2D;
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.response.level.Board;
 import saltr.parser.response.level.LevelData;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class LevelStructure implements Comparable<LevelStructure> {

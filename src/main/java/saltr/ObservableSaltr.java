@@ -8,5 +8,6 @@ package saltr;
  */
 public interface ObservableSaltr {
     public void addObserver(SaltrObserver o);
+
     public void removeObserver(SaltrObserver o);
 }

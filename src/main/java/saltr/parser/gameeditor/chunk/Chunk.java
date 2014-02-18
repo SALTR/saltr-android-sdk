@@ -40,7 +40,8 @@ public class Chunk {
         for (AssetInChunk chunkAsset : this.chunkAssets) {
             if (chunkAsset.getCount() != 0) {
                 generateAsset(chunkAsset.getCount(), chunkAsset.getId(), chunkAsset.getStateId());
-            } else {
+            }
+            else {
                 weakChunkAsset.add(chunkAsset);
             }
         }
