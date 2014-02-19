@@ -17,7 +17,7 @@ import saltr.resource.HttpConnection;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class Saltr implements ObservableSaltr {
+public class Saltr {
     //    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
     protected static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
     //    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
@@ -116,7 +116,7 @@ public class Saltr implements ObservableSaltr {
         }
     }
 
-    public void getAppData() {
+    public void getAppData(AppDataHandler appDataHandler) {
         loadAppData();
     }
 
@@ -177,7 +177,6 @@ public class Saltr implements ObservableSaltr {
         }
     }
 
-    @Override
     public void getLevelDataBody(LevelPackStructure levelPackData, LevelStructure levelData, Boolean useCache) {
         if (!useCache) {
             loadLevelDataFromServer(levelPackData, levelData, true);
@@ -345,22 +344,6 @@ public class Saltr implements ObservableSaltr {
 
         HttpConnection connection = new HttpConnection(SALTR_URL, urlVars);
         SaltrResponse response = gson.fromJson(connection.excutePost(), SaltrResponse.class);
-        if (response != null && response.getStatus().equals(RESULT_SUCCEED)) {
-            fireSyncFeatureSuccess();
-        }
-        else {
-            fireSyncFeatureFail();
-        }
-    }
-
-    @Override
-    public void addObserver(SaltrObserver o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void removeObserver(SaltrObserver o) {
-        observers.remove(o);
     }
 
     private void fireAppDataSuccess() {
@@ -384,18 +367,6 @@ public class Saltr implements ObservableSaltr {
     private void fireLevelDataBodyFail() {
         for (SaltrObserver observer : observers) {
             observer.onGetLevelDataBodyFail(this);
-        }
-    }
-
-    private void fireSyncFeatureSuccess() {
-        for (SaltrObserver observer : observers) {
-            observer.onSaveOrUpdateFeatureSuccess(this);
-        }
-    }
-
-    private void fireSyncFeatureFail() {
-        for (SaltrObserver observer : observers) {
-            observer.onSaveOrUpdateFeatureFail(this);
         }
     }
 }

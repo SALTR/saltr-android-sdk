@@ -1,8 +1,7 @@
 import org.junit.Test;
+import saltr.AppDataHandler;
 import saltr.LevelPackStructure;
-import saltr.ObservableSaltr;
 import saltr.Saltr;
-import saltr.SaltrObserver;
 import saltr.repository.MobileRepository;
 import saltr.resource.HttpConnection;
 
@@ -17,7 +16,7 @@ import java.util.Map;
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
 
-public class SaltrTest implements SaltrObserver {
+public class SaltrTest {
 
     private String instanceKey = "d7c3d370-6238-60f6-d8c5-0ed6a6c745f2";
 
@@ -25,18 +24,26 @@ public class SaltrTest implements SaltrObserver {
     public void getAppData() {
 //        Saltr saltr = new Saltr("2dc1e2cf-5ed2-54ae-91c4-e781233b9db1");
         Saltr saltr = new Saltr(instanceKey);
-        saltr.addObserver(this);
         saltr.initDevice("asdhaksjdh", "iphone");
         saltr.initPartner("ajksdhakjsd", "facebook");
         saltr.setRepository(new MobileRepository());
 
-        saltr.getAppData();
+        saltr.getAppData(new AppDataHandler() {
+            @Override
+            public void onGetAppDataSuccess(Saltr saltr) {
+
+            }
+
+            @Override
+            public void onGetAppDataFail(Saltr saltr) {
+
+            }
+        });
     }
 
     @Test
     public void syncFeatures() {
         Saltr saltr = new Saltr(instanceKey);
-        saltr.addObserver(this);
         saltr.setAppVersion("1.0.0");
 
         Map<String, String> data = new HashMap<String, String>();
@@ -55,37 +62,5 @@ public class SaltrTest implements SaltrObserver {
         HttpConnection connection = new HttpConnection("http://localadmin.saltr.com:8085/", new HashMap<String, String>());
         connection.call("http://localapi.saltr.com:8081/httpjson.action?command=APPDATA&arguments={\"instanceKey\":\"d7c3d370-6238-60f6-d8c5-0ed6a6c745f2\",\"partner\":{\"partnerId\":\"100000024783448\",\"partnerType\":\"facebook\",\"gender\":\"male\",\"age\":36,\"firstName\":\"Artem\",\"lastName\":\"Sukiasyan\"},\"device\":{\"deviceId\":\"asdas123kasd\",\"deviceType\":\"iphone\"}}");
 //        connection.call("http://localadmin.saltr.com:8085/");
-    }
-
-    @Override
-    public void onGetAppDataSuccess(ObservableSaltr saltr) {
-        List<LevelPackStructure> packs = saltr.getLevelPackStructures();
-        saltr.getLevelDataBody(packs.get(0), packs.get(0).getLevelStructureList().get(0), false);
-        System.out.println("onGetAppDataSuccess");
-    }
-
-    @Override
-    public void onGetAppDataFail(ObservableSaltr saltr) {
-        System.out.println("onGetAppDataFail");
-    }
-
-    @Override
-    public void onGetLevelDataBodySuccess(ObservableSaltr saltr) {
-        System.out.println("onGetLevelDataBodySuccess");
-    }
-
-    @Override
-    public void onGetLevelDataBodyFail(ObservableSaltr saltr) {
-        System.out.println("onGetLevelDataBodyFail");
-    }
-
-    @Override
-    public void onSaveOrUpdateFeatureSuccess(ObservableSaltr saltr) {
-        System.out.println("onSaveOrUpdateFeatureSuccess");
-    }
-
-    @Override
-    public void onSaveOrUpdateFeatureFail(ObservableSaltr saltr) {
-        System.out.println("onSaveOrUpdateFeatureFail");
     }
 }
