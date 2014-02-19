@@ -63,8 +63,8 @@ public class Chunk {
             asset.setState(state);
             asset.setType(assetTemplate.getType());
             asset.setCell(randCell);
-            outputBoard[randCell.getX()][randCell.getY()] = asset;
-            cells.subList(randCellIndex, 1).clear();
+            outputBoard[randCell.getY()][randCell.getX()] = asset;
+            cells.subList(randCellIndex, randCellIndex + 1).clear();
         }
         if (cells.isEmpty()) {
             return;
