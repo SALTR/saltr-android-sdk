@@ -6,7 +6,7 @@
  */
 package saltr.parser.gameeditor.composite;
 
-import saltr.parser.data.Vector2D;
+
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.gameeditor.Cell;
 
@@ -17,10 +17,10 @@ import java.util.Map;
 public class Composite {
     private String id;
     private Cell position;
-    private Vector2D outputBoard;
+    private Object[][] outputBoard;
     private Map boardAssetMap;
 
-    public Composite(String id, Cell position, Vector2D outputBoard, BoardData boardData) {
+    public Composite(String id, Cell position, Object[][] outputBoard, BoardData boardData) {
         this.id = id;
         this.position = position;
         this.outputBoard = outputBoard;
@@ -49,6 +49,6 @@ public class Composite {
         }
         compositeAsset.setShifts(shifts);
         compositeAsset.setBasis(new Cell(position.getX(), position.getY()));
-        outputBoard.insert(position.getX(), position.getY(), compositeAsset);
+        outputBoard[position.getX()][position.getY()] = compositeAsset;
     }
 }

@@ -7,7 +7,7 @@
 package saltr;
 
 import saltr.parser.LevelParser;
-import saltr.parser.data.Vector2D;
+
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.response.level.Board;
 import saltr.parser.response.level.BoardChunk;
@@ -23,7 +23,7 @@ public class LevelBoard {
     private Integer cols;
     private List<List<Integer>> blockedCells;
     private List<Integer> position;
-    private Vector2D boardVector;
+    private Object[][] boardVector;
     private Board rawBoard;
     private BoardData boardData;
 
@@ -35,7 +35,7 @@ public class LevelBoard {
         blockedCells = this.rawBoard.getBlockedCells();
         position = this.rawBoard.getPosition();
 
-        this.boardVector = new Vector2D(cols, rows);
+        this.boardVector = new Object[rows][cols];
         LevelParser.parseBoard(boardVector, this.rawBoard, this.boardData);
     }
 
@@ -67,7 +67,7 @@ public class LevelBoard {
         return position;
     }
 
-    public Vector2D getBoardVector() {
+    public Object[][] getBoardVector() {
         return boardVector;
     }
 

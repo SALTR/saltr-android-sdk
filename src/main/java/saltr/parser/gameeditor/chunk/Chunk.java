@@ -6,7 +6,7 @@
  */
 package saltr.parser.gameeditor.chunk;
 
-import saltr.parser.data.Vector2D;
+
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.gameeditor.Cell;
 import saltr.parser.gameeditor.simple.SimpleAsset;
@@ -21,11 +21,11 @@ public class Chunk {
     private List<AssetInChunk> chunkAssets;
     private List items;
     private List<Cell> cells;
-    private Vector2D outputBoard;
+    private Object[][] outputBoard;
     private Map boardAssetMap;
     private Map boardStateMap;
 
-    public Chunk(String id, Vector2D outputBoard, BoardData boardData) {
+    public Chunk(String id, Object[][] outputBoard, BoardData boardData) {
         this.id = id;
         this.chunkAssets = new ArrayList<AssetInChunk>();
         this.cells = new ArrayList<Cell>();
@@ -63,7 +63,7 @@ public class Chunk {
             asset.setState(state);
             asset.setType(assetTemplate.getType());
             asset.setCell(randCell);
-            outputBoard.insert(randCell.getX(), randCell.getY(), asset);
+            outputBoard[randCell.getX()][randCell.getY()] = asset;
             cells.subList(randCellIndex, 1).clear();
         }
         if (cells.isEmpty()) {

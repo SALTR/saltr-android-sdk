@@ -6,7 +6,6 @@
  */
 package saltr.parser;
 
-import saltr.parser.data.Vector2D;
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.gameeditor.Cell;
 import saltr.parser.gameeditor.chunk.AssetInChunk;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LevelParser {
-    public static void parseBoard(Vector2D outputBoard, Board board, BoardData boardData) {
+    public static void parseBoard(Object[][] outputBoard, Board board, BoardData boardData) {
         createEmptyBoard(outputBoard);
         Map<String, Composite> composites = parseComposites(board.getComposites(), outputBoard, boardData);
         Map boardChunks = parseChunks(board.getChunks(), outputBoard, boardData);
@@ -29,7 +28,7 @@ public class LevelParser {
         generateChunks(boardChunks);
     }
 
-    public static void regenerateChunks(Vector2D outputBoard, Board board, BoardData boardData) {
+    public static void regenerateChunks(Object[][] outputBoard, Board board, BoardData boardData) {
         Map<String, Chunk> boardChunks = parseChunks(board.getChunks(), outputBoard, boardData);
         generateChunks(boardChunks);
     }
@@ -46,20 +45,20 @@ public class LevelParser {
         }
     }
 
-    private static void createEmptyBoard(Vector2D board) {
-        int cols = board.getWidth();
-        int rows = board.getHeight();
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
+    private static void createEmptyBoard(Object[][] board) {
+        int cols = board.length;
+        for (int j = 0; j < cols; ++j) {
+            int rows = board[j].length;
+            for (int i = 0; i < rows; ++i) {
                 Map<String, Integer> map = new HashMap<String, Integer>();
                 map.put("col", j);
                 map.put("row", i);
-                board.insert(j, i, map);
+                board[j][i] = map;
             }
         }
     }
 
-    private static Map parseChunks(List<BoardChunk> chunksPrototype, Vector2D outputBoard, BoardData boardData) {
+    private static Map parseChunks(List<BoardChunk> chunksPrototype, Object[][] outputBoard, BoardData boardData) {
         AssetInChunk chunkAsset;
         Chunk chunk;
         List<BoardChunkAsset> assetsPrototype;
@@ -82,7 +81,7 @@ public class LevelParser {
     }
 
 
-    private static Map<String, Composite> parseComposites(List<BoardCompositeAsset> composites, Vector2D outputBoard, BoardData boardData) {
+    private static Map<String, Composite> parseComposites(List<BoardCompositeAsset> composites, Object[][] outputBoard, BoardData boardData) {
         Composite composite;
         Map<String, Composite> compositesMap = new HashMap<String, Composite>();
         for (BoardCompositeAsset compositePrototype : composites) {
