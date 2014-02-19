@@ -6,19 +6,25 @@
  */
 package saltr.resource;
 
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.FluentStringsMap;
-import com.ning.http.client.Response;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class HttpConnection {
     private String urlParameters;
     private String targetURL;
+
+    public HttpConnection(String targetURL) {
+        this.targetURL = targetURL;
+    }
 
     public HttpConnection(String targetURL, Map<String, String> urlParameters) {
         this.targetURL = targetURL;
@@ -33,6 +39,10 @@ public class HttpConnection {
         this.targetURL = targetURL;
     }
 
+    public HttpConnection() {
+        super();
+    }
+
     public String excutePost() {
         URL url;
         HttpURLConnection connection = null;
@@ -44,8 +54,10 @@ public class HttpConnection {
             connection.setRequestProperty("Content-Type",
                     "application/x-www-form-urlencoded");
 
-            connection.setRequestProperty("Content-Length", "" +
-                    Integer.toString(urlParameters.getBytes().length));
+            if (urlParameters != null && !urlParameters.isEmpty()) {
+                connection.setRequestProperty("Content-Length", "" +
+                        Integer.toString(urlParameters.getBytes().length));
+            }
             connection.setRequestProperty("Content-Language", "en-US");
             connection.setRequestProperty("charset", "utf-8");
 
@@ -56,7 +68,9 @@ public class HttpConnection {
             //Send request
             DataOutputStream wr = new DataOutputStream(
                     connection.getOutputStream());
-            wr.writeBytes(urlParameters);
+            if (urlParameters != null && !urlParameters.isEmpty()) {
+                wr.writeBytes(urlParameters);
+            }
             wr.flush();
             wr.close();
 
@@ -72,7 +86,6 @@ public class HttpConnection {
             rd.close();
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         } finally {
             if (connection != null) {
@@ -82,21 +95,13 @@ public class HttpConnection {
 
     }
 
-    public void call(String url, FluentStringsMap params) throws IOException {
-        AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-        asyncHttpClient.preparePost(url).setQueryParameters(params).execute(new AsyncCompletionHandler<Response>() {
-            @Override
-            public Response onCompleted(Response response) throws Exception {
-                System.out.println("success");
-                return response;
-            }
+    public void call(String url) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        Future<Response> response = executor.submit(new Request(new URL(url)));
 
-            @Override
-            public void onThrowable(Throwable t) {
-                System.out.println("failure");
-            }
-        });
-
+        InputStream body = response.get().getBody();
+        System.out.println("111111");
+        executor.shutdown();
     }
 
     private String convertUrlParameters(Map<String, String> paramsMap) {
@@ -106,5 +111,31 @@ public class HttpConnection {
             params += entry.getKey() + "=" + entry.getValue() + "&";
         }
         return params;
+    }
+
+    public class Request implements Callable<Response> {
+        private URL url;
+
+        public Request(URL url) {
+            this.url = url;
+        }
+
+        @Override
+        public Response call() throws Exception {
+            return new Response(url.openStream());
+        }
+    }
+
+    public class Response {
+        private InputStream body;
+
+        public Response(InputStream body) {
+            System.out.println("HUUUUUUUURAAYYY!!!!");
+            this.body = body;
+        }
+
+        public InputStream getBody() {
+            return body;
+        }
     }
 }

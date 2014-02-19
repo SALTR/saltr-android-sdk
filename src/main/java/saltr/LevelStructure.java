@@ -37,7 +37,7 @@ public class LevelStructure implements Comparable<LevelStructure> {
     public void parseData(LevelData data) {
         this.data = data;
         BoardData boardData = LevelParser.parseBoardData(data);
-        this.keyset = boardData.getKeyset();
+        keyset = boardData.getKeyset();
 
         boards = new HashMap();
         LevelBoard levelBoard;

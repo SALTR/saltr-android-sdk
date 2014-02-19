@@ -1,18 +1,14 @@
-import com.ning.http.client.FluentStringsMap;
 import org.junit.Test;
+import saltr.LevelPackStructure;
 import saltr.ObservableSaltr;
 import saltr.Saltr;
 import saltr.SaltrObserver;
+import saltr.repository.MobileRepository;
 import saltr.resource.HttpConnection;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
 
 /**
  * Copyright Teoken LLC. (c) 2013. All rights reserved.
@@ -26,12 +22,13 @@ public class SaltrTest implements SaltrObserver {
     private String instanceKey = "d7c3d370-6238-60f6-d8c5-0ed6a6c745f2";
 
     @Test
-    public void gettingAppData() {
+    public void getAppData() {
 //        Saltr saltr = new Saltr("2dc1e2cf-5ed2-54ae-91c4-e781233b9db1");
         Saltr saltr = new Saltr(instanceKey);
         saltr.addObserver(this);
         saltr.initDevice("asdhaksjdh", "iphone");
         saltr.initPartner("ajksdhakjsd", "facebook");
+        saltr.setRepository(new MobileRepository());
 
         saltr.getAppData();
     }
@@ -54,17 +51,16 @@ public class SaltrTest implements SaltrObserver {
     }
 
     @Test
-    public void asynchCall() throws IOException, ExecutionException, InterruptedException {
+    public void asynchCall() throws Exception {
         HttpConnection connection = new HttpConnection("http://localadmin.saltr.com:8085/", new HashMap<String, String>());
-        FluentStringsMap map = new FluentStringsMap();
-        map.put("command", new ArrayList<String>());
-        map.put("instanceKey", new ArrayList<String>());
-        map.put("data", new ArrayList<String>());
-        connection.call("http://localadmin.saltr.com:8085/", map);
+        connection.call("http://localapi.saltr.com:8081/httpjson.action?command=APPDATA&arguments={\"instanceKey\":\"d7c3d370-6238-60f6-d8c5-0ed6a6c745f2\",\"partner\":{\"partnerId\":\"100000024783448\",\"partnerType\":\"facebook\",\"gender\":\"male\",\"age\":36,\"firstName\":\"Artem\",\"lastName\":\"Sukiasyan\"},\"device\":{\"deviceId\":\"asdas123kasd\",\"deviceType\":\"iphone\"}}");
+//        connection.call("http://localadmin.saltr.com:8085/");
     }
 
     @Override
     public void onGetAppDataSuccess(ObservableSaltr saltr) {
+        List<LevelPackStructure> packs = saltr.getLevelPackStructures();
+        saltr.getLevelDataBody(packs.get(0), packs.get(0).getLevelStructureList().get(0), false);
         System.out.println("onGetAppDataSuccess");
     }
 

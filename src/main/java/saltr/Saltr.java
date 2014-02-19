@@ -82,6 +82,7 @@ public class Saltr implements ObservableSaltr {
         return features;
     }
 
+    @Override
     public List<LevelPackStructure> getLevelPackStructures() {
         return levelPackStructures;
     }
@@ -120,12 +121,12 @@ public class Saltr implements ObservableSaltr {
     }
 
     protected void loadAppDataSuccessHandler(AppData appData) {
-        this.isLoading = false;
-        this.ready = true;
-        this.saltUserId = appData.getSaltId().toString();
+        isLoading = false;
+        ready = true;
+        saltUserId = appData.getSaltId().toString();
 
-        this.experiments = deserializer.decodeExperimentInfo(appData);
-        this.levelPackStructures = deserializer.decodeLevels(appData);
+        experiments = deserializer.decodeExperimentInfo(appData);
+        levelPackStructures = deserializer.decodeLevels(appData);
         Map<String, Feature> saltrFeatures = deserializer.decodeFeatures(appData);
         //merging with defaults...
         for (Map.Entry<String, Feature> entry : saltrFeatures.entrySet()) {
@@ -145,36 +146,39 @@ public class Saltr implements ObservableSaltr {
         }
     }
 
-    private void loadAppDataFailHandler() {
+    private void loadAppDataFailHandler(String msg) {
+        fireAppDataFail();
         this.isLoading = false;
         this.ready = false;
-        System.out.println("[SaltClient] ERROR: Level Packs are not loaded.");
+        System.out.println(msg);
     }
 
     protected void loadAppDataInternal() {
-        System.out.println("[SaltClient] NO Internet available - so loading internal app data.");
-        AppData data = (AppData) repository.getObjectFromCache(APP_DATA_URL_CACHE);
+        System.out.println("[SaltClient] NO Internet available - loading internal app data.");
+        if (repository == null) {
+            loadAppDataFailHandler("[SaltClient] ERROR: Repository is not initialized.");
+        }
+
+        Object data = repository.getObjectFromCache(APP_DATA_URL_CACHE);
+
         if (data != null) {
             System.out.println("[SaltClient] Loading App data from Cache folder.");
-            loadAppDataSuccessHandler(data);
+            loadAppDataSuccessHandler((AppData) data);
         }
         else {
             System.out.println("[SaltClient] Loading App data from application folder.");
-            data = (AppData) repository.getObjectFromApplication(APP_DATA_URL_INTERNAL);
+            data = repository.getObjectFromApplication(APP_DATA_URL_INTERNAL);
             if (data != null) {
-                loadAppDataSuccessHandler(data);
+                loadAppDataSuccessHandler((AppData) data);
             }
             else {
-                loadAppDataFailHandler();
+                loadAppDataFailHandler("[SaltClient] ERROR: Level Packs are not loaded.");
             }
         }
     }
 
+    @Override
     public void getLevelDataBody(LevelPackStructure levelPackData, LevelStructure levelData, Boolean useCache) {
-        if (useCache == null) {
-            useCache = true;
-        }
-
         if (!useCache) {
             loadLevelDataFromServer(levelPackData, levelData, true);
             return;
@@ -226,7 +230,7 @@ public class Saltr implements ObservableSaltr {
         params.add((new Integer(levelData.getIndex())).toString());
         String cachedFileName = String.format(LEVEL_DATA_URL_CACHE_TEMPLATE, params);
         try {
-            HttpConnection connection = new HttpConnection(dataUrl, null);
+            HttpConnection connection = new HttpConnection(dataUrl);
             String data = connection.excutePost();
 
             if (data == null) {
@@ -266,11 +270,12 @@ public class Saltr implements ObservableSaltr {
         isLoading = true;
         ready = false;
         HttpConnection connection = createAppDataConnection();
-        try {
-            String response = connection.excutePost();
+
+        String response = connection.excutePost();
+        if (response != null) {
             appDataAssetLoadCompleteHandler(response);
         }
-        catch (Exception e) {
+        else {
             appDataAssetLoadErrorHandler();
         }
     }
@@ -285,11 +290,12 @@ public class Saltr implements ObservableSaltr {
         Gson gson = new Gson();
         SaltrResponse<AppData> response = gson.fromJson(data, new TypeToken<SaltrResponse<AppData>>() {
         }.getType());
-        System.out.println("[SaltClient] Loaded App data. json=" + data);
-        if (data == null || !response.getStatus().equals(Saltr.RESULT_SUCCEED)) {
+
+        if (!response.getStatus().equals(Saltr.RESULT_SUCCEED)) {
             loadAppDataInternal();
         }
         else {
+            System.out.println("[SaltClient] Loaded App data. json=" + data);
             loadAppDataSuccessHandler(response.getResponseData());
             repository.cacheObject(APP_DATA_URL_CACHE, "0", response.getResponseData());
         }
@@ -338,7 +344,13 @@ public class Saltr implements ObservableSaltr {
         urlVars.put("data", gson.toJson(featureList));
 
         HttpConnection connection = new HttpConnection(SALTR_URL, urlVars);
-        System.out.println(connection.excutePost());
+        SaltrResponse response = gson.fromJson(connection.excutePost(), SaltrResponse.class);
+        if (response != null && response.getStatus().equals(RESULT_SUCCEED)) {
+            fireSyncFeatureSuccess();
+        }
+        else {
+            fireSyncFeatureFail();
+        }
     }
 
     @Override
