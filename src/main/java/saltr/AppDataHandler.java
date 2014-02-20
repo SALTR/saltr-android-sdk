@@ -7,7 +7,7 @@ package saltr;
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
 public interface AppDataHandler {
-    public void onGetAppDataSuccess(Saltr saltr);
+    public void onGetAppDataSuccess();
 
-    public void onGetAppDataFail(Saltr saltr);
+    public void onGetAppDataFail();
 }

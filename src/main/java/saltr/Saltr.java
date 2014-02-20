@@ -52,8 +52,8 @@ public class Saltr {
     protected Device device;
     private String appVersion;
     private Boolean isInDevMode;
-
-    private List<SaltrObserver> observers;
+    private AppDataHandler appDataHandler;
+    private LevelDataHandler levelDataHandler;
 
     public Saltr(String instanceKey) {
         features = new HashMap<String, Feature>();
@@ -62,8 +62,6 @@ public class Saltr {
         isLoading = false;
         ready = false;
         isInDevMode = true;
-
-        observers = new ArrayList<SaltrObserver>();
     }
 
     public void setAppVersion(String appVersion) {
@@ -82,7 +80,6 @@ public class Saltr {
         return features;
     }
 
-    @Override
     public List<LevelPackStructure> getLevelPackStructures() {
         return levelPackStructures;
     }
@@ -117,6 +114,7 @@ public class Saltr {
     }
 
     public void getAppData(AppDataHandler appDataHandler) {
+        this.appDataHandler = appDataHandler;
         loadAppData();
     }
 
@@ -139,7 +137,7 @@ public class Saltr {
         }
 
         System.out.println("[SaltClient] packs=" + levelPackStructures.size());
-        fireAppDataSuccess();
+        appDataHandler.onGetAppDataSuccess();
 
         if (isInDevMode) {
             syncFeatures();
@@ -147,7 +145,7 @@ public class Saltr {
     }
 
     private void loadAppDataFailHandler(String msg) {
-        fireAppDataFail();
+        appDataHandler.onGetAppDataFail();
         this.isLoading = false;
         this.ready = false;
         System.out.println(msg);
@@ -177,7 +175,8 @@ public class Saltr {
         }
     }
 
-    public void getLevelDataBody(LevelPackStructure levelPackData, LevelStructure levelData, Boolean useCache) {
+    public void getLevelDataBody(LevelPackStructure levelPackData, LevelStructure levelData, Boolean useCache, LevelDataHandler levelDataHandler) {
+        this.levelDataHandler = levelDataHandler;
         if (!useCache) {
             loadLevelDataFromServer(levelPackData, levelData, true);
             return;
@@ -199,10 +198,13 @@ public class Saltr {
 
     protected void levelLoadSuccessHandler(LevelStructure levelData, LevelData data) {
         levelData.parseData(data);
+        levelDataHandler.onGetLevelDataBodySuccess();
+
     }
 
     protected void levelLoadErrorHandler() {
         System.out.println("[SaltClient] ERROR: Level data is not loaded.");
+        levelDataHandler.onGetLevelDataBodyFail();
     }
 
     protected void loadLevelDataLocally(LevelPackStructure levelPackData, LevelStructure levelData, String cachedFileName) {
@@ -344,29 +346,5 @@ public class Saltr {
 
         HttpConnection connection = new HttpConnection(SALTR_URL, urlVars);
         SaltrResponse response = gson.fromJson(connection.excutePost(), SaltrResponse.class);
-    }
-
-    private void fireAppDataSuccess() {
-        for (SaltrObserver observer : observers) {
-            observer.onGetAppDataSuccess(this);
-        }
-    }
-
-    private void fireAppDataFail() {
-        for (SaltrObserver observer : observers) {
-            observer.onGetAppDataFail(this);
-        }
-    }
-
-    private void fireLevelDataBodySuccess() {
-        for (SaltrObserver observer : observers) {
-            observer.onGetLevelDataBodySuccess(this);
-        }
-    }
-
-    private void fireLevelDataBodyFail() {
-        for (SaltrObserver observer : observers) {
-            observer.onGetLevelDataBodyFail(this);
-        }
     }
 }

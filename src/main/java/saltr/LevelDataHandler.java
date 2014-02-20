@@ -7,7 +7,7 @@ package saltr;
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
 public interface LevelDataHandler {
-    public void onGetLevelDataBodySuccess(ObservableSaltr saltr);
+    public void onGetLevelDataBodySuccess();
 
-    public void onGetLevelDataBodyFail(ObservableSaltr saltr);
+    public void onGetLevelDataBodyFail();
 }

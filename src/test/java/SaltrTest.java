@@ -1,5 +1,6 @@
 import org.junit.Test;
 import saltr.AppDataHandler;
+import saltr.LevelDataHandler;
 import saltr.LevelPackStructure;
 import saltr.Saltr;
 import saltr.repository.MobileRepository;
@@ -30,13 +31,27 @@ public class SaltrTest {
 
         saltr.getAppData(new AppDataHandler() {
             @Override
-            public void onGetAppDataSuccess(Saltr saltr) {
-
+            public void onGetAppDataSuccess() {
+                System.out.println("APP DATA LOADED");
             }
 
             @Override
-            public void onGetAppDataFail(Saltr saltr) {
+            public void onGetAppDataFail() {
+                System.out.println("APP DATA FAILED TO LOAD");
+            }
+        });
+        List<LevelPackStructure> packs = saltr.getLevelPackStructures();
 
+        saltr.getLevelDataBody(packs.get(0), packs.get(0).getLevelStructureList().get(0), false, new LevelDataHandler() {
+
+            @Override
+            public void onGetLevelDataBodySuccess() {
+                System.out.println("LEVEL DATA LOADED");
+            }
+
+            @Override
+            public void onGetLevelDataBodyFail() {
+                System.out.println("LEVEL DATA FAILED TO LOAD");
             }
         });
     }
