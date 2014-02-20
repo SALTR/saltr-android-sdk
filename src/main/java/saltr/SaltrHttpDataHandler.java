@@ -6,8 +6,8 @@ package saltr;
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-public interface AppDataHandler {
-    public void onGetAppDataSuccess();
+public interface SaltrHttpDataHandler {
+    public void onSuccess();
 
-    public void onGetAppDataFail();
+    public void onFail();
 }

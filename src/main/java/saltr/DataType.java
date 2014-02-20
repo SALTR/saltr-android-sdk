@@ -6,8 +6,18 @@ package saltr;
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-public interface LevelDataHandler {
-    public void onGetLevelDataBodySuccess();
+public enum DataType {
+    LEVEL("level"),
+    APP("app"),
+    FEATURE("feature");
 
-    public void onGetLevelDataBodyFail();
+    private String type;
+
+    DataType(String type) {
+        this.type = type;
+    }
+
+    public String getValue() {
+        return this.type;
+    }
 }

@@ -7,7 +7,6 @@
 package saltr;
 
 import saltr.parser.LevelParser;
-
 import saltr.parser.gameeditor.BoardData;
 import saltr.parser.response.level.Board;
 import saltr.parser.response.level.BoardChunk;
