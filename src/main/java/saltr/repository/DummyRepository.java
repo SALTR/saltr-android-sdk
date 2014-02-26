@@ -18,7 +18,7 @@ public class DummyRepository implements IRepository {
     }
 
     @Override
-    public Object getObjectVersion(String name) {
+    public String getObjectVersion(String name) {
         return null;
     }
 

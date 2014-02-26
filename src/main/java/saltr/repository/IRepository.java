@@ -11,7 +11,7 @@ public interface IRepository {
 
     Object getObjectFromCache(String fileName);
 
-    Object getObjectVersion(String name);
+    String getObjectVersion(String name);
 
     void saveObject(String name, Object object);
 

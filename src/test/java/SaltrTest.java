@@ -2,7 +2,6 @@ import org.junit.Test;
 import saltr.LevelPackStructure;
 import saltr.Saltr;
 import saltr.SaltrHttpDataHandler;
-import saltr.repository.MobileRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +21,9 @@ public class SaltrTest {
 
     @Test
     public void getAppData() {
-        final Saltr saltr = Saltr.getSaltr(instanceKey);
+        final Saltr saltr = Saltr.getInstance(instanceKey);
         saltr.initDevice("asdhaksjdh", "iphone");
         saltr.initPartner("ajksdhakjsd", "facebook");
-        saltr.setRepository(new MobileRepository());
 
         saltr.setAppVersion("1.0.0");
 
@@ -67,7 +65,7 @@ public class SaltrTest {
 
     @Test
     public void syncFeatures() {
-        Saltr saltr = Saltr.getSaltr(instanceKey);
+        Saltr saltr = Saltr.getInstance(instanceKey);
         saltr.setAppVersion("1.0.0");
 
         Map<String, String> data = new HashMap<String, String>();

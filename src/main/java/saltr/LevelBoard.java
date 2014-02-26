@@ -11,6 +11,7 @@ import saltr.parser.gameeditor.BoardData;
 import saltr.parser.response.level.Board;
 import saltr.parser.response.level.BoardChunk;
 import saltr.parser.response.level.BoardCompositeAsset;
+import saltr.parser.response.level.CustomPropertyCell;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,11 @@ public class LevelBoard {
         return boardData;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, String> getBoardProperties() {
         return rawBoard.getProperties().getBoard();
+    }
+
+    public List<CustomPropertyCell> cellProperties() {
+        return rawBoard.getProperties().getCell();
     }
 }

@@ -6,21 +6,57 @@
  */
 package saltr.repository;
 
-public class MobileRepository implements IRepository {
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.location.Address;
 
-    @Override
-    public Object getObjectFromStorage(String name) {
-        return null;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MobileRepository extends ContextWrapper implements IRepository {
+
+    private String applicationDirectory;
+    private String cacheDirectory;
+
+    public MobileRepository(Context base) {
+        super(base);
+        applicationDirectory = getApplicationInfo().dataDir;
+        cacheDirectory = getCacheDir().getPath();
     }
 
     @Override
-    public Object getObjectFromCache(String fileName) {
-        return null;
+    public Object getObjectFromCache(String name) {
+        return getInternal(cacheDirectory + File.separator + name);
     }
 
     @Override
-    public Object getObjectVersion(String name) {
-        return null;
+    public String getObjectVersion(String name) {
+        String path = cacheDirectory + File.separator + name.replace(".", "") + "_VERSION_";
+        Object obj = getInternal(path);
+        if (obj == null) {
+            return null;
+        }
+        Map<String, String> map = (Map<String, String>) obj;
+        return map.get("_VERSION_");
+    }
+
+    @Override
+    public void cacheObject(String name, String version, Object object) {
+        String path = cacheDirectory + File.separator + name;
+        saveInternal(path, object);
+        path = cacheDirectory + File.separator + name.replace(".", "") + "_VERSION_";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("_VERSION_", version);
+        saveInternal(path, map);
+    }
+
+    @Override
+    public Object getObjectFromApplication(String name) {
+        String path = applicationDirectory + File.separator + name;
+        return getInternal(path);
     }
 
     @Override
@@ -29,12 +65,36 @@ public class MobileRepository implements IRepository {
     }
 
     @Override
-    public void cacheObject(String name, String version, Object object) {
-
+    public Object getObjectFromStorage(String name) {
+        return null;
     }
 
-    @Override
-    public Object getObjectFromApplication(String fileName) {
-        return null;
+    private Object getInternal(String path) {
+        FileInputStream fin;
+        Object object = null;
+        try {
+            fin = new FileInputStream(path);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+            object = ois.readObject();
+
+            fin.close();
+            ois.close();
+        } catch (Exception e) {
+            System.out.println("[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
+        }
+        return object;
+    }
+
+    private void saveInternal(String path, Object objectToSave) {
+        try {
+            FileOutputStream out = new FileOutputStream(path);
+            ObjectOutputStream oos = new ObjectOutputStream(out);
+            oos.writeObject(objectToSave);
+
+            out.close();
+            oos.close();
+        } catch (IOException e) {
+            System.out.println("[MobileStorageEngine] : error while saving object.\n', message : '" + e.getMessage() + "'");
+        }
     }
 }

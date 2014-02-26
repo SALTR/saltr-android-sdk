@@ -20,41 +20,42 @@ import java.util.*;
 
 public class Saltr {
     private static Saltr saltr;
-    //    private static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
-    private static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
-    //    private static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
-    private static final String SALTR_URL = "http://localhost:8085/httpjson.action";
-    private static final String COMMAND_APP_DATA = "APPDATA";
-    private static final String COMMAND_ADD_PROPERTY = "ADDPROP";
-    private static final String COMMAND_SAVE_OR_UPDATE_FEATURE = "SOUFTR";
+    //    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
+    protected static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
+    //    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+    protected static final String SALTR_URL = "http://localhost:8085/httpjson.action";
+    protected static final String COMMAND_APP_DATA = "APPDATA";
+    protected static final String COMMAND_ADD_PROPERTY = "ADDPROP";
+    protected static final String COMMAND_SAVE_OR_UPDATE_FEATURE = "SOUFTR";
 
     //
-    private static final String APP_DATA_URL_CACHE = "app_data_cache.json";
-    private static final String APP_DATA_URL_INTERNAL = "saltr/app_data.json";
-    private static final String LEVEL_DATA_URL_LOCAL_TEMPLATE = "saltr/pack_{0}/level_{1}.json";
-    private static final String LEVEL_DATA_URL_CACHE_TEMPLATE = "pack_{0}_level_{1}.json";
+    protected static final String APP_DATA_URL_CACHE = "app_data_cache.json";
+    protected static final String APP_DATA_URL_INTERNAL = "saltr/app_data.json";
+    protected static final String LEVEL_DATA_URL_LOCAL_TEMPLATE = "saltr/pack_{0}/level_{1}.json";
+    protected static final String LEVEL_DATA_URL_CACHE_TEMPLATE = "pack_{0}_level_{1}.json";
 
     public static final String PROPERTY_OPERATIONS_INCREMENT = "inc";
     public static final String PROPERTY_OPERATIONS_SET = "set";
 
-    private static final String RESULT_SUCCEED = "SUCCEED";
-    private static final String RESULT_ERROR = "FAILURE";
+    protected static final String RESULT_SUCCEED = "SUCCEED";
+    protected static final String RESULT_ERROR = "FAILURE";
 
-    private IRepository repository;
-    private String saltUserId;
-    private Boolean isLoading;
-    private Boolean ready;
-    private Partner partner;
+    protected Gson gson;
+    protected IRepository repository;
+    protected String saltrUserId;
+    protected Boolean isLoading;
+    protected Boolean ready;
+    protected Partner partner;
 
-    private Deserializer deserializer;
-    private String instanceKey;
-    private Map<String, Feature> features;
-    private List<LevelPackStructure> levelPackStructures;
-    private List<Experiment> experiments;
-    private Device device;
+    protected Deserializer deserializer;
+    protected String instanceKey;
+    protected Map<String, Feature> features;
+    protected List<LevelPackStructure> levelPackStructures;
+    protected List<Experiment> experiments;
+    protected Device device;
     private String appVersion;
     private Boolean isInDevMode;
-    private SaltrHttpDataHandler saltrHttpDataHandler;
+    protected SaltrHttpDataHandler saltrHttpDataHandler;
 
     private Saltr(String instanceKey) {
         features = new HashMap<String, Feature>();
@@ -63,9 +64,10 @@ public class Saltr {
         isLoading = false;
         ready = false;
         isInDevMode = true;
+        gson = new Gson();
     }
 
-    public static Saltr getSaltr(String instanceKey) {
+    public static Saltr getInstance(String instanceKey) {
         if (saltr == null) {
             return new Saltr(instanceKey);
         }
@@ -126,10 +128,10 @@ public class Saltr {
         loadAppData();
     }
 
-    private void loadAppDataSuccessHandler(AppData appData) {
+    protected void loadAppDataSuccessHandler(AppData appData) {
         isLoading = false;
         ready = true;
-        saltUserId = appData.getSaltId().toString();
+        saltrUserId = appData.getSaltId().toString();
 
         experiments = deserializer.decodeExperimentInfo(appData);
         levelPackStructures = deserializer.decodeLevels(appData);
@@ -152,14 +154,14 @@ public class Saltr {
         }
     }
 
-    private void loadAppDataFailHandler(String msg) {
+    protected void loadAppDataFailHandler(String msg) {
         saltrHttpDataHandler.onFail();
         this.isLoading = false;
         this.ready = false;
         System.out.println(msg);
     }
 
-    private void loadAppDataInternal() {
+    protected void loadAppDataInternal() {
         System.out.println("[SaltClient] NO Internet available - loading internal app data.");
         if (repository == null) {
             loadAppDataFailHandler("[SaltClient] ERROR: Repository is not initialized.");
@@ -204,25 +206,25 @@ public class Saltr {
 
     }
 
-    private void levelLoadSuccessHandler(LevelStructure levelData, LevelData data) {
+    protected void levelLoadSuccessHandler(LevelStructure levelData, LevelData data) {
         levelData.parseData(data);
         saltrHttpDataHandler.onSuccess();
 
     }
 
-    private void levelLoadErrorHandler() {
+    protected void levelLoadErrorHandler() {
         System.out.println("[SaltClient] ERROR: Level data is not loaded.");
         saltrHttpDataHandler.onFail();
     }
 
-    private void loadLevelDataLocally(LevelPackStructure levelPackData, LevelStructure levelData, String cachedFileName) {
+    protected void loadLevelDataLocally(LevelPackStructure levelPackData, LevelStructure levelData, String cachedFileName) {
         if (loadLevelDataCached(levelData, cachedFileName) == true) {
             return;
         }
         loadLevelDataInternal(levelPackData, levelData);
     }
 
-    private boolean loadLevelDataCached(LevelStructure levelData, String cachedFileName) {
+    protected boolean loadLevelDataCached(LevelStructure levelData, String cachedFileName) {
         System.out.println("[SaltClient::loadLevelData] LOADING LEVEL DATA CACHE IMMEDIATELY.");
         LevelData data = (LevelData) repository.getObjectFromCache(cachedFileName);
         if (data != null) {
@@ -232,7 +234,7 @@ public class Saltr {
         return false;
     }
 
-    private void loadLevelDataFromServer(LevelPackStructure levelPackData, LevelStructure levelData, Boolean forceNoCache) {
+    protected void loadLevelDataFromServer(LevelPackStructure levelPackData, LevelStructure levelData, Boolean forceNoCache) {
         String dataUrl = forceNoCache ? levelData.getDataUrl() + "?_time_=" + new Date().getTime() : levelData.getDataUrl();
         String cachedFileName = getCachedFileName((new Integer(levelPackData.getIndex())).toString(),
                 (new Integer(levelData.getIndex())).toString());
@@ -255,7 +257,6 @@ public class Saltr {
             loadLevelDataLocally(details.getLevelPackData(), details.getLevelData(), details.getCachedFileName());
         }
         else {
-            Gson gson = new Gson();
             levelLoadSuccessHandler(details.getLevelData(), gson.fromJson(data, LevelData.class));
             repository.cacheObject(details.getCachedFileName(), details.getLevelData().getVersion(), data);
         }
@@ -305,7 +306,6 @@ public class Saltr {
 
     void appDataAssetLoadCompleteHandler(String data) {
         System.out.println("[SaltAPI] App data is loaded.");
-        Gson gson = new Gson();
         SaltrResponse<AppData> response = gson.fromJson(data, new TypeToken<SaltrResponse<AppData>>() {
         }.getType());
 
@@ -320,7 +320,6 @@ public class Saltr {
     }
 
     private SaltrHttpConnection createAppDataConnection() {
-        Gson gson = new Gson();
         Map<String, Object> args = new HashMap<String, Object>();
         if (device != null) {
             args.put("device", device);
@@ -338,8 +337,6 @@ public class Saltr {
     }
 
     public void syncFeatures() {
-        Gson gson = new Gson();
-
         List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
         Map<String, String> tempMap;
         Feature feature;
