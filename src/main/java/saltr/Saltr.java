@@ -67,7 +67,7 @@ public class Saltr {
         deserializer = new Deserializer();
         isLoading = false;
         ready = false;
-        isInDevMode = true;
+        isInDevMode = false;
         gson = new Gson();
         repository = new MobileRepository(contextWrapper);
         System.out.println("Saltr instance created");
@@ -226,10 +226,13 @@ public class Saltr {
 
     protected boolean loadLevelDataCached(LevelStructure levelData, String cachedFileName) {
         System.out.println("[SaltClient::loadLevelData] LOADING LEVEL DATA CACHE IMMEDIATELY.");
-        LevelData data = gson.fromJson(repository.getObjectFromCache(cachedFileName).toString(), LevelData.class);
-        if (data != null) {
-            levelLoadSuccessHandler(levelData, data);
-            return true;
+        Object object = repository.getObjectFromCache(cachedFileName).toString();
+        if (object != null) {
+            LevelData data = gson.fromJson(object.toString(), LevelData.class);
+            if (data != null) {
+                levelLoadSuccessHandler(levelData, data);
+                return true;
+            }
         }
         return false;
     }
