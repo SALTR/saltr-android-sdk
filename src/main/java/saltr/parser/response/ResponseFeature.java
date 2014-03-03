@@ -6,9 +6,10 @@
  */
 package saltr.parser.response;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ResponseFeature {
+public class ResponseFeature implements Serializable {
     private String token;
     private Map<String, String> data;
 

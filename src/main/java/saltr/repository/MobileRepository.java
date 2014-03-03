@@ -8,9 +8,6 @@ package saltr.repository;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.location.Address;
 
 import java.io.*;
 import java.util.HashMap;

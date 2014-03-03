@@ -6,24 +6,28 @@
  */
 package saltr;
 
+import android.content.ContextWrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import com.loopj.android.http.RequestParams;
 import saltr.parser.response.AppData;
 import saltr.parser.response.SaltrResponse;
 import saltr.parser.response.level.LevelData;
 import saltr.repository.IRepository;
+import saltr.repository.MobileRepository;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.logging.Level;
 
 public class Saltr {
     private static Saltr saltr;
-    //    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
-    protected static final String SALTR_API_URL = "http://localhost:8081/httpjson.action";
-    //    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
-    protected static final String SALTR_URL = "http://localhost:8085/httpjson.action";
+    protected static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
+    protected static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+
+//    protected static final String SALTR_API_URL = "http://10.0.2.2:8081/httpjson.action";
+//    protected static final String SALTR_URL = "http://10.0.2.2:8085/httpjson.action";
+
     protected static final String COMMAND_APP_DATA = "APPDATA";
     protected static final String COMMAND_ADD_PROPERTY = "ADDPROP";
     protected static final String COMMAND_SAVE_OR_UPDATE_FEATURE = "SOUFTR";
@@ -57,7 +61,7 @@ public class Saltr {
     private Boolean isInDevMode;
     protected SaltrHttpDataHandler saltrHttpDataHandler;
 
-    private Saltr(String instanceKey) {
+    private Saltr(String instanceKey, ContextWrapper contextWrapper) {
         features = new HashMap<String, Feature>();
         this.instanceKey = instanceKey;
         deserializer = new Deserializer();
@@ -65,21 +69,19 @@ public class Saltr {
         ready = false;
         isInDevMode = true;
         gson = new Gson();
+        repository = new MobileRepository(contextWrapper);
+        System.out.println("Saltr instance created");
     }
 
-    public static Saltr getInstance(String instanceKey) {
+    public static Saltr getInstance(String instanceKey, ContextWrapper contextWrapper) {
         if (saltr == null) {
-            return new Saltr(instanceKey);
+            return new Saltr(instanceKey, contextWrapper);
         }
         return saltr;
     }
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
-    }
-
-    public void setRepository(IRepository repository) {
-        this.repository = repository;
     }
 
     public Boolean getReady() {
@@ -193,10 +195,8 @@ public class Saltr {
         }
 
         //if there are no version change than load from cache
-        String[] values = {
-                String.valueOf(levelPackData.getIndex()), String.valueOf(levelData.getIndex())
-        };
-        String cachedFileName = MessageFormat.format(LEVEL_DATA_URL_CACHE_TEMPLATE, values);
+
+        String cachedFileName = MessageFormat.format(LEVEL_DATA_URL_CACHE_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
         if (levelData.getVersion().equals(repository.getObjectVersion(cachedFileName))) {
             loadLevelDataCached(levelData, cachedFileName);
         }
@@ -218,7 +218,7 @@ public class Saltr {
     }
 
     protected void loadLevelDataLocally(LevelPackStructure levelPackData, LevelStructure levelData, String cachedFileName) {
-        if (loadLevelDataCached(levelData, cachedFileName) == true) {
+        if (loadLevelDataCached(levelData, cachedFileName)) {
             return;
         }
         loadLevelDataInternal(levelPackData, levelData);
@@ -226,7 +226,7 @@ public class Saltr {
 
     protected boolean loadLevelDataCached(LevelStructure levelData, String cachedFileName) {
         System.out.println("[SaltClient::loadLevelData] LOADING LEVEL DATA CACHE IMMEDIATELY.");
-        LevelData data = (LevelData) repository.getObjectFromCache(cachedFileName);
+        LevelData data = gson.fromJson(repository.getObjectFromCache(cachedFileName).toString(), LevelData.class);
         if (data != null) {
             levelLoadSuccessHandler(levelData, data);
             return true;
@@ -236,8 +236,7 @@ public class Saltr {
 
     protected void loadLevelDataFromServer(LevelPackStructure levelPackData, LevelStructure levelData, Boolean forceNoCache) {
         String dataUrl = forceNoCache ? levelData.getDataUrl() + "?_time_=" + new Date().getTime() : levelData.getDataUrl();
-        String cachedFileName = getCachedFileName((new Integer(levelPackData.getIndex())).toString(),
-                (new Integer(levelData.getIndex())).toString());
+        String cachedFileName = MessageFormat.format(LEVEL_DATA_URL_CACHE_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
 
         CallBackDetails details = new CallBackDetails(DataType.LEVEL);
         details.setCachedFileName(cachedFileName);
@@ -253,6 +252,7 @@ public class Saltr {
     }
 
     void levelDataAssetLoadedHandler(String data, CallBackDetails details) {
+
         if (data == null) {
             loadLevelDataLocally(details.getLevelPackData(), details.getLevelData(), details.getCachedFileName());
         }
@@ -267,11 +267,7 @@ public class Saltr {
     }
 
     private void loadLevelDataInternal(LevelPackStructure levelPackData, LevelStructure levelData) {
-
-        String[] values = {
-                String.valueOf(levelPackData.getIndex()), String.valueOf(levelData.getIndex())
-        };
-        String url = MessageFormat.format(LEVEL_DATA_URL_LOCAL_TEMPLATE, values);
+        String url = MessageFormat.format(LEVEL_DATA_URL_LOCAL_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
 
         LevelData data = (LevelData) repository.getObjectFromApplication(url);
         if (data != null) {
@@ -329,9 +325,9 @@ public class Saltr {
         }
         args.put("instanceKey", instanceKey);
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("arguments", gson.toJson(args)));
-        params.add(new BasicNameValuePair("command", Saltr.COMMAND_APP_DATA));
+        RequestParams params = new RequestParams();
+        params.put("arguments", gson.toJson(args));
+        params.put("command", Saltr.COMMAND_APP_DATA);
 
         return new SaltrHttpConnection(Saltr.SALTR_API_URL, params);
     }
@@ -349,13 +345,13 @@ public class Saltr {
                 featureList.add(tempMap);
             }
         }
+        RequestParams params = new RequestParams();
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("command", Saltr.COMMAND_SAVE_OR_UPDATE_FEATURE));
-        params.add(new BasicNameValuePair("instanceKey", instanceKey));
-        params.add(new BasicNameValuePair("data", gson.toJson(featureList)));
+        params.put("command", Saltr.COMMAND_SAVE_OR_UPDATE_FEATURE);
+        params.put("instanceKey", instanceKey);
+        params.put("data", gson.toJson(featureList));
         if (appVersion != null) {
-            params.add(new BasicNameValuePair("appVersion", appVersion));
+            params.put("appVersion", appVersion);
         }
 
         SaltrHttpConnection connection = new SaltrHttpConnection(SALTR_URL, params);
@@ -364,12 +360,5 @@ public class Saltr {
             connection.call(this, details);
         } catch (Exception e) {
         }
-    }
-
-    private String getCachedFileName(String packId, String levelId) {
-        List<String> params = new ArrayList<String>();
-        params.add(packId);
-        params.add(levelId);
-        return String.format(LEVEL_DATA_URL_CACHE_TEMPLATE, params);
     }
 }

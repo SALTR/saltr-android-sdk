@@ -6,52 +6,26 @@
  */
 package saltr;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
-
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 public class SaltrHttpConnection {
     private String url;
-    private List<NameValuePair> parameters;
+    private RequestParams params;
 
     public SaltrHttpConnection(String targetURL) {
         this.url = targetURL;
     }
 
-    public SaltrHttpConnection(String targetURL, List<NameValuePair> parameters) {
+    public SaltrHttpConnection(String targetURL, RequestParams params) {
         this.url = targetURL;
-        this.parameters = parameters;
+        this.params = params;
     }
 
     public void call(Saltr saltr, CallBackDetails details) throws Exception {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(3000)
-                .setConnectTimeout(3000).build();
-        CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom()
-                .setDefaultRequestConfig(requestConfig)
-                .build();
-
-        try {
-            httpClient.start();
-            final HttpPost request = new HttpPost(url);
-            if (parameters != null) {
-                request.setEntity(new UrlEncodedFormEntity(parameters));
-            }
-            FutureCallback<HttpResponse> callBack = new SaltrCallBack(saltr, details);
-            final CountDownLatch latch = new CountDownLatch(1);
-            httpClient.execute(request, callBack);
-            latch.await();
-        } finally {
-            httpClient.close();
-        }
+        AsyncHttpClient client = new AsyncHttpClient();
+        AsyncHttpResponseHandler callBack = new SaltrCallBackHandler(saltr, details);
+        client.post(url, params, callBack);
     }
 }

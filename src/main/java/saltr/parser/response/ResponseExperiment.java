@@ -6,23 +6,16 @@
  */
 package saltr.parser.response;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ResponseExperiment {
+public class ResponseExperiment implements Serializable {
     private String name;
     private String token;
     private String partitionName;
-    private ExperimentType type;
-    private ExperimentTrackingType trackingType;
+    private String type;
+    private String trackingType;
     private List<String> customEventList;
-
-    public ExperimentTrackingType getTrackingType() {
-        return trackingType;
-    }
-
-    public void setTrackingType(ExperimentTrackingType trackingType) {
-        this.trackingType = trackingType;
-    }
 
     public List<String> getCustomEventList() {
         return customEventList;
@@ -30,14 +23,6 @@ public class ResponseExperiment {
 
     public void setCustomEventList(List<String> customEventList) {
         this.customEventList = customEventList;
-    }
-
-    public ExperimentType getType() {
-        return type;
-    }
-
-    public void setType(ExperimentType type) {
-        this.type = type;
     }
 
     public String getName() {
@@ -62,5 +47,21 @@ public class ResponseExperiment {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTrackingType() {
+        return trackingType;
+    }
+
+    public void setTrackingType(String trackingType) {
+        this.trackingType = trackingType;
     }
 }

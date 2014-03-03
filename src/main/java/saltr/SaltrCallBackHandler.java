@@ -6,48 +6,43 @@
  */
 package saltr;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.client.BasicResponseHandler;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import org.apache.http.Header;
 
-public class SaltrCallBack implements FutureCallback<HttpResponse> {
+import java.io.UnsupportedEncodingException;
+
+public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
 
     private Saltr saltr;
     private CallBackDetails details;
 
-    public SaltrCallBack(Saltr saltr, CallBackDetails details) {
+    public SaltrCallBackHandler(Saltr saltr, CallBackDetails details) {
         this.saltr = saltr;
         this.details = details;
     }
 
-    public void completed(HttpResponse response) {
+    @Override
+    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
         try {
-            String responseData = new BasicResponseHandler().handleResponse(response);
+            String responseData = new String(responseBody, "UTF-8");
             if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
                 saltr.appDataAssetLoadCompleteHandler(responseData);
             }
-            else {
+            else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
                 saltr.levelDataAssetLoadedHandler(responseData, details);
             }
-        } catch (HttpResponseException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    public void failed(Exception ex) {
+    @Override
+    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
         if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
             saltr.appDataAssetLoadErrorHandler();
         }
-        else {
+        else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
             saltr.levelDataAssetLoadErrorHandler(details);
         }
     }
-
-    public void cancelled() {
-    }
-
-
 }

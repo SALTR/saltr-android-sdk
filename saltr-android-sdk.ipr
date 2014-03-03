@@ -44,6 +44,9 @@
         <module name="saltr-android-sdk" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="saltr-android-sdk" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
   <component name="CopyrightManager" default="">
     <module2copyright />
@@ -196,6 +199,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../AdnoTest/AdnoTest.iml" filepath="$PROJECT_DIR$/../AdnoTest/AdnoTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/saltr-android-sdk.iml" filepath="$PROJECT_DIR$/saltr-android-sdk.iml" />
     </modules>
   </component>
@@ -215,6 +219,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.4/gson-2.2.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.loopj.android:android-async-http:1.4.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/loopj/android/android-async-http/1.4.4/android-async-http-1.4.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/loopj/android/android-async-http/1.4.4/android-async-http-1.4.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/loopj/android/android-async-http/1.4.4/android-async-http-1.4.4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: commons-codec:commons-codec:1.6">

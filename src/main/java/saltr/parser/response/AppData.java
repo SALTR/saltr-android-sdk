@@ -6,10 +6,11 @@
  */
 package saltr.parser.response;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class AppData {
+public class AppData implements Serializable{
     private List<ResponsePack> levelPackList;
     private List<ResponseFeature> featureList;
     private List<ResponseExperiment> splitTestInfo;

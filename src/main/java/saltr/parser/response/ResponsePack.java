@@ -6,9 +6,10 @@
  */
 package saltr.parser.response;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ResponsePack {
+public class ResponsePack implements Serializable{
     private Long id;
     private String name;
     private String token;

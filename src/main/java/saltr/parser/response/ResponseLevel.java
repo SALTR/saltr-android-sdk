@@ -6,7 +6,9 @@
  */
 package saltr.parser.response;
 
-public class ResponseLevel {
+import java.io.Serializable;
+
+public class ResponseLevel implements Serializable{
     private Long id;
     private Integer order;
     private String url;

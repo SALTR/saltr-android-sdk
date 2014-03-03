@@ -20,7 +20,7 @@ public class Deserializer {
                 Experiment experiment = new Experiment();
                 experiment.setToken(item.getToken());
                 experiment.setPartition(item.getPartitionName());
-                experiment.setType(item.getType().getValue());
+                experiment.setType(item.getType());
                 experiment.setCustomEvents(item.getCustomEventList());
                 experiments.add(experiment);
             }
@@ -30,7 +30,6 @@ public class Deserializer {
 
     public List<LevelPackStructure> decodeLevels(AppData data) {
         List<LevelPackStructure> levelPackStructures = new ArrayList<LevelPackStructure>();
-        ;
         List<ResponsePack> levelPacksObject = data.getLevelPackList();
         List<LevelStructure> levelStructures;
         List<ResponseLevel> levelsObject;
