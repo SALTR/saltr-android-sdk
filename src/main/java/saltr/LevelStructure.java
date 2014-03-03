@@ -40,11 +40,9 @@ public class LevelStructure implements Comparable<LevelStructure> {
         keyset = boardData.getKeyset();
 
         boards = new HashMap();
-        LevelBoard levelBoard;
         Map<String, Board> boardsObject = data.getBoards();
         for (Map.Entry<String, Board> entry : boardsObject.entrySet()) {
-            levelBoard = new LevelBoard(entry.getValue(), boardData);
-            boards.put(entry.getKey(), levelBoard);
+            boards.put(entry.getKey(), new LevelBoard(entry.getValue(), boardData));
         }
         this.dataFetched = true;
     }
