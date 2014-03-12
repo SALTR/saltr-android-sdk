@@ -8,12 +8,12 @@ package saltr;
 
 import java.util.List;
 
-public class LevelPackStructure implements Comparable<LevelPackStructure> {
+public class SLTLevelPack implements Comparable<SLTLevelPack> {
     private String token;
     private List<LevelStructure> levelStructureList;
     private int index;
 
-    public LevelPackStructure(String token, int index, List<LevelStructure> levelStructureList) {
+    public SLTLevelPack(String token, int index, List<LevelStructure> levelStructureList) {
         this.token = token;
         this.index = index;
         this.levelStructureList = levelStructureList;
@@ -36,7 +36,7 @@ public class LevelPackStructure implements Comparable<LevelPackStructure> {
     }
 
     @Override
-    public int compareTo(LevelPackStructure o) {
+    public int compareTo(SLTLevelPack o) {
         return (new Integer(this.index)).compareTo(new Integer(o.index));
     }
 }

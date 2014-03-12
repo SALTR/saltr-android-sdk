@@ -8,7 +8,7 @@ package saltr;
 
 import java.util.List;
 
-public class Experiment {
+public class SLTExperiment {
     public static final String SPLIT_TEST_TYPE_FEATURE = "FEATURE";
     public static final String SPLIT_TEST_TYPE_LEVEL_PACK = "LEVEL_PACK";
 

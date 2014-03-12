@@ -6,11 +6,11 @@
  */
 package saltr;
 
-public class Partner {
+public class SLTPartner {
     private String partnerId;
     private String partnerType;
 
-    public Partner(String partnerId, String partnerType) {
+    public SLTPartner(String partnerId, String partnerType) {
         this.partnerId = partnerId;
         this.partnerType = partnerType;
     }

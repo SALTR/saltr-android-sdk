@@ -6,7 +6,7 @@ package saltr;
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-public interface SaltrHttpDataHandler {
+public interface SLTHttpDataHandler {
     public void onSuccess();
 
     public void onFail();

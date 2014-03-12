@@ -8,7 +8,7 @@ package saltr;
 
 class CallBackDetails {
     private DataType dataType;
-    private LevelPackStructure levelPackData;
+    private SLTLevelPack levelPackData;
     private LevelStructure levelData;
     private String cachedFileName;
 
@@ -32,11 +32,11 @@ class CallBackDetails {
         this.dataType = dataType;
     }
 
-    public LevelPackStructure getLevelPackData() {
+    public SLTLevelPack getLevelPackData() {
         return levelPackData;
     }
 
-    public void setLevelPackData(LevelPackStructure levelPackData) {
+    public void setLevelPackData(SLTLevelPack levelPackData) {
         this.levelPackData = levelPackData;
     }
 

@@ -23,7 +23,7 @@ public class SaltrHttpConnection {
         this.params = params;
     }
 
-    public void call(Saltr saltr, CallBackDetails details) throws Exception {
+    public void call(SLTSaltr saltr, CallBackDetails details) throws Exception {
         AsyncHttpClient client = new AsyncHttpClient();
         AsyncHttpResponseHandler callBack = new SaltrCallBackHandler(saltr, details);
         client.post(url, params, callBack);

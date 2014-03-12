@@ -6,11 +6,11 @@
  */
 package saltr;
 
-public class Device {
+public class SLTDevice {
     private String deviceId;
     private String deviceType;
 
-    public Device(String deviceId, String deviceType) {
+    public SLTDevice(String deviceId, String deviceType) {
         this.deviceId = deviceId;
         this.deviceType = deviceType;
     }

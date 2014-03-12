@@ -10,14 +10,14 @@ import saltr.parser.response.*;
 
 import java.util.*;
 
-public class Deserializer {
+public class SLTDeserializer {
 
-    public List<Experiment> decodeExperimentInfo(AppData data) {
-        List<Experiment> experiments = new ArrayList<Experiment>();
+    public List<SLTExperiment> decodeExperiment(AppData data) {
+        List<SLTExperiment> experiments = new ArrayList<SLTExperiment>();
 
         if (data.getExperiment() != null) {
             for (ResponseExperiment item : data.getExperiment()) {
-                Experiment experiment = new Experiment();
+                SLTExperiment experiment = new SLTExperiment();
                 experiment.setToken(item.getToken());
                 experiment.setPartition(item.getPartitionName());
                 experiment.setType(item.getType());
@@ -28,8 +28,8 @@ public class Deserializer {
         return experiments;
     }
 
-    public List<LevelPackStructure> decodeLevels(AppData data) {
-        List<LevelPackStructure> levelPackStructures = new ArrayList<LevelPackStructure>();
+    public List<SLTLevelPack> decodeLevels(AppData data) {
+        List<SLTLevelPack> SLTLevelPacks = new ArrayList<SLTLevelPack>();
         List<ResponsePack> levelPacksObject = data.getLevelPackList();
         List<LevelStructure> levelStructures;
         List<ResponseLevel> levelsObject;
@@ -40,19 +40,19 @@ public class Deserializer {
                 levelStructures.add(new LevelStructure(level.getId().toString(), level.getOrder(), level.getUrl(), level.getProperties(), level.getVersion().toString()));
             }
             Collections.sort(levelStructures);
-            levelPackStructures.add(new LevelPackStructure(levelPack.getToken(), levelPack.getOrder().intValue(), levelStructures));
+            SLTLevelPacks.add(new SLTLevelPack(levelPack.getToken(), levelPack.getOrder().intValue(), levelStructures));
         }
-        Collections.sort(levelPackStructures);
-        return levelPackStructures;
+        Collections.sort(SLTLevelPacks);
+        return SLTLevelPacks;
     }
 
-    public Map<String, Feature> decodeFeatures(AppData data) {
-        Map<String, Feature> features = new HashMap<String, Feature>();
+    public Map<String, SLTFeature> decodeFeatures(AppData data) {
+        Map<String, SLTFeature> features = new HashMap<String, SLTFeature>();
         List<ResponseFeature> featuresList = data.getFeatureList();
         if (featuresList != null) {
-            Feature feature;
+            SLTFeature feature;
             for (ResponseFeature featureObj : featuresList) {
-                feature = new Feature(featureObj.getToken(), featureObj.getData());
+                feature = new SLTFeature(featureObj.getToken(), featureObj.getData());
                 features.put(featureObj.getToken(), feature);
             }
         }

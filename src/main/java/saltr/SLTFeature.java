@@ -8,17 +8,17 @@ package saltr;
 
 import java.util.Map;
 
-public class Feature {
+public class SLTFeature {
     private String token;
     private Map<String, String> properties;
     private Map<String, String> defaultProperties;
 
-    public Feature(String token, Map<String, String> properties) {
+    public SLTFeature(String token, Map<String, String> properties) {
         this.token = token;
         this.properties = properties;
     }
 
-    public Feature(String token, Map<String, String> properties, Map<String, String> defaultProperties) {
+    public SLTFeature(String token, Map<String, String> properties, Map<String, String> defaultProperties) {
         this.token = token;
         this.properties = properties;
         this.defaultProperties = defaultProperties;

@@ -13,10 +13,10 @@ import java.io.UnsupportedEncodingException;
 
 public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
 
-    private Saltr saltr;
+    private SLTSaltr saltr;
     private CallBackDetails details;
 
-    public SaltrCallBackHandler(Saltr saltr, CallBackDetails details) {
+    public SaltrCallBackHandler(SLTSaltr saltr, CallBackDetails details) {
         this.saltr = saltr;
         this.details = details;
     }
@@ -26,10 +26,10 @@ public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
         try {
             String responseData = new String(responseBody, "UTF-8");
             if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
-                saltr.appDataAssetLoadCompleteHandler(responseData);
+                saltr.appDataLoadCompleteCallback(responseData);
             }
             else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
-                saltr.levelDataAssetLoadedHandler(responseData, details);
+                saltr.appDataLoadFailedCallback(responseData, details);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
     @Override
     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
         if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
-            saltr.appDataAssetLoadErrorHandler();
+            saltr.appDataLoadFailedCallback();
         }
         else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
             saltr.levelDataAssetLoadErrorHandler(details);
