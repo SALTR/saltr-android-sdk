@@ -4,10 +4,8 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr;
+package saltr.parser.game;
 
-import saltr.parser.LevelParser;
-import saltr.parser.gameeditor.BoardData;
 import saltr.parser.response.level.Board;
 import saltr.parser.response.level.BoardChunk;
 import saltr.parser.response.level.BoardCompositeAsset;
@@ -16,7 +14,7 @@ import saltr.parser.response.level.CustomPropertyCell;
 import java.util.List;
 import java.util.Map;
 
-public class LevelBoard {
+public class SLTLevelBoard {
     public static String MAIN_BOARD_ID = "main";
 
     private Integer rows;
@@ -25,22 +23,22 @@ public class LevelBoard {
     private List<Integer> position;
     private Object[][] boardVector;
     private Board rawBoard;
-    private BoardData boardData;
+    private SLTLevelSettings SLTLevelSettings;
 
-    public LevelBoard(Board rawBoard, BoardData boardData) {
+    public SLTLevelBoard(Board rawBoard, SLTLevelSettings SLTLevelSettings) {
         this.rawBoard = rawBoard;
-        this.boardData = boardData;
+        this.SLTLevelSettings = SLTLevelSettings;
         cols = this.rawBoard.getCols();
         rows = this.rawBoard.getRows();
         blockedCells = this.rawBoard.getBlockedCells();
         position = this.rawBoard.getPosition();
 
         this.boardVector = new Object[rows][cols];
-        LevelParser.parseBoard(boardVector, this.rawBoard, this.boardData);
+        SLTLevelBoardParser.parseBoard(boardVector, this.rawBoard, this.SLTLevelSettings);
     }
 
     public void regenerateChunks() {
-        LevelParser.regenerateChunks(boardVector, rawBoard, boardData);
+        SLTLevelBoardParser.regenerateChunks(boardVector, rawBoard, SLTLevelSettings);
     }
 
     public List<BoardCompositeAsset> getComposites() {
@@ -71,8 +69,8 @@ public class LevelBoard {
         return boardVector;
     }
 
-    public BoardData getBoardData() {
-        return boardData;
+    public SLTLevelSettings getSLTLevelSettings() {
+        return SLTLevelSettings;
     }
 
     public Map<String, String> getBoardProperties() {

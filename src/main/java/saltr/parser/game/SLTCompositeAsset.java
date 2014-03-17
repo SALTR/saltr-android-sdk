@@ -4,21 +4,21 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.gameeditor.composite;
+package saltr.parser.game;
 
-import saltr.parser.gameeditor.simple.SimpleAssetTemplate;
+import saltr.parser.game.SLTAsset;
 
 import java.util.List;
 
-public class CompositeAssetTemplate extends SimpleAssetTemplate {
-    private List shifts;
+public class SLTCompositeAsset extends SLTAsset {
+    private List cellInfos;
 
-    public CompositeAssetTemplate(List shifts, String typeKey, Object keys) {
-        super(typeKey, keys);
-        this.shifts = shifts;
+    public SLTCompositeAsset(List cellInfos, String type, Object keys) {
+        super(type, keys);
+        this.cellInfos = cellInfos;
     }
 
-    public List getShifts() {
-        return shifts;
+    public List getCellInfos() {
+        return cellInfos;
     }
 }

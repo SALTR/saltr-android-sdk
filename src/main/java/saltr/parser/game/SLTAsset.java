@@ -4,34 +4,26 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.gameeditor;
+package saltr.parser.game;
 
-public class BoardAsset {
-    protected String state;
-    protected Object keys;
-    protected String type;
+public class SLTAsset {
+    private Object keys;
+    private String type;
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
+    public SLTAsset(String type, Object keys) {
+        this.type = type;
+        this.keys = keys;
     }
 
     public Object getKeys() {
         return keys;
     }
 
-    public void setKeys(Object keys) {
-        this.keys = keys;
-    }
-
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public String toString() {
+        return "[Asset] type: " + type + ", " + " keys: " + keys;
     }
 }

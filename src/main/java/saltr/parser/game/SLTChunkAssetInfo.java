@@ -4,30 +4,28 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.gameeditor;
+package saltr.parser.game;
 
-public class Cell {
-    private int x;
-    private int y;
+public class SLTChunkAssetInfo {
+    private String assetId;
+    private int count;
+    private String stateId;
 
-    public Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public SLTChunkAssetInfo(String assetId, int count, String stateId) {
+        this.assetId = assetId;
+        this.count = count;
+        this.stateId = stateId;
     }
 
-    public int getX() {
-        return x;
+    public String getAssetId() {
+        return assetId;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public int getCount() {
+        return count;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public String getStateId() {
+        return stateId;
     }
 }

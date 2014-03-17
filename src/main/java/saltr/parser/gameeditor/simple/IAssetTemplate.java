@@ -13,5 +13,5 @@ public interface IAssetTemplate {
 
     public String getType();
 
-    public List getShifts();
+    public List getCellInfos();
 }

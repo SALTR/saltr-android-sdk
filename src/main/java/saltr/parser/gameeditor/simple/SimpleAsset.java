@@ -6,17 +6,17 @@
  */
 package saltr.parser.gameeditor.simple;
 
-import saltr.parser.gameeditor.BoardAsset;
-import saltr.parser.gameeditor.Cell;
+import saltr.parser.game.SLTCell;
+import saltr.parser.game.SLTAssetInstance;
 
-public class SimpleAsset extends BoardAsset {
-    private Cell cell;
+public class SimpleAsset extends SLTAssetInstance {
+    private SLTCell cell;
 
-    public Cell getCell() {
+    public SLTCell getCell() {
         return cell;
     }
 
-    public void setCell(Cell cell) {
+    public void setCell(SLTCell cell) {
         this.cell = cell;
     }
 

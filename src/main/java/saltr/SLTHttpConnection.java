@@ -10,22 +10,22 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-public class SaltrHttpConnection {
+public class SLTHttpConnection {
     private String url;
     private RequestParams params;
 
-    public SaltrHttpConnection(String targetURL) {
+    public SLTHttpConnection(String targetURL) {
         this.url = targetURL;
     }
 
-    public SaltrHttpConnection(String targetURL, RequestParams params) {
+    public SLTHttpConnection(String targetURL, RequestParams params) {
         this.url = targetURL;
         this.params = params;
     }
 
-    public void call(SLTSaltr saltr, CallBackDetails details) throws Exception {
+    public void call(SLTSaltr saltr, SLTCallBackProperties properties) throws Exception {
         AsyncHttpClient client = new AsyncHttpClient();
-        AsyncHttpResponseHandler callBack = new SaltrCallBackHandler(saltr, details);
+        AsyncHttpResponseHandler callBack = new SLTCallBackHandler(saltr, properties);
         client.post(url, params, callBack);
     }
 }

@@ -12,8 +12,26 @@ import java.util.Map;
 public class SaltrAsset {
     private Map<String, Integer> keys;
     private String type_key;
+    private String type;
     private List<Long> states;
     private List<List<Integer>> cells;
+    private List<List<Integer>> cellInfos;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<List<Integer>> getCellInfos() {
+        return cellInfos;
+    }
+
+    public void setCellInfos(List<List<Integer>> cellInfos) {
+        this.cellInfos = cellInfos;
+    }
 
     public Map<String, Integer> getKeys() {
         return keys;

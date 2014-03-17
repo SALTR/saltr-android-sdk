@@ -11,6 +11,15 @@ import java.util.List;
 public class BoardCompositeAsset {
     private String assetId;
     private List<Integer> position;
+    private List<Integer> cell;
+
+    public List<Integer> getCell() {
+        return cell;
+    }
+
+    public void setCell(List<Integer> cell) {
+        this.cell = cell;
+    }
 
     public String getAssetId() {
         return assetId;

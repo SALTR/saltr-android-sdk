@@ -4,17 +4,21 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.gameeditor.simple;
+package saltr.parser.game;
 
-import java.util.List;
+public class SLTAssetInstance {
+    protected String state;
+    protected Object keys;
+    protected String type;
 
-public class SimpleAssetTemplate implements IAssetTemplate {
-    private Object keys;
-    private String type;
-
-    public SimpleAssetTemplate(String typeKey, Object keys) {
-        this.type = typeKey;
+    public SLTAssetInstance(Object keys, String state, String type) {
+        this.state = state;
         this.keys = keys;
+        this.type = type;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public Object getKeys() {
@@ -23,14 +27,5 @@ public class SimpleAssetTemplate implements IAssetTemplate {
 
     public String getType() {
         return type;
-    }
-
-    @Override
-    public List getShifts() {
-        return null;
-    }
-
-    public String toString() {
-        return "AssetTemplate : [type : " + type + "]" + "[keys : " + keys.toString() + "]";
     }
 }

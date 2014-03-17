@@ -1,23 +1,25 @@
-package saltr;
-
 /**
  * Copyright Teoken LLC. (c) 2013. All rights reserved.
  * Copying or usage of any piece of this source code without written notice from Teoken LLC is a major crime.
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-public enum DataType {
-    LEVEL("level"),
-    APP("app"),
-    FEATURE("feature");
+package saltr.parser.game;
 
-    private String type;
+import saltr.parser.game.SLTCell;
+import saltr.parser.game.SLTAssetInstance;
 
-    DataType(String type) {
-        this.type = type;
+import java.util.List;
+
+public class SLTCompositeInstance extends SLTAssetInstance {
+    private List<SLTCell> cells;
+
+    public SLTCompositeInstance(Object keys, String state, String type, List<SLTCell> cells) {
+        super(keys, state, type);
+        this.cells = cells;
     }
 
-    public String getValue() {
-        return this.type;
+    public List<SLTCell> getCells() {
+        return cells;
     }
 }

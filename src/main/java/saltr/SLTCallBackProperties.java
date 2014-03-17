@@ -6,13 +6,16 @@
  */
 package saltr;
 
-class CallBackDetails {
-    private DataType dataType;
-    private SLTLevelPack levelPackData;
-    private LevelStructure levelData;
+import saltr.parser.game.SLTLevel;
+import saltr.parser.game.SLTLevelPack;
+
+class SLTCallBackProperties {
+    private SLTDataType dataType;
+    private SLTLevelPack pack;
+    private SLTLevel level;
     private String cachedFileName;
 
-    public CallBackDetails(DataType dataType) {
+    public SLTCallBackProperties(SLTDataType dataType) {
         this.dataType = dataType;
     }
 
@@ -24,27 +27,27 @@ class CallBackDetails {
         this.cachedFileName = cachedFileName;
     }
 
-    public DataType getDataType() {
+    public SLTDataType getDataType() {
         return dataType;
     }
 
-    public void setDataType(DataType dataType) {
+    public void setDataType(SLTDataType dataType) {
         this.dataType = dataType;
     }
 
-    public SLTLevelPack getLevelPackData() {
-        return levelPackData;
+    public SLTLevelPack getPack() {
+        return pack;
     }
 
-    public void setLevelPackData(SLTLevelPack levelPackData) {
-        this.levelPackData = levelPackData;
+    public void setPack(SLTLevelPack pack) {
+        this.pack = pack;
     }
 
-    public LevelStructure getLevelData() {
-        return levelData;
+    public SLTLevel getLevel() {
+        return level;
     }
 
-    public void setLevelData(LevelStructure levelData) {
-        this.levelData = levelData;
+    public void setLevel(SLTLevel level) {
+        this.level = level;
     }
 }

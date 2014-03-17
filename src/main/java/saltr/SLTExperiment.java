@@ -17,6 +17,13 @@ public class SLTExperiment {
     private String type;
     private List<String> customEvents;
 
+    public SLTExperiment(String partition, String token, String type, List<String> customEvents) {
+        this.partition = partition;
+        this.token = token;
+        this.type = type;
+        this.customEvents = customEvents;
+    }
+
     public String getPartition() {
         return partition;
     }

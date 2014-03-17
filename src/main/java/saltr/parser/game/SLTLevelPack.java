@@ -4,16 +4,16 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr;
+package saltr.parser.game;
 
 import java.util.List;
 
 public class SLTLevelPack implements Comparable<SLTLevelPack> {
     private String token;
-    private List<LevelStructure> levelStructureList;
+    private List<SLTLevel> levelStructureList;
     private int index;
 
-    public SLTLevelPack(String token, int index, List<LevelStructure> levelStructureList) {
+    public SLTLevelPack(String token, int index, List<SLTLevel> levelStructureList) {
         this.token = token;
         this.index = index;
         this.levelStructureList = levelStructureList;
@@ -23,7 +23,7 @@ public class SLTLevelPack implements Comparable<SLTLevelPack> {
         return token;
     }
 
-    public List<LevelStructure> getLevelStructureList() {
+    public List<SLTLevel> getLevelStructureList() {
         return levelStructureList;
     }
 

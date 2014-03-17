@@ -10,18 +10,37 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class AppData implements Serializable{
+public class AppData implements Serializable {
     private List<ResponsePack> levelPackList;
+    private List<ResponsePack> levelPacks;
     private List<ResponseFeature> featureList;
-    private List<ResponseExperiment> splitTestInfo;
+    private List<ResponseFeature> features;
+    private List<ResponseExperiment> experimentInfo;
     private UUID saltId;
+    private UUID saltrUserId;
 
-    public UUID getSaltId() {
-        return saltId;
+    public List<ResponseFeature> getFeatures() {
+        return features;
     }
 
-    public void setSaltId(UUID saltId) {
-        this.saltId = saltId;
+    public void setFeatures(List<ResponseFeature> features) {
+        this.features = features;
+    }
+
+    public List<ResponsePack> getLevelPacks() {
+        return levelPacks;
+    }
+
+    public void setLevelPacks(List<ResponsePack> levelPacks) {
+        this.levelPacks = levelPacks;
+    }
+
+    public List<ResponsePack> getLevelPackList() {
+        return levelPackList;
+    }
+
+    public void setLevelPackList(List<ResponsePack> levelPackList) {
+        this.levelPackList = levelPackList;
     }
 
     public List<ResponseFeature> getFeatureList() {
@@ -32,19 +51,27 @@ public class AppData implements Serializable{
         this.featureList = featureList;
     }
 
-    public List<ResponseExperiment> getExperiment() {
-        return splitTestInfo;
+    public List<ResponseExperiment> getExperimentInfo() {
+        return experimentInfo;
     }
 
-    public void setSplitTestInfo(List<ResponseExperiment> splitTestInfo) {
-        this.splitTestInfo = splitTestInfo;
+    public void setExperimentInfo(List<ResponseExperiment> experimentInfo) {
+        this.experimentInfo = experimentInfo;
     }
 
-    public List<ResponsePack> getLevelPackList() {
-        return levelPackList;
+    public UUID getSaltId() {
+        return saltId;
     }
 
-    public void setLevelPackList(List<ResponsePack> levelPackList) {
-        this.levelPackList = levelPackList;
+    public void setSaltId(UUID saltId) {
+        this.saltId = saltId;
+    }
+
+    public UUID getSaltrUserId() {
+        return saltrUserId;
+    }
+
+    public void setSaltrUserId(UUID saltrUserId) {
+        this.saltrUserId = saltrUserId;
     }
 }

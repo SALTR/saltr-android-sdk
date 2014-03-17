@@ -13,9 +13,18 @@ public class ResponseExperiment implements Serializable {
     private String name;
     private String token;
     private String partitionName;
+    private String partition;
     private String type;
     private String trackingType;
     private List<String> customEventList;
+
+    public String getPartition() {
+        return partition;
+    }
+
+    public void setPartition(String partition) {
+        this.partition = partition;
+    }
 
     public List<String> getCustomEventList() {
         return customEventList;

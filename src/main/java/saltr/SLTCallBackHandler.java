@@ -11,25 +11,25 @@ import org.apache.http.Header;
 
 import java.io.UnsupportedEncodingException;
 
-public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
+public class SLTCallBackHandler extends AsyncHttpResponseHandler {
 
     private SLTSaltr saltr;
-    private CallBackDetails details;
+    private SLTCallBackProperties properties;
 
-    public SaltrCallBackHandler(SLTSaltr saltr, CallBackDetails details) {
+    public SLTCallBackHandler(SLTSaltr saltr, SLTCallBackProperties properties) {
         this.saltr = saltr;
-        this.details = details;
+        this.properties = properties;
     }
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
         try {
             String responseData = new String(responseBody, "UTF-8");
-            if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
+            if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
                 saltr.appDataLoadCompleteCallback(responseData);
             }
-            else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
-                saltr.appDataLoadFailedCallback(responseData, details);
+            else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
+                saltr.loadSuccessCallback(responseData, properties);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -38,11 +38,11 @@ public class SaltrCallBackHandler extends AsyncHttpResponseHandler {
 
     @Override
     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-        if (details.getDataType().getValue().equals(DataType.APP.getValue())) {
+        if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
             saltr.appDataLoadFailedCallback();
         }
-        else if (details.getDataType().getValue().equals(DataType.LEVEL.getValue())) {
-            saltr.levelDataAssetLoadErrorHandler(details);
+        else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
+            saltr.loadFailedCallback(properties);
         }
     }
 }

@@ -8,13 +8,22 @@ package saltr.parser.response;
 
 import java.io.Serializable;
 
-public class ResponseLevel implements Serializable{
+public class ResponseLevel implements Serializable {
     private Long id;
     private Integer order;
+    private Integer index;
     private String url;
     private Integer version;
     private Object properties;
     private Long activeVariationId;
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
 
     public Long getActiveVariationId() {
         return activeVariationId;

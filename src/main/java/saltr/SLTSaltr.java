@@ -10,9 +10,10 @@ import android.content.ContextWrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.RequestParams;
+import saltr.parser.game.SLTLevel;
+import saltr.parser.game.SLTLevelPack;
 import saltr.parser.response.AppData;
 import saltr.parser.response.SaltrResponse;
-import saltr.parser.response.level.LevelData;
 import saltr.repository.IRepository;
 import saltr.repository.MobileRepository;
 
@@ -90,14 +91,12 @@ public class SLTSaltr {
         this.device = new SLTDevice(deviceId, deviceType);
     }
 
-    public void importLevelFromJSON(String json, SLTLevel level) {
-        Object data = gson.fromJson(json, Object.class);
-        level.updateContent(data);
-    }
-
-    public void importLevelPacksFromJSON(String json) {
-        Object applicationData = gson.fromJson(json, Object.class);
-        levelPacks = SLTDeserializer.decodeLevels(applicationData);
+    public void importLevels(String path) {
+        if (path == null) {
+            path = SLTConfig.LEVEL_PACK_URL_PACKAGE;
+        }
+        Object applicationData = repository.getObjectFromApplication(path);
+        levelPacks = SLTDeserializer.decodeLevels((AppData) applicationData);
     }
 
     /**
@@ -112,21 +111,24 @@ public class SLTSaltr {
             feature.setDefaultProperties(properties);
         }
     }
+/*
 
     public void getAppData(SLTHttpDataHandler saltrHttpDataHandler) {
         this.saltrHttpDataHandler = saltrHttpDataHandler;
         start();
     }
+*/
 
     private void start() {
         if (isLoading) {
             return;
         }
+        applyCachedFeatures();
+
         isLoading = true;
         connected = false;
-
-        SaltrHttpConnection connection = createAppDataConnection();
-        CallBackDetails details = new CallBackDetails(DataType.APP);
+        SLTHttpConnection connection = createAppDataConnection();
+        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.APP);
 
         try {
             connection.call(this, details);
@@ -135,187 +137,75 @@ public class SLTSaltr {
         }
     }
 
-    protected void appDataLoadCompleteCallback(String json) {
-        System.out.println("[SaltAPI] App data is loaded.");
-        SaltrResponse<AppData> response = gson.fromJson(json, new TypeToken<SaltrResponse<AppData>>() {
-        }.getType());
-        AppData jsonData = response.getResponseData();
-
-        isLoading = false;
-        connected = true;
-        saltrUserId = jsonData.getSaltId().toString();
-
-        experiments = SLTDeserializer.decodeExperiment(jsonData);
-        levelPacks = SLTDeserializer.decodeLevels(jsonData);
-        Map<String, SLTFeature> saltrFeatures = SLTDeserializer.decodeFeatures(jsonData);
-
-        //merging with defaults...
-        for (Map.Entry<String, SLTFeature> entry : saltrFeatures.entrySet()) {
+    private void applyCachedFeatures() {
+        Object cachedData = repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
+        if (cachedData == null) {
+            return;
+        }
+        Map<String, SLTFeature> cachedFeatures = SLTDeserializer.decodeFeatures((AppData) cachedData);
+        for (Map.Entry<String, SLTFeature> entry : cachedFeatures.entrySet()) {
+            String token = entry.getKey();
             SLTFeature saltrFeature = entry.getValue();
-            SLTFeature defaultFeature = features.get(entry.getKey());
+            SLTFeature defaultFeature = features.get(token);
             if (defaultFeature != null) {
                 saltrFeature.setDefaultProperties(defaultFeature.getDefaultProperties());
             }
-            features.put(entry.getKey(), saltrFeature);
-        }
-
-        System.out.println("[Saltr] packs=" + levelPacks.size());
-        saltrHttpDataHandler.onSuccess();
-
-        if (isInDevMode) {
-            syncFeatures();
+            features.put(token, saltrFeature);
         }
     }
 
-    protected void loadAppDataFailHandler(String msg) {
-        saltrHttpDataHandler.onFail();
-        this.isLoading = false;
-        this.connected = false;
-        System.out.println(msg);
-    }
-
-    protected void loadAppDataInternal() {
-        System.out.println("[SaltClient] NO Internet available - loading internal app data.");
-        if (repository == null) {
-            loadAppDataFailHandler("[SaltClient] ERROR: Repository is not initialized.");
-        }
-
-        Object data = repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
-
-        if (data != null) {
-            System.out.println("[SaltClient] Loading App data from Cache folder.");
-            appDataLoadCompleteCallback((AppData) data);
-        }
-        else {
-            System.out.println("[SaltClient] Loading App data from application folder.");
-            data = repository.getObjectFromApplication(SLTConfig.APP_DATA_URL_INTERNAL);
-            if (data != null) {
-                appDataLoadCompleteCallback((AppData) data);
-            }
-            else {
-                loadAppDataFailHandler("[SaltClient] ERROR: Level Packs are not loaded.");
-            }
-        }
-    }
-
-    public void getLevelDataBody(SLTLevelPack levelPackData, LevelStructure levelData, Boolean useCache, SLTHttpDataHandler saltrHttpDataHandler) {
-        this.saltrHttpDataHandler = saltrHttpDataHandler;
-        if (!useCache) {
-            loadLevelDataFromServer(levelPackData, levelData, true);
-            return;
-        }
-
-        //if there are no version change than load from cache
-
-        String cachedFileName = MessageFormat.format(SLTConfig.LEVEL_DATA_URL_CACHE_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
-        if (levelData.getVersion().equals(repository.getObjectVersion(cachedFileName))) {
-            loadLevelDataCached(levelData, cachedFileName);
-        }
-        else {
-            loadLevelDataFromServer(levelPackData, levelData, false);
-        }
-
-    }
-
-    protected void levelLoadSuccessHandler(LevelStructure levelData, LevelData data) {
-        levelData.parseData(data);
-        saltrHttpDataHandler.onSuccess();
-
-    }
-
-    protected void levelLoadErrorHandler() {
-        System.out.println("[SaltClient] ERROR: Level data is not loaded.");
-        saltrHttpDataHandler.onFail();
-    }
-
-    protected void loadLevelDataLocally(SLTLevelPack levelPackData, LevelStructure levelData, String cachedFileName) {
-        if (loadLevelDataCached(levelData, cachedFileName)) {
-            return;
-        }
-        loadLevelDataInternal(levelPackData, levelData);
-    }
-
-    protected boolean loadLevelDataCached(LevelStructure levelData, String cachedFileName) {
-        System.out.println("[SaltClient::loadLevelData] LOADING LEVEL DATA CACHE IMMEDIATELY.");
-        Object object = repository.getObjectFromCache(cachedFileName).toString();
-        if (object != null) {
-            LevelData data = gson.fromJson(object.toString(), LevelData.class);
-            if (data != null) {
-                levelLoadSuccessHandler(levelData, data);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected void loadLevelDataFromServer(SLTLevelPack levelPackData, LevelStructure levelData, Boolean forceNoCache) {
-        String dataUrl = forceNoCache ? levelData.getDataUrl() + "?_time_=" + new Date().getTime() : levelData.getDataUrl();
-        String cachedFileName = MessageFormat.format(SLTConfig.LEVEL_DATA_URL_CACHE_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
-
-        CallBackDetails details = new CallBackDetails(DataType.LEVEL);
-        details.setCachedFileName(cachedFileName);
-        details.setLevelData(levelData);
-        details.setLevelPackData(levelPackData);
-
-        try {
-            SaltrHttpConnection connection = new SaltrHttpConnection(dataUrl);
-            connection.call(this, details);
-        } catch (Exception e) {
-            levelDataAssetLoadErrorHandler(details);
-        }
-    }
-
-    void levelDataAssetLoadedHandler(String data, CallBackDetails details) {
-
-        if (data == null) {
-            loadLevelDataLocally(details.getLevelPackData(), details.getLevelData(), details.getCachedFileName());
-        }
-        else {
-            levelLoadSuccessHandler(details.getLevelData(), gson.fromJson(data, LevelData.class));
-            repository.cacheObject(details.getCachedFileName(), details.getLevelData().getVersion(), data);
-        }
-    }
-
-    void levelDataAssetLoadErrorHandler(CallBackDetails details) {
-        loadLevelDataLocally(details.getLevelPackData(), details.getLevelData(), details.getCachedFileName());
-    }
-
-    private void loadLevelDataInternal(SLTLevelPack levelPackData, LevelStructure levelData) {
-        String url = MessageFormat.format(SLTConfig.LEVEL_DATA_URL_LOCAL_TEMPLATE, levelPackData.getIndex(), levelData.getIndex());
-
-        LevelData data = (LevelData) repository.getObjectFromApplication(url);
-        if (data != null) {
-            levelLoadSuccessHandler(levelData, data);
-        }
-        else {
-            levelLoadErrorHandler();
-        }
-    }
-
-    void appDataLoadFailedCallback( responseData, details) {
+    void appDataLoadFailedCallback() {
         System.out.println("[Saltr] App data is failed to load.");
         isLoading = false;
         connected = false;
-        loadAppDataInternal();
+        saltrHttpDataHandler.onFail();
     }
 
-    void appDataAssetLoadCompleteHandler(String data) {
-        System.out.println("[SaltAPI] App data is loaded.");
-        SaltrResponse<AppData> response = gson.fromJson(data, new TypeToken<SaltrResponse<AppData>>() {
+    protected void appDataLoadCompleteCallback(String json) {
+        SaltrResponse<AppData> response = gson.fromJson(json, new TypeToken<SaltrResponse<AppData>>() {
         }.getType());
+        AppData responseData = response.getResponseData();
+        String status = response.getStatus();
+        isLoading = false;
+        if (status == SLTConfig.RESULT_SUCCEED) {
+            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", responseData);
+            connected = true;
+            if (responseData.getSaltId() != null) {
+                saltrUserId = responseData.getSaltId().toString();
+            }
+            else {
+                saltrUserId = responseData.getSaltrUserId().toString();
+            }
+            experiments = SLTDeserializer.decodeExperiment(responseData);
+            levelPacks = SLTDeserializer.decodeLevels(responseData);
+            Map<String, SLTFeature> saltrFeatures = SLTDeserializer.decodeFeatures(responseData);
 
-        if (!response.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
-            loadAppDataInternal();
+            //merging with defaults...
+            for (Map.Entry<String, SLTFeature> entry : saltrFeatures.entrySet()) {
+                String token = entry.getKey();
+                SLTFeature saltrFeature = entry.getValue();
+                SLTFeature defaultFeature = features.get(token);
+                if (defaultFeature != null) {
+                    saltrFeature.setDefaultProperties(defaultFeature.getDefaultProperties());
+                }
+                features.put(token, saltrFeature);
+            }
+
+            System.out.println("[Saltr] packs=" + levelPacks.size());
+            saltrHttpDataHandler.onSuccess();
+
+            if (isInDevMode) {
+                syncFeatures();
+            }
         }
         else {
-            System.out.println("[SaltClient] Loaded App data. json=" + data);
-            appDataLoadCompleteCallback(response.getResponseData());
-            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response.getResponseData());
+            connected = false;
+            saltrHttpDataHandler.onFail();
         }
     }
 
-    private SaltrHttpConnection createAppDataConnection() {
-        Map<String, Object> args = new HashMap<String, Object>();
+    private SLTHttpConnection createAppDataConnection() {
+        Map<String, Object> args = new HashMap<>();
         if (device != null) {
             args.put("device", device);
         }
@@ -328,17 +218,17 @@ public class SLTSaltr {
         params.put("arguments", gson.toJson(args));
         params.put("command", SLTConfig.COMMAND_APP_DATA);
 
-        return new SaltrHttpConnection(SLTConfig.SALTR_API_URL, params);
+        return new SLTHttpConnection(SLTConfig.SALTR_API_URL, params);
     }
 
     public void syncFeatures() {
-        List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> featureList = new ArrayList<>();
         Map<String, String> tempMap;
         SLTFeature feature;
         for (Map.Entry<String, SLTFeature> entry : features.entrySet()) {
             feature = entry.getValue();
             if (feature.getDefaultProperties() != null) {
-                tempMap = new HashMap<String, String>();
+                tempMap = new HashMap<>();
                 tempMap.put("token", feature.getToken());
                 tempMap.put("value", gson.toJson(feature.getDefaultProperties()));
                 featureList.add(tempMap);
@@ -353,11 +243,105 @@ public class SLTSaltr {
             params.put("appVersion", appVersion);
         }
 
-        SaltrHttpConnection connection = new SaltrHttpConnection(SLTConfig.SALTR_URL, params);
-        CallBackDetails details = new CallBackDetails(DataType.FEATURE);
+        SLTHttpConnection connection = new SLTHttpConnection(SLTConfig.SALTR_URL, params);
+        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.FEATURE);
         try {
             connection.call(this, details);
         } catch (Exception e) {
         }
+    }
+
+    // level content data loading methods.
+    public void loadLevelContentData(SLTLevelPack levelPack, SLTLevel level, boolean useCache, SLTHttpDataHandler saltrHttpDataHandler) {
+        this.saltrHttpDataHandler = saltrHttpDataHandler;
+        if (!useCache) {
+            loadSaltrLevelContentData(levelPack, level, true);
+        }
+        else {
+            //if there are no version change than load from cache
+            String cachedVersion = getCachedLevelVersion(levelPack, level);
+            if (level.getVersion().equals(cachedVersion)) {
+                Object contentData = loadCachedLevelContentData(levelPack, level);
+                contentDataLoadSuccessCallback(level, contentData);
+            }
+            else {
+                loadSaltrLevelContentData(levelPack, level, false);
+            }
+        }
+    }
+
+    private String getCachedLevelVersion(SLTLevelPack levelPack, SLTLevel level) {
+        String cachedFileName = MessageFormat.format(SLTConfig.LEVEL_CONTENT_DATA_URL_CACHE_TEMPLATE, levelPack.getIndex(), level.getIndex());
+        return repository.getObjectVersion(cachedFileName);
+    }
+
+
+    private void cacheLevelContentData(SLTLevelPack levelPack, SLTLevel level, Object contentData) {
+        String cachedFileName = MessageFormat.format(SLTConfig.LEVEL_CONTENT_DATA_URL_CACHE_TEMPLATE, levelPack.getIndex(), level.getIndex());
+        repository.cacheObject(cachedFileName, level.getVersion(), contentData);
+    }
+
+    private Object loadLevelContentDataInternally(SLTLevelPack levelPack, SLTLevel level) {
+        Object contentData = loadCachedLevelContentData(levelPack, level);
+        if (contentData == null) {
+            contentData = loadDefaultLevelContentData(levelPack, level);
+        }
+        return contentData;
+    }
+
+    private Object loadCachedLevelContentData(SLTLevelPack levelPack, SLTLevel level) {
+        String url = MessageFormat.format(SLTConfig.LEVEL_CONTENT_DATA_URL_CACHE_TEMPLATE, levelPack.getIndex(), level.getIndex());
+        return repository.getObjectFromCache(url);
+    }
+
+    private Object loadDefaultLevelContentData(SLTLevelPack levelPack, SLTLevel level) {
+        String url = MessageFormat.format(SLTConfig.LEVEL_CONTENT_DATA_URL_PACKAGE_TEMPLATE, levelPack.getIndex(), level.getIndex());
+        return repository.getObjectFromApplication(url);
+    }
+
+    protected void loadSaltrLevelContentData(SLTLevelPack levelPack, SLTLevel level, Boolean forceNoCache) {
+        String dataUrl = forceNoCache ? level.getContentDataUrl() + "?_time_=" + new Date().getTime() : level.getContentDataUrl();
+
+        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.LEVEL);
+        details.setLevel(level);
+        details.setPack(levelPack);
+
+        try {
+            SLTHttpConnection connection = new SLTHttpConnection(dataUrl);
+            connection.call(this, details);
+        } catch (Exception e) {
+            loadFailedCallback(details);
+        }
+    }
+
+    void loadSuccessCallback(Object data, SLTCallBackProperties properties) {
+        if (data != null) {
+            cacheLevelContentData(properties.getPack(), properties.getLevel(), data);
+        }
+        else {
+            data = loadLevelContentDataInternally(properties.getPack(), properties.getLevel());
+        }
+
+        if (data != null) {
+            contentDataLoadSuccessCallback(properties.getLevel(), data);
+        }
+        else {
+            contentDataLoadFailedCallback();
+        }
+    }
+
+    void loadFailedCallback(SLTCallBackProperties poperties) {
+        Object contentData = loadLevelContentDataInternally(poperties.getPack(), poperties.getLevel());
+        contentDataLoadSuccessCallback(poperties.getLevel(), contentData);
+    }
+
+    protected void contentDataLoadSuccessCallback(SLTLevel level, Object data) {
+        level.updateContent(data);
+        saltrHttpDataHandler.onSuccess();
+    }
+
+    protected void contentDataLoadFailedCallback() {
+        System.out.println("[SaltClient] ERROR: Level data is not loaded.");
+        saltrHttpDataHandler.onFail();
     }
 }

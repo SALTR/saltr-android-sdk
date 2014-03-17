@@ -9,12 +9,21 @@ package saltr.parser.response;
 import java.io.Serializable;
 import java.util.List;
 
-public class ResponsePack implements Serializable{
+public class ResponsePack implements Serializable {
     private Long id;
     private String name;
     private String token;
     private Integer order;
+    private Integer index;
     private List<ResponseLevel> levelList;
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
 
     public String getToken() {
         return token;
