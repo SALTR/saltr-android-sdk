@@ -6,26 +6,25 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.gameeditor.simple.IAssetTemplate;
 
 import java.util.Map;
 
 public class SLTLevelSettings {
-    private Map<String, IAssetTemplate> assetMap;
+    private Map<String, SLTAsset> assetMap;
     private Map<String, Map<String, String>> keyset;
     private Map<String, String> stateMap;
 
-    public SLTLevelSettings(Map<String, IAssetTemplate> assetMap, Map<String, Map<String, String>> keyset, Map<String, String> stateMap) {
+    public SLTLevelSettings(Map<String, SLTAsset> assetMap, Map<String, Map<String, String>> keyset, Map<String, String> stateMap) {
         this.assetMap = assetMap;
         this.keyset = keyset;
         this.stateMap = stateMap;
     }
 
-    public Map<String, IAssetTemplate> getAssetMap() {
+    public Map<String, SLTAsset> getAssetMap() {
         return assetMap;
     }
 
-    public void setAssetMap(Map<String, IAssetTemplate> assetMap) {
+    public void setAssetMap(Map<String, SLTAsset> assetMap) {
         this.assetMap = assetMap;
     }
 

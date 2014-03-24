@@ -6,8 +6,6 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.game.SLTAsset;
-
 import java.util.List;
 
 public class SLTCompositeAsset extends SLTAsset {

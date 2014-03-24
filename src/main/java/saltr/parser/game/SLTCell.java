@@ -6,10 +6,12 @@
  */
 package saltr.parser.game;
 
+import java.util.Map;
+
 public class SLTCell implements Cloneable {
     private int x;
     private int y;
-    private Object properties;
+    private Map<String, String> properties;
     private Boolean isBocked;
     private SLTAssetInstance assetInstance;
 
@@ -19,11 +21,11 @@ public class SLTCell implements Cloneable {
         isBocked = false;
     }
 
-    public Object getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public void setProperties(Object properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 

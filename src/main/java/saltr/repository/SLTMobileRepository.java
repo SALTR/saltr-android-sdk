@@ -13,12 +13,12 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MobileRepository extends ContextWrapper implements IRepository {
+public class SLTMobileRepository extends ContextWrapper implements ISLTRepository {
 
     private String applicationDirectory;
     private String cacheDirectory;
 
-    public MobileRepository(Context base) {
+    public SLTMobileRepository(Context base) {
         super(base);
         applicationDirectory = getApplicationInfo().dataDir;
         cacheDirectory = getCacheDir().getPath();
@@ -45,7 +45,7 @@ public class MobileRepository extends ContextWrapper implements IRepository {
         String path = cacheDirectory + File.separator + name;
         saveInternal(path, object);
         path = cacheDirectory + File.separator + name.replace(".", "") + "_VERSION_";
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("_VERSION_", version);
         saveInternal(path, map);
     }

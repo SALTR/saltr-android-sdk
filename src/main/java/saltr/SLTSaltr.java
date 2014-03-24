@@ -14,8 +14,9 @@ import saltr.parser.game.SLTLevel;
 import saltr.parser.game.SLTLevelPack;
 import saltr.parser.response.AppData;
 import saltr.parser.response.SaltrResponse;
-import saltr.repository.IRepository;
-import saltr.repository.MobileRepository;
+import saltr.parser.response.level.LevelData;
+import saltr.repository.ISLTRepository;
+import saltr.repository.SLTMobileRepository;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -24,7 +25,7 @@ public class SLTSaltr {
     private static SLTSaltr saltr;
 
     protected Gson gson;
-    protected IRepository repository;
+    protected ISLTRepository repository;
     protected String saltrUserId;
     protected Boolean isLoading;
     protected Boolean connected;
@@ -46,10 +47,10 @@ public class SLTSaltr {
         connected = false;
 
         isInDevMode = false;
-        features = new HashMap();
+        features = new HashMap<>();
 
         gson = new Gson();
-        repository = new MobileRepository(contextWrapper);
+        repository = new SLTMobileRepository(contextWrapper);
     }
 
     public static SLTSaltr getInstance(String instanceKey, ContextWrapper contextWrapper) {
@@ -111,15 +112,9 @@ public class SLTSaltr {
             feature.setDefaultProperties(properties);
         }
     }
-/*
 
-    public void getAppData(SLTHttpDataHandler saltrHttpDataHandler) {
+    public void start(SLTHttpDataHandler saltrHttpDataHandler) {
         this.saltrHttpDataHandler = saltrHttpDataHandler;
-        start();
-    }
-*/
-
-    private void start() {
         if (isLoading) {
             return;
         }
@@ -165,9 +160,8 @@ public class SLTSaltr {
         SaltrResponse<AppData> response = gson.fromJson(json, new TypeToken<SaltrResponse<AppData>>() {
         }.getType());
         AppData responseData = response.getResponseData();
-        String status = response.getStatus();
         isLoading = false;
-        if (status == SLTConfig.RESULT_SUCCEED) {
+        if (response.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
             repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", responseData);
             connected = true;
             if (responseData.getSaltId() != null) {
@@ -262,7 +256,7 @@ public class SLTSaltr {
             String cachedVersion = getCachedLevelVersion(levelPack, level);
             if (level.getVersion().equals(cachedVersion)) {
                 Object contentData = loadCachedLevelContentData(levelPack, level);
-                contentDataLoadSuccessCallback(level, contentData);
+                contentDataLoadSuccessCallback(level, gson.fromJson(contentData.toString(), LevelData.class));
             }
             else {
                 loadSaltrLevelContentData(levelPack, level, false);
@@ -323,25 +317,25 @@ public class SLTSaltr {
         }
 
         if (data != null) {
-            contentDataLoadSuccessCallback(properties.getLevel(), data);
+            contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(data.toString(), LevelData.class));
         }
         else {
             contentDataLoadFailedCallback();
         }
     }
 
-    void loadFailedCallback(SLTCallBackProperties poperties) {
-        Object contentData = loadLevelContentDataInternally(poperties.getPack(), poperties.getLevel());
-        contentDataLoadSuccessCallback(poperties.getLevel(), contentData);
+    void loadFailedCallback(SLTCallBackProperties properties) {
+        Object contentData = loadLevelContentDataInternally(properties.getPack(), properties.getLevel());
+        contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(contentData.toString(), LevelData.class));
     }
 
-    protected void contentDataLoadSuccessCallback(SLTLevel level, Object data) {
+    protected void contentDataLoadSuccessCallback(SLTLevel level, LevelData data) {
         level.updateContent(data);
         saltrHttpDataHandler.onSuccess();
     }
 
     protected void contentDataLoadFailedCallback() {
-        System.out.println("[SaltClient] ERROR: Level data is not loaded.");
+        System.out.println("[Saltr] ERROR: Level data is not loaded.");
         saltrHttpDataHandler.onFail();
     }
 }

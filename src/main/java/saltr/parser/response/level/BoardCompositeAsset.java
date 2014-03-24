@@ -10,6 +10,7 @@ import java.util.List;
 
 public class BoardCompositeAsset {
     private String assetId;
+    private String stateId;
     private List<Integer> position;
     private List<Integer> cell;
 
@@ -35,5 +36,13 @@ public class BoardCompositeAsset {
 
     public void setPosition(List<Integer> position) {
         this.position = position;
+    }
+
+    public String getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(String stateId) {
+        this.stateId = stateId;
     }
 }

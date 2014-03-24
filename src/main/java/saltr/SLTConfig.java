@@ -11,8 +11,11 @@ public class SLTConfig {
     public static final String COMMAND_ADD_PROPERTY = "ADDPROP";
     public static final String COMMAND_SAVE_OR_UPDATE_FEATURE = "SOUFTR";
 
-    public static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
-    public static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
+    public static final String SALTR_API_URL = "http://api.saltr.com/httpjson.action";
+    public static final String SALTR_URL = "http://saltr.com/httpjson.action";
+
+//    public static final String SALTR_API_URL = "http://saltapi.includiv.com/httpjson.action";
+//    public static final String SALTR_URL = "http://saltadmin.includiv.com/httpjson.action";
 
 //    public static final String SALTR_API_URL = "http://10.0.2.2:8081/httpjson.action";
 //    public static final String SALTR_URL = "http://10.0.2.2:8085/httpjson.action";

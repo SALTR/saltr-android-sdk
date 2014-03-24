@@ -6,47 +6,19 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.response.level.Board;
-import saltr.parser.response.level.BoardChunk;
-import saltr.parser.response.level.BoardCompositeAsset;
-import saltr.parser.response.level.CustomPropertyCell;
-
-import java.util.List;
 import java.util.Map;
 
 public class SLTLevelBoard {
-    public static String MAIN_BOARD_ID = "main";
-
     private Integer rows;
     private Integer cols;
-    private List<List<Integer>> blockedCells;
-    private List<Integer> position;
-    private Object[][] boardVector;
-    private Board rawBoard;
-    private SLTLevelSettings SLTLevelSettings;
+    private SLTCell[][] cells;
+    private Map<String, String> properties;
 
-    public SLTLevelBoard(Board rawBoard, SLTLevelSettings SLTLevelSettings) {
-        this.rawBoard = rawBoard;
-        this.SLTLevelSettings = SLTLevelSettings;
-        cols = this.rawBoard.getCols();
-        rows = this.rawBoard.getRows();
-        blockedCells = this.rawBoard.getBlockedCells();
-        position = this.rawBoard.getPosition();
-
-        this.boardVector = new Object[rows][cols];
-        SLTLevelBoardParser.parseBoard(boardVector, this.rawBoard, this.SLTLevelSettings);
-    }
-
-    public void regenerateChunks() {
-        SLTLevelBoardParser.regenerateChunks(boardVector, rawBoard, SLTLevelSettings);
-    }
-
-    public List<BoardCompositeAsset> getComposites() {
-        return rawBoard.getComposites();
-    }
-
-    public List<BoardChunk> getChunks() {
-        return rawBoard.getChunks();
+    public SLTLevelBoard(SLTCell[][] cells, Map<String, String> properties) {
+        this.cells = cells;
+        cols = cells.length;
+        rows = cells[0].length;
+        this.properties = properties;
     }
 
     public Integer getRows() {
@@ -57,27 +29,11 @@ public class SLTLevelBoard {
         return cols;
     }
 
-    public List<List<Integer>> getBlockedCells() {
-        return blockedCells;
+    public SLTCell[][] getCells() {
+        return cells;
     }
 
-    public List<Integer> getPosition() {
-        return position;
-    }
-
-    public Object[][] getBoardVector() {
-        return boardVector;
-    }
-
-    public SLTLevelSettings getSLTLevelSettings() {
-        return SLTLevelSettings;
-    }
-
-    public Map<String, String> getBoardProperties() {
-        return rawBoard.getProperties().getBoard();
-    }
-
-    public List<CustomPropertyCell> cellProperties() {
-        return rawBoard.getProperties().getCell();
+    public Map<String, String> getProperties() {
+        return properties;
     }
 }

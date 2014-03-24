@@ -6,9 +6,6 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.game.SLTCell;
-import saltr.parser.game.SLTAssetInstance;
-
 import java.util.List;
 
 public class SLTCompositeInstance extends SLTAssetInstance {

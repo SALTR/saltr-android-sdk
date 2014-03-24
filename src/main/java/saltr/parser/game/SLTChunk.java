@@ -18,7 +18,7 @@ public class SLTChunk {
     private Map assetMap;
     private Map stateMap;
 
-    public SLTChunk(List<SLTChunkAssetInfo> chunkAssetInfos, List<SLTCell> chunkCells, SLTLevelSettings levelSettings) {
+    public SLTChunk(List<SLTCell> chunkCells, List<SLTChunkAssetInfo> chunkAssetInfos, SLTLevelSettings levelSettings) {
         this.chunkCells = chunkCells;
         this.chunkAssetInfos = chunkAssetInfos;
 

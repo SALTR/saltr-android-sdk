@@ -6,32 +6,46 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.game.SLTCompositeInfo;
-import saltr.parser.gameeditor.simple.IAssetTemplate;
 import saltr.parser.response.level.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SLTLevelBoardParser {
 
-    public static void parseBoard(Object[][] outputBoard, Board board, SLTLevelSettings SLTLevelSettings) {
-        createEmptyBoard(outputBoard);
-        Map<String, SLTCompositeInfo> composites = parseComposites(board.getComposites(), outputBoard, SLTLevelSettings);
-        Map boardChunks = parseChunks(board.getChunks(), outputBoard, SLTLevelSettings);
+    public static Map<String, SLTLevelBoard> parseLevelBoards(Map<String, Board> boardNodes, SLTLevelSettings levelSettings) {
+        Map<String, SLTLevelBoard> boards = new HashMap<>();
+        for (Map.Entry<String, Board> entry : boardNodes.entrySet()) {
+            boards.put(entry.getKey(), parseLevelBoard(entry.getValue(), levelSettings));
+        }
+        return boards;
+    }
+
+    public static SLTLevelBoard parseLevelBoard(Board boardNode, SLTLevelSettings levelSettings) {
+        Map<String, String> boardProperties = null;
+        SLTCell[][] cells = parseBoardCells(boardNode, levelSettings);
+        if (boardNode.getProperties() != null && boardNode.getProperties().getBoard() != null) {
+            boardProperties = boardNode.getProperties().getBoard();
+        }
+        return new SLTLevelBoard(cells, boardProperties);
+    }
+
+    private static SLTCell[][] parseBoardCells(Board boardNode, SLTLevelSettings levelSettings) {
+        SLTCell[][] cells = new SLTCell[boardNode.getCols()][boardNode.getRows()];
+        createEmptyBoard(cells, boardNode);
+        Map<String, SLTCompositeInfo> composites = parseComposites(boardNode.getComposites(), cells, levelSettings);
+        List<SLTChunk> boardChunks = parseChunks(boardNode.getChunks(), cells, levelSettings);
         generateComposites(composites);
         generateChunks(boardChunks);
+
+        return cells;
     }
 
-    public static void regenerateChunks(Object[][] outputBoard, Board board, SLTLevelSettings SLTLevelSettings) {
-        Map<String, SLTChunk> boardChunks = parseChunks(board.getChunks(), outputBoard, SLTLevelSettings);
-        generateChunks(boardChunks);
-    }
-
-    private static void generateChunks(Map<String, SLTChunk> chunks) {
-        for (Map.Entry<String, SLTChunk> entry : chunks.entrySet()) {
-            entry.getValue().generate();
+    private static void generateChunks(List<SLTChunk> chunks) {
+        for (SLTChunk chunk : chunks) {
+            chunk.generate();
         }
     }
 
@@ -41,48 +55,71 @@ public class SLTLevelBoardParser {
         }
     }
 
-    private static void createEmptyBoard(Object[][] board) {
+    private static void createEmptyBoard(SLTCell[][] board, Board boardNode) {
+        List<List<Integer>> blockedCells = boardNode.getBlockedCells() != null ? boardNode.getBlockedCells() : new ArrayList<List<Integer>>();
+        List<CustomPropertyCell> cellProperties = boardNode.getProperties() != null && boardNode.getProperties().getCell() != null
+                ? boardNode.getProperties().getCell() : new ArrayList<CustomPropertyCell>();
+        int length;
         int cols = board.length;
         for (int j = 0; j < cols; ++j) {
             int rows = board[j].length;
             for (int i = 0; i < rows; ++i) {
-                Map<String, Integer> map = new HashMap<String, Integer>();
-                map.put("col", j);
-                map.put("row", i);
-                board[j][i] = map;
+                SLTCell cell = new SLTCell(j, i);
+                board[j][i] = cell;
+                length = cellProperties.size();
+                for (int n = 0; n < length; n++) {
+                    CustomPropertyCell property = cellProperties.get(n);
+                    if (property.getCoords().get(0).equals(j) && property.getCoords().get(1).equals(1)) {
+                        cell.setProperties(property.getValue());
+                        break;
+                    }
+                }
+                length = blockedCells.size();
+                for (int n = 0; n < length; n++) {
+                    List<Integer> blockedCell = blockedCells.get(n);
+                    if (blockedCell.get(0).equals(j) && blockedCell.get(1).equals(i)) {
+                        cell.setIsBocked(true);
+                        break;
+                    }
+                }
             }
         }
     }
 
-    private static Map parseChunks(List<BoardChunk> chunksPrototype, Object[][] outputBoard, SLTLevelSettings SLTLevelSettings) {
-        SLTChunkAssetInfo chunkAsset;
+    private static List<SLTChunk> parseChunks(List<BoardChunk> chunkNodes, SLTCell[][] cellMatrix, SLTLevelSettings levelSettings) {
+        List<SLTChunk> chunks = new ArrayList<>();
+        List<List<Integer>> cellNodes;
+        List<SLTCell> chunkCells;
+        List<BoardChunkAsset> assetNodes;
+        List<SLTChunkAssetInfo> chunkAssetInfoList;
         SLTChunk chunk;
-        List<BoardChunkAsset> assetsPrototype;
-        List<List<Integer>> cellsPrototype;
-        Map<String, SLTChunk> chunks = new HashMap<String, SLTChunk>();
-        for (BoardChunk chunkPrototype : chunksPrototype) {
-            chunk = new SLTChunk(chunkPrototype.getChunkId(), outputBoard, SLTLevelSettings);
-            assetsPrototype = chunkPrototype.getAssets();
-            for (BoardChunkAsset assetPrototype : assetsPrototype) {
-                chunkAsset = new SLTChunkAssetInfo(assetPrototype.getAssetId(), assetPrototype.getCount(), assetPrototype.getStateId());
-                chunk.addChunkAsset(chunkAsset);
+        for (BoardChunk chunkNode : chunkNodes) {
+            cellNodes = chunkNode.getCells();
+            chunkCells = new ArrayList<>();
+            for (List<Integer> cellNode : cellNodes) {
+                chunkCells.add(cellMatrix[cellNode.get(1)][cellNode.get(0)]);
             }
-            cellsPrototype = chunkPrototype.getCells();
-            for (List<Integer> cellPrototype : cellsPrototype) {
-                chunk.addCell(new SLTCell(cellPrototype.get(0), cellPrototype.get(1)));
+
+            assetNodes = chunkNode.getAssets();
+            chunkAssetInfoList = new ArrayList<>();
+            for (BoardChunkAsset assetNode : assetNodes) {
+                chunkAssetInfoList.add(new SLTChunkAssetInfo(assetNode.getAssetId(), assetNode.getCount(), assetNode.getStateId()));
             }
-            chunks.put(chunk.getId(), chunk);
+
+            chunk = new SLTChunk(chunkCells, chunkAssetInfoList, levelSettings);
+            chunks.add(chunk);
         }
         return chunks;
     }
 
 
-    private static Map<String, SLTCompositeInfo> parseComposites(List<BoardCompositeAsset> compositeNodes, Object[][] cellMatrix, SLTLevelSettings levelSettings) {
+    private static Map<String, SLTCompositeInfo> parseComposites(List<BoardCompositeAsset> compositeNodes, SLTCell[][] cellMatrix, SLTLevelSettings levelSettings) {
         SLTCompositeInfo compositeInfo;
         Map<String, SLTCompositeInfo> compositesMap = new HashMap<>();
-        for (BoardCompositeAsset compositePrototype : compositeNodes) {
-            List<Integer> cellPosition = compositePrototype.getCell() != null ? compositePrototype.getCell() : compositePrototype.getPosition();
-            compositeInfo = new SLTCompositeInfo(compositePrototype.getAssetId(), new SLTCell(cellPosition.get(0), cellPosition.get(1)), cellMatrix, levelSettings);
+        for (BoardCompositeAsset compositeNode : compositeNodes) {
+            List<Integer> cellPosition = compositeNode.getCell() != null ? compositeNode.getCell() : compositeNode.getPosition();
+            compositeInfo = new SLTCompositeInfo(compositeNode.getAssetId(), compositeNode.getStateId(),
+                    cellMatrix[cellPosition.get(1)][cellPosition.get(0)], levelSettings);
             compositesMap.put(compositeInfo.getAssetId(), compositeInfo);
         }
         return compositesMap;
@@ -92,15 +129,15 @@ public class SLTLevelBoardParser {
         return new SLTLevelSettings(parseBoardAssets(rootNode.getAssets()), rootNode.getKeySets(), rootNode.getAssetStates());
     }
 
-    private static Map<String, IAssetTemplate> parseBoardAssets(Map<String, SaltrAsset> assetNodes) {
-        Map<String, IAssetTemplate> assetMap = new HashMap<>();
+    private static Map<String, SLTAsset> parseBoardAssets(Map<String, SaltrAsset> assetNodes) {
+        Map<String, SLTAsset> assetMap = new HashMap<>();
         for (Map.Entry<String, SaltrAsset> entry : assetNodes.entrySet()) {
             assetMap.put(entry.getKey(), parseAsset(entry.getValue()));
         }
         return assetMap;
     }
 
-    private static IAssetTemplate parseAsset(SaltrAsset assetNode) {
+    private static SLTAsset parseAsset(SaltrAsset assetNode) {
         String type = assetNode.getType() != null ? assetNode.getType() : assetNode.getType_key();
         if (assetNode.getCells() != null || assetNode.getCellInfos() != null) { /*if asset is composite asset*/
             List<List<Integer>> cellInfos = assetNode.getCellInfos() != null ? assetNode.getCellInfos() : assetNode.getCells();

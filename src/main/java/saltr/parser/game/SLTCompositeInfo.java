@@ -7,18 +7,14 @@
 package saltr.parser.game;
 
 
-import saltr.parser.game.SLTCell;
-import saltr.parser.game.SLTCompositeAsset;
-import saltr.parser.game.SLTLevelSettings;
-
 import java.util.Map;
 
 public class SLTCompositeInfo {
     private String assetId;
     private String stateId;
     private SLTCell cell;
-    private Map assetMap;
-    private Map stateMap;
+    private Map<String, SLTAsset> assetMap;
+    private Map<String, String> stateMap;
 
     public SLTCompositeInfo(String assetId, String stateId, SLTCell cell, SLTLevelSettings levelSettings) {
         this.assetId = assetId;
@@ -34,7 +30,7 @@ public class SLTCompositeInfo {
 
     public void generate() {
         SLTCompositeAsset asset = (SLTCompositeAsset) assetMap.get(assetId);
-        String state = stateMap.get(stateId).toString();
+        String state = stateMap.get(stateId);
         cell.setAssetInstance(new SLTCompositeInstance(asset.getKeys(), state, asset.getType(), asset.getCellInfos()));
     }
 }

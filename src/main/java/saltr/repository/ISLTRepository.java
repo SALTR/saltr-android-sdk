@@ -6,7 +6,7 @@ package saltr.repository;
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-public interface IRepository {
+public interface ISLTRepository {
     Object getObjectFromStorage(String name);
 
     Object getObjectFromCache(String fileName);
