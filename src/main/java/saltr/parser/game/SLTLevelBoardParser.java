@@ -97,7 +97,7 @@ public class SLTLevelBoardParser {
             cellNodes = chunkNode.getCells();
             chunkCells = new ArrayList<>();
             for (List<Integer> cellNode : cellNodes) {
-                chunkCells.add(cellMatrix[cellNode.get(1)][cellNode.get(0)]);
+                chunkCells.add(cellMatrix[cellNode.get(0)][cellNode.get(1)]);
             }
 
             assetNodes = chunkNode.getAssets();

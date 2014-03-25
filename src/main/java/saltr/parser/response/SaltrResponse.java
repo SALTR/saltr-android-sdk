@@ -9,13 +9,11 @@ package saltr.parser.response;
 public class SaltrResponse<T> {
     protected String status;
     protected T responseData;
+    protected String responseMessage;
+    protected int errorCode;
 
     public SaltrResponse(String status, T responseData) {
         this.status = status;
-        this.responseData = responseData;
-    }
-
-    public void setResponseData(T responseData) {
         this.responseData = responseData;
     }
 
@@ -24,11 +22,15 @@ public class SaltrResponse<T> {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public T getResponseData() {
         return responseData;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
     }
 }

@@ -9,5 +9,5 @@ package saltr;
 public interface SLTHttpDataHandler {
     public void onSuccess();
 
-    public void onFail();
+    public void onFail(SLTError error);
 }

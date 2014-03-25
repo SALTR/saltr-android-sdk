@@ -153,7 +153,7 @@ public class SLTSaltr {
         System.out.println("[Saltr] App data is failed to load.");
         isLoading = false;
         connected = false;
-        saltrHttpDataHandler.onFail();
+        saltrHttpDataHandler.onFail(new SLTError(SLTError.GENERAL_ERROR_CODE, "could not connect to SALTR"));
     }
 
     protected void appDataLoadCompleteCallback(String json) {
@@ -194,7 +194,7 @@ public class SLTSaltr {
         }
         else {
             connected = false;
-            saltrHttpDataHandler.onFail();
+            saltrHttpDataHandler.onFail(new SLTError(response.getErrorCode(), response.getResponseMessage()));
         }
     }
 
@@ -336,6 +336,6 @@ public class SLTSaltr {
 
     protected void contentDataLoadFailedCallback() {
         System.out.println("[Saltr] ERROR: Level data is not loaded.");
-        saltrHttpDataHandler.onFail();
+        saltrHttpDataHandler.onFail(null);
     }
 }
