@@ -12,9 +12,9 @@ import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.RequestParams;
 import saltr.parser.game.SLTLevel;
 import saltr.parser.game.SLTLevelPack;
-import saltr.parser.response.AppData;
-import saltr.parser.response.SaltrResponse;
-import saltr.parser.response.level.LevelData;
+import saltr.parser.response.SLTResponseAppData;
+import saltr.parser.response.SLTResponse;
+import saltr.parser.response.level.SLTResponseLevelData;
 import saltr.repository.ISLTRepository;
 import saltr.repository.SLTMobileRepository;
 
@@ -97,7 +97,7 @@ public class SLTSaltr {
             path = SLTConfig.LEVEL_PACK_URL_PACKAGE;
         }
         Object applicationData = repository.getObjectFromApplication(path);
-        levelPacks = SLTDeserializer.decodeLevels((AppData) applicationData);
+        levelPacks = SLTDeserializer.decodeLevels((SLTResponseAppData) applicationData);
     }
 
     /**
@@ -137,7 +137,7 @@ public class SLTSaltr {
         if (cachedData == null) {
             return;
         }
-        Map<String, SLTFeature> cachedFeatures = SLTDeserializer.decodeFeatures((AppData) cachedData);
+        Map<String, SLTFeature> cachedFeatures = SLTDeserializer.decodeFeatures((SLTResponseAppData) cachedData);
         for (Map.Entry<String, SLTFeature> entry : cachedFeatures.entrySet()) {
             String token = entry.getKey();
             SLTFeature saltrFeature = entry.getValue();
@@ -157,9 +157,9 @@ public class SLTSaltr {
     }
 
     protected void appDataLoadCompleteCallback(String json) {
-        SaltrResponse<AppData> response = gson.fromJson(json, new TypeToken<SaltrResponse<AppData>>() {
+        SLTResponse<SLTResponseAppData> response = gson.fromJson(json, new TypeToken<SLTResponse<SLTResponseAppData>>() {
         }.getType());
-        AppData responseData = response.getResponseData();
+        SLTResponseAppData responseData = response.getResponseData();
         isLoading = false;
         if (response.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
             repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", responseData);
@@ -256,7 +256,7 @@ public class SLTSaltr {
             String cachedVersion = getCachedLevelVersion(levelPack, level);
             if (level.getVersion().equals(cachedVersion)) {
                 Object contentData = loadCachedLevelContentData(levelPack, level);
-                contentDataLoadSuccessCallback(level, gson.fromJson(contentData.toString(), LevelData.class));
+                contentDataLoadSuccessCallback(level, gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
             }
             else {
                 loadSaltrLevelContentData(levelPack, level, false);
@@ -317,7 +317,7 @@ public class SLTSaltr {
         }
 
         if (data != null) {
-            contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(data.toString(), LevelData.class));
+            contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(data.toString(), SLTResponseLevelData.class));
         }
         else {
             contentDataLoadFailedCallback();
@@ -326,10 +326,10 @@ public class SLTSaltr {
 
     void loadFailedCallback(SLTCallBackProperties properties) {
         Object contentData = loadLevelContentDataInternally(properties.getPack(), properties.getLevel());
-        contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(contentData.toString(), LevelData.class));
+        contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
     }
 
-    protected void contentDataLoadSuccessCallback(SLTLevel level, LevelData data) {
+    protected void contentDataLoadSuccessCallback(SLTLevel level, SLTResponseLevelData data) {
         level.updateContent(data);
         saltrHttpDataHandler.onSuccess();
     }

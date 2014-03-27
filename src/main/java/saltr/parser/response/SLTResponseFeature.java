@@ -4,28 +4,28 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.response.level;
+package saltr.parser.response;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.Map;
 
-public class CustomProperties {
-    private Map<String, String> board;
-    private List<CustomPropertyCell> cell;
+public class SLTResponseFeature implements Serializable {
+    private String token;
+    private Map<String, String> data;
 
-    public Map<String, String> getBoard() {
-        return board;
+    public Map<String, String> getData() {
+        return data;
     }
 
-    public void setBoard(Map<String, String> board) {
-        this.board = board;
+    public void setData(Map<String, String> data) {
+        this.data = data;
     }
 
-    public List<CustomPropertyCell> getCell() {
-        return cell;
+    public String getToken() {
+        return token;
     }
 
-    public void setCell(List<CustomPropertyCell> cell) {
-        this.cell = cell;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

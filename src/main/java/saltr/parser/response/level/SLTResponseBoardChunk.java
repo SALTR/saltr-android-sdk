@@ -8,9 +8,9 @@ package saltr.parser.response.level;
 
 import java.util.List;
 
-public class BoardChunk {
+public class SLTResponseBoardChunk {
     private String chunkId;
-    private List<BoardChunkAsset> assets;
+    private List<SLTResponseBoardChunkAsset> assets;
     private List<List<Integer>> cells;
 
     public String getChunkId() {
@@ -21,11 +21,11 @@ public class BoardChunk {
         this.chunkId = chunkId;
     }
 
-    public List<BoardChunkAsset> getAssets() {
+    public List<SLTResponseBoardChunkAsset> getAssets() {
         return assets;
     }
 
-    public void setAssets(List<BoardChunkAsset> assets) {
+    public void setAssets(List<SLTResponseBoardChunkAsset> assets) {
         this.assets = assets;
     }
 

@@ -8,7 +8,7 @@ package saltr.parser.response;
 
 import java.io.Serializable;
 
-public class ResponseLevel implements Serializable {
+public class SLTResponseLevel implements Serializable {
     private Long id;
     private Integer order;
     private Integer index;

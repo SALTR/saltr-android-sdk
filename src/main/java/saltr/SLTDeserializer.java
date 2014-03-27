@@ -14,11 +14,11 @@ import java.util.*;
 
 public class SLTDeserializer {
 
-    public static List<SLTExperiment> decodeExperiment(AppData data) {
+    public static List<SLTExperiment> decodeExperiment(SLTResponseAppData data) {
         List<SLTExperiment> experiments = new ArrayList<>();
-        List<ResponseExperiment> experimentInfoNodes = data.getExperimentInfo();
+        List<SLTResponseExperiment> experimentInfoNodes = data.getExperimentInfo();
         if (experimentInfoNodes != null) {
-            for (ResponseExperiment item : experimentInfoNodes) {
+            for (SLTResponseExperiment item : experimentInfoNodes) {
                 String partition = item.getPartition() != null ? item.getPartition() : item.getPartitionName();
                 SLTExperiment experiment = new SLTExperiment(partition, item.getToken(), item.getType(), item.getCustomEventList());
                 experiments.add(experiment);
@@ -27,16 +27,16 @@ public class SLTDeserializer {
         return experiments;
     }
 
-    public static List<SLTLevelPack> decodeLevels(AppData data) {
+    public static List<SLTLevelPack> decodeLevels(SLTResponseAppData data) {
 
         List<SLTLevelPack> levelPacks = new ArrayList<>();
-        List<ResponsePack> levelPackNodes = data.getLevelPacks() != null ? data.getLevelPacks() : data.getLevelPackList();
+        List<SLTResponsePack> levelPackNodes = data.getLevelPacks() != null ? data.getLevelPacks() : data.getLevelPackList();
         List<SLTLevel> levels;
-        List<ResponseLevel> levelNodes;
-        for (ResponsePack levelPackNode : levelPackNodes) {
+        List<SLTResponseLevel> levelNodes;
+        for (SLTResponsePack levelPackNode : levelPackNodes) {
             levelNodes = levelPackNode.getLevelList();
             levels = new ArrayList<>();
-            for (ResponseLevel levelNode : levelNodes) {
+            for (SLTResponseLevel levelNode : levelNodes) {
                 int index = levelNode.getIndex() != null ? levelNode.getIndex() : levelNode.getOrder();
                 levels.add(new SLTLevel(levelNode.getId().toString(), index, levelNode.getUrl(), levelNode.getProperties(), levelNode.getVersion().toString()));
             }
@@ -48,12 +48,12 @@ public class SLTDeserializer {
         return levelPacks;
     }
 
-    public static Map<String, SLTFeature> decodeFeatures(AppData data) {
+    public static Map<String, SLTFeature> decodeFeatures(SLTResponseAppData data) {
         Map<String, SLTFeature> features = new HashMap<>();
-        List<ResponseFeature> featuresNodes = data.getFeatures() != null ? data.getFeatures() : data.getFeatureList();
+        List<SLTResponseFeature> featuresNodes = data.getFeatures() != null ? data.getFeatures() : data.getFeatureList();
         if (featuresNodes != null) {
             SLTFeature feature;
-            for (ResponseFeature featureObj : featuresNodes) {
+            for (SLTResponseFeature featureObj : featuresNodes) {
                 feature = new SLTFeature(featureObj.getToken(), featureObj.getData());
                 features.put(featureObj.getToken(), feature);
             }

@@ -6,13 +6,13 @@
  */
 package saltr.parser.response;
 
-public class SaltrResponse<T> {
+public class SLTResponse<T> {
     protected String status;
     protected T responseData;
     protected String responseMessage;
     protected int errorCode;
 
-    public SaltrResponse(String status, T responseData) {
+    public SLTResponse(String status, T responseData) {
         this.status = status;
         this.responseData = responseData;
     }

@@ -9,7 +9,7 @@ package saltr.parser.response;
 import java.io.Serializable;
 import java.util.List;
 
-public class ResponseExperiment implements Serializable {
+public class SLTResponseExperiment implements Serializable {
     private String name;
     private String token;
     private String partitionName;

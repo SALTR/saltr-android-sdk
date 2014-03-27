@@ -6,8 +6,8 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.response.level.Board;
-import saltr.parser.response.level.LevelData;
+import saltr.parser.response.level.SLTResponseBoard;
+import saltr.parser.response.level.SLTResponseLevelData;
 
 import java.util.Map;
 
@@ -19,9 +19,9 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private Map<String, SLTLevelBoard> boards;
     private Boolean contentReady;
     private String version;
-    private LevelData rootNode;
+    private SLTResponseLevelData rootNode;
     private SLTLevelSettings levelSettings;
-    private Map<String, Board> boardsNode;
+    private Map<String, SLTResponseBoard> boardsNode;
 
     public SLTLevel(String id, int index, String contentDataUrl, Object properties, String version) {
         this.id = id;
@@ -64,7 +64,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return boards.get(id);
     }
 
-    public void updateContent(LevelData rootNode) {
+    public void updateContent(SLTResponseLevelData rootNode) {
         this.rootNode = rootNode;
         boardsNode = rootNode.getBoards();
         properties = rootNode.getProperties();

@@ -8,21 +8,21 @@ package saltr.parser.response.level;
 
 import java.util.List;
 
-public class Board {
-    private List<BoardCompositeAsset> composites;
-    private List<BoardChunk> chunks;
+public class SLTResponseBoard {
+    private List<SLTResponseBoardCompositeAsset> composites;
+    private List<SLTResponseBoardChunk> chunks;
     private Integer rows;
     private Integer cols;
     private List<List<Integer>> blockedCells;
     private Integer isFirstRowShifted;
     private List<Integer> position;
-    private CustomProperties properties;
+    private SLTResponseCustomProperties properties;
 
-    public CustomProperties getProperties() {
+    public SLTResponseCustomProperties getProperties() {
         return properties;
     }
 
-    public void setProperties(CustomProperties properties) {
+    public void setProperties(SLTResponseCustomProperties properties) {
         this.properties = properties;
     }
 
@@ -42,11 +42,11 @@ public class Board {
         isFirstRowShifted = firstRowShifted;
     }
 
-    public List<BoardChunk> getChunks() {
+    public List<SLTResponseBoardChunk> getChunks() {
         return chunks;
     }
 
-    public void setChunks(List<BoardChunk> chunks) {
+    public void setChunks(List<SLTResponseBoardChunk> chunks) {
         this.chunks = chunks;
     }
 
@@ -66,11 +66,11 @@ public class Board {
         this.cols = cols;
     }
 
-    public List<BoardCompositeAsset> getComposites() {
+    public List<SLTResponseBoardCompositeAsset> getComposites() {
         return composites;
     }
 
-    public void setComposites(List<BoardCompositeAsset> composites) {
+    public void setComposites(List<SLTResponseBoardCompositeAsset> composites) {
         this.composites = composites;
     }
 

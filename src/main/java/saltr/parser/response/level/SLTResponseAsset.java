@@ -9,7 +9,7 @@ package saltr.parser.response.level;
 import java.util.List;
 import java.util.Map;
 
-public class SaltrAsset {
+public class SLTResponseAsset {
     private Map<String, Integer> keys;
     private String type_key;
     private String type;

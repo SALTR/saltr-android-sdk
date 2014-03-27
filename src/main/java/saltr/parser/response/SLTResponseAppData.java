@@ -10,52 +10,52 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class AppData implements Serializable {
-    private List<ResponsePack> levelPackList;
-    private List<ResponsePack> levelPacks;
-    private List<ResponseFeature> featureList;
-    private List<ResponseFeature> features;
-    private List<ResponseExperiment> experimentInfo;
+public class SLTResponseAppData implements Serializable {
+    private List<SLTResponsePack> levelPackList;
+    private List<SLTResponsePack> levelPacks;
+    private List<SLTResponseFeature> featureList;
+    private List<SLTResponseFeature> features;
+    private List<SLTResponseExperiment> experimentInfo;
     private UUID saltId;
     private UUID saltrUserId;
 
-    public List<ResponseFeature> getFeatures() {
+    public List<SLTResponseFeature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<ResponseFeature> features) {
+    public void setFeatures(List<SLTResponseFeature> features) {
         this.features = features;
     }
 
-    public List<ResponsePack> getLevelPacks() {
+    public List<SLTResponsePack> getLevelPacks() {
         return levelPacks;
     }
 
-    public void setLevelPacks(List<ResponsePack> levelPacks) {
+    public void setLevelPacks(List<SLTResponsePack> levelPacks) {
         this.levelPacks = levelPacks;
     }
 
-    public List<ResponsePack> getLevelPackList() {
+    public List<SLTResponsePack> getLevelPackList() {
         return levelPackList;
     }
 
-    public void setLevelPackList(List<ResponsePack> levelPackList) {
+    public void setLevelPackList(List<SLTResponsePack> levelPackList) {
         this.levelPackList = levelPackList;
     }
 
-    public List<ResponseFeature> getFeatureList() {
+    public List<SLTResponseFeature> getFeatureList() {
         return featureList;
     }
 
-    public void setFeatureList(List<ResponseFeature> featureList) {
+    public void setFeatureList(List<SLTResponseFeature> featureList) {
         this.featureList = featureList;
     }
 
-    public List<ResponseExperiment> getExperimentInfo() {
+    public List<SLTResponseExperiment> getExperimentInfo() {
         return experimentInfo;
     }
 
-    public void setExperimentInfo(List<ResponseExperiment> experimentInfo) {
+    public void setExperimentInfo(List<SLTResponseExperiment> experimentInfo) {
         this.experimentInfo = experimentInfo;
     }
 

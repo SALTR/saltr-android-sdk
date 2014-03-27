@@ -6,32 +6,26 @@
  */
 package saltr.parser.response.level;
 
-public class BoardChunkAsset {
-    private String assetId;
-    private Integer count;
-    private String stateId;
+import java.util.List;
+import java.util.Map;
 
-    public Integer getCount() {
-        return count;
+public class SLTResponseCustomPropertyCell {
+    private List<Integer> coords;
+    private Map<String, String> value;
+
+    public List<Integer> getCoords() {
+        return coords;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setCoords(List<Integer> coords) {
+        this.coords = coords;
     }
 
-    public String getAssetId() {
-        return assetId;
+    public Map<String, String> getValue() {
+        return value;
     }
 
-    public void setAssetId(String assetId) {
-        this.assetId = assetId;
-    }
-
-    public String getStateId() {
-        return stateId;
-    }
-
-    public void setStateId(String stateId) {
-        this.stateId = stateId;
+    public void setValue(Map<String, String> value) {
+        this.value = value;
     }
 }

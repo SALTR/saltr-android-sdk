@@ -9,13 +9,13 @@ package saltr.parser.response;
 import java.io.Serializable;
 import java.util.List;
 
-public class ResponsePack implements Serializable {
+public class SLTResponsePack implements Serializable {
     private Long id;
     private String name;
     private String token;
     private Integer order;
     private Integer index;
-    private List<ResponseLevel> levelList;
+    private List<SLTResponseLevel> levelList;
 
     public Integer getIndex() {
         return index;
@@ -57,11 +57,11 @@ public class ResponsePack implements Serializable {
         this.order = order;
     }
 
-    public List<ResponseLevel> getLevelList() {
+    public List<SLTResponseLevel> getLevelList() {
         return levelList;
     }
 
-    public void setLevelList(List<ResponseLevel> levelList) {
+    public void setLevelList(List<SLTResponseLevel> levelList) {
         this.levelList = levelList;
     }
 }

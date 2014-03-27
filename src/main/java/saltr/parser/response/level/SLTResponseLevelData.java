@@ -8,18 +8,18 @@ package saltr.parser.response.level;
 
 import java.util.Map;
 
-public class LevelData {
-    private Map<String, Board> boards;
+public class SLTResponseLevelData {
+    private Map<String, SLTResponseBoard> boards;
     private Map<String, Map<String, String>> keySets;
     private Map<String, String> assetStates;
-    private Map<String, SaltrAsset> assets;
+    private Map<String, SLTResponseAsset> assets;
     private Map<String, Object> properties;
 
-    public Map<String, Board> getBoards() {
+    public Map<String, SLTResponseBoard> getBoards() {
         return boards;
     }
 
-    public void setBoards(Map<String, Board> boards) {
+    public void setBoards(Map<String, SLTResponseBoard> boards) {
         this.boards = boards;
     }
 
@@ -39,11 +39,11 @@ public class LevelData {
         this.assetStates = assetStates;
     }
 
-    public Map<String, SaltrAsset> getAssets() {
+    public Map<String, SLTResponseAsset> getAssets() {
         return assets;
     }
 
-    public void setAssets(Map<String, SaltrAsset> assets) {
+    public void setAssets(Map<String, SLTResponseAsset> assets) {
         this.assets = assets;
     }
 

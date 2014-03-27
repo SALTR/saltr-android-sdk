@@ -8,7 +8,7 @@ package saltr.parser.response.level;
 
 import java.util.List;
 
-public class BoardCompositeAsset {
+public class SLTResponseBoardCompositeAsset {
     private String assetId;
     private String stateId;
     private List<Integer> position;
