@@ -9,21 +9,23 @@ package saltr.parser.response.level;
 import java.util.List;
 
 public class SLTResponseBoard {
-    private List<SLTResponseBoardCompositeAsset> composites;
-    private List<SLTResponseBoardChunk> chunks;
+    private List<SLTResponseBoardLayer> layers;
     private Integer rows;
     private Integer cols;
     private List<List<Integer>> blockedCells;
     private Integer isFirstRowShifted;
-    private List<Integer> position;
-    private SLTResponseCustomProperties properties;
 
-    public SLTResponseCustomProperties getProperties() {
-        return properties;
+    private Object cellSize;
+    private Object orientation;
+    private Object position;
+    private SLTResponseBoardProperties properties;
+
+    public List<SLTResponseBoardLayer> getLayers() {
+        return layers;
     }
 
-    public void setProperties(SLTResponseCustomProperties properties) {
-        this.properties = properties;
+    public void setLayers(List<SLTResponseBoardLayer> layers) {
+        this.layers = layers;
     }
 
     public Integer getIsFirstRowShifted() {
@@ -32,22 +34,6 @@ public class SLTResponseBoard {
 
     public void setIsFirstRowShifted(Integer isFirstRowShifted) {
         this.isFirstRowShifted = isFirstRowShifted;
-    }
-
-    public Integer getFirstRowShifted() {
-        return isFirstRowShifted;
-    }
-
-    public void setFirstRowShifted(Integer firstRowShifted) {
-        isFirstRowShifted = firstRowShifted;
-    }
-
-    public List<SLTResponseBoardChunk> getChunks() {
-        return chunks;
-    }
-
-    public void setChunks(List<SLTResponseBoardChunk> chunks) {
-        this.chunks = chunks;
     }
 
     public Integer getRows() {
@@ -66,14 +52,6 @@ public class SLTResponseBoard {
         this.cols = cols;
     }
 
-    public List<SLTResponseBoardCompositeAsset> getComposites() {
-        return composites;
-    }
-
-    public void setComposites(List<SLTResponseBoardCompositeAsset> composites) {
-        this.composites = composites;
-    }
-
     public List<List<Integer>> getBlockedCells() {
         return blockedCells;
     }
@@ -82,11 +60,35 @@ public class SLTResponseBoard {
         this.blockedCells = blockedCells;
     }
 
-    public List<Integer> getPosition() {
+    public Object getCellSize() {
+        return cellSize;
+    }
+
+    public void setCellSize(Object cellSize) {
+        this.cellSize = cellSize;
+    }
+
+    public Object getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(Object orientation) {
+        this.orientation = orientation;
+    }
+
+    public Object getPosition() {
         return position;
     }
 
-    public void setPosition(List<Integer> position) {
+    public void setPosition(Object position) {
         this.position = position;
+    }
+
+    public SLTResponseBoardProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(SLTResponseBoardProperties properties) {
+        this.properties = properties;
     }
 }

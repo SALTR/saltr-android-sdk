@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class SLTLevel implements Comparable<SLTLevel> {
     private String id;
-    private String contentDataUrl;
+    private String contentUrl;
     private int index;
     private Object properties;
     private Map<String, SLTLevelBoard> boards;
@@ -22,22 +22,18 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private SLTResponseLevelData rootNode;
     private SLTLevelSettings levelSettings;
     private Map<String, SLTResponseBoard> boardsNode;
+    private int packIndex;
+    private int localIndex;
 
-    public SLTLevel(String id, int index, String contentDataUrl, Object properties, String version) {
+    public SLTLevel(String id, int index, int localIndex, int packIndex, String contentUrl, Object properties, String version) {
         this.id = id;
         this.index = index;
-        this.contentDataUrl = contentDataUrl;
-        this.contentReady = false;
+        this.localIndex = localIndex;
+        this.packIndex = packIndex;
+        this.contentUrl = contentUrl;
         this.properties = properties;
         this.version = version;
-    }
-
-    public SLTLevelSettings getLevelSettings() {
-        return levelSettings;
-    }
-
-    public String getId() {
-        return id;
+        this.contentReady = false;
     }
 
     public int getIndex() {
@@ -48,25 +44,40 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return properties;
     }
 
-    public Boolean getContentReady() {
-        return contentReady;
+    public String getContentUrl() {
+        return contentUrl;
     }
 
-    public String getContentDataUrl() {
-        return contentDataUrl;
+    public Boolean getContentReady() {
+        return contentReady;
     }
 
     public String getVersion() {
         return version;
     }
 
+    public int getLocalIndex() {
+        return localIndex;
+    }
+
+    public int getPackIndex() {
+        return packIndex;
+    }
+
     public SLTLevelBoard getBoard(String id) {
         return boards.get(id);
     }
 
-    public void updateContent(SLTResponseLevelData rootNode) {
+    public void updateContent(SLTResponseLevelData rootNode) throws Exception {
         this.rootNode = rootNode;
-        boardsNode = rootNode.getBoards();
+
+        if (rootNode.getBoards() != null) {
+            boardsNode = rootNode.getBoards();
+        }
+        else {
+            throw new Exception("Boards node is not found.");
+        }
+
         properties = rootNode.getProperties();
         levelSettings = SLTLevelBoardParser.parseLevelSettings(rootNode);
         generateAllBoards();

@@ -26,12 +26,20 @@ public class SLTCallBackHandler extends AsyncHttpResponseHandler {
         try {
             String responseData = new String(responseBody, "UTF-8");
             if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
-                saltr.appDataLoadCompleteCallback(responseData);
+                saltr.appDataLoadSuccessCallback(responseData);
             }
             else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
-                saltr.loadSuccessCallback(responseData, properties);
+                saltr.loadFromSaltrSuccessCallback(responseData, properties);
+            }
+            else if (properties.getDataType().getValue().equals(SLTDataType.PLAYER_PROPERTY.getValue())) {
+                System.out.println("success");
+            }
+            else if (properties.getDataType().getValue().equals(SLTDataType.FEATURE.getValue())) {
+                System.out.println("[Saltr] Dev feature Sync is complete.");
             }
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -39,10 +47,20 @@ public class SLTCallBackHandler extends AsyncHttpResponseHandler {
     @Override
     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
         if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
-            saltr.appDataLoadFailedCallback();
+            saltr.appDataLoadFailCallback();
         }
         else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
-            saltr.loadFailedCallback(properties);
+            try {
+                saltr.loadFromSaltrFailCallback(properties);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else if (properties.getDataType().getValue().equals(SLTDataType.PLAYER_PROPERTY.getValue())) {
+            System.err.println("error");
+        }
+        else if (properties.getDataType().getValue().equals(SLTDataType.FEATURE.getValue())) {
+            System.err.println("[Saltr] Dev feature Sync has failed.");
         }
     }
 }

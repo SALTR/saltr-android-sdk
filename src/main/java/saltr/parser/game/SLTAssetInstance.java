@@ -8,24 +8,24 @@ package saltr.parser.game;
 
 public class SLTAssetInstance {
     protected String state;
-    protected Object keys;
-    protected String type;
+    protected Object properties;
+    protected String token;
 
-    public SLTAssetInstance(Object keys, String state, String type) {
+    public SLTAssetInstance(String token, String state, Object properties) {
         this.state = state;
-        this.keys = keys;
-        this.type = type;
+        this.properties = properties;
+        this.token = token;
     }
 
     public String getState() {
         return state;
     }
 
-    public Object getKeys() {
-        return keys;
+    public Object getProperties() {
+        return properties;
     }
 
-    public String getType() {
-        return type;
+    public String getToken() {
+        return token;
     }
 }

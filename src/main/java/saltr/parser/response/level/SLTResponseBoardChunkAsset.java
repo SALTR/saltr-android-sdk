@@ -6,18 +6,14 @@
  */
 package saltr.parser.response.level;
 
+import java.util.Set;
+
 public class SLTResponseBoardChunkAsset {
     private String assetId;
-    private Integer count;
+    private String distributionType;
+    private Integer distributionValue;
     private String stateId;
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
+    private Set<Long> states;
 
     public String getAssetId() {
         return assetId;
@@ -33,5 +29,29 @@ public class SLTResponseBoardChunkAsset {
 
     public void setStateId(String stateId) {
         this.stateId = stateId;
+    }
+
+    public String getDistributionType() {
+        return distributionType;
+    }
+
+    public void setDistributionType(String distributionType) {
+        this.distributionType = distributionType;
+    }
+
+    public Integer getDistributionValue() {
+        return distributionValue;
+    }
+
+    public void setDistributionValue(Integer distributionValue) {
+        this.distributionValue = distributionValue;
+    }
+
+    public Set<Long> getStates() {
+        return states;
+    }
+
+    public void setStates(Set<Long> states) {
+        this.states = states;
     }
 }

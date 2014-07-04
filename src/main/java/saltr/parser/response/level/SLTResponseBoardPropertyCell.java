@@ -9,7 +9,7 @@ package saltr.parser.response.level;
 import java.util.List;
 import java.util.Map;
 
-public class SLTResponseCustomPropertyCell {
+public class SLTResponseBoardPropertyCell {
     private List<Integer> coords;
     private Map<String, String> value;
 

@@ -12,6 +12,15 @@ import java.util.Map;
 public class SLTResponseFeature implements Serializable {
     private String token;
     private Map<String, String> data;
+    private Boolean required;
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
 
     public Map<String, String> getData() {
         return data;

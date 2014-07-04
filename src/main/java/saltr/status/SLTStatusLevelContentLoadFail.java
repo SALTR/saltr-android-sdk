@@ -4,19 +4,10 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.game;
+package saltr.status;
 
-import java.util.List;
-
-public class SLTCompositeAsset extends SLTAsset {
-    private List cellInfos;
-
-    public SLTCompositeAsset(List cellInfos, String type, Object keys) {
-        super(type, keys);
-        this.cellInfos = cellInfos;
-    }
-
-    public List getCellInfos() {
-        return cellInfos;
+public class SLTStatusLevelContentLoadFail extends SLTStatus {
+    public SLTStatusLevelContentLoadFail() {
+        super(CLIENT_LEVEL_CONTENT_LOAD_FAIL, "Level content load has failed.");
     }
 }

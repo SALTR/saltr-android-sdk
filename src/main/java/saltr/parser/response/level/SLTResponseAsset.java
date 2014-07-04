@@ -11,26 +11,18 @@ import java.util.Map;
 
 public class SLTResponseAsset {
     private Map<String, Integer> keys;
-    private String type_key;
     private String type;
+    private String token;
     private List<Long> states;
-    private List<List<Integer>> cells;
-    private List<List<Integer>> cellInfos;
+    private Object cells;
+    private Object properties;
 
-    public String getType() {
-        return type;
+    public Object getProperties() {
+        return properties;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<List<Integer>> getCellInfos() {
-        return cellInfos;
-    }
-
-    public void setCellInfos(List<List<Integer>> cellInfos) {
-        this.cellInfos = cellInfos;
+    public void setProperties(Object properties) {
+        this.properties = properties;
     }
 
     public Map<String, Integer> getKeys() {
@@ -41,12 +33,20 @@ public class SLTResponseAsset {
         this.keys = keys;
     }
 
-    public String getType_key() {
-        return type_key;
+    public String getType() {
+        return type;
     }
 
-    public void setType_key(String type_key) {
-        this.type_key = type_key;
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<Long> getStates() {
@@ -57,11 +57,11 @@ public class SLTResponseAsset {
         this.states = states;
     }
 
-    public List<List<Integer>> getCells() {
+    public Object getCells() {
         return cells;
     }
 
-    public void setCells(List<List<Integer>> cells) {
+    public void setCells(Object cells) {
         this.cells = cells;
     }
 }

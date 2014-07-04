@@ -9,16 +9,33 @@ package saltr.parser.game;
 import java.util.Map;
 
 public class SLTCell implements Cloneable {
-    private int x;
-    private int y;
+    private int row;
+    private int col;
     private Map<String, String> properties;
-    private Boolean isBocked;
-    private SLTAssetInstance assetInstance;
+    private Boolean isBlocked;
+    private Map<Object, SLTAssetInstance> instancesByLayerId;
+    private Map<Object, SLTAssetInstance> instancesByLayerIndex;
 
-    public SLTCell(int x, int y) {
-        this.x = x;
-        this.y = y;
-        isBocked = false;
+    public SLTCell(int row, int col) {
+        this.row = row;
+        this.col = col;
+        isBlocked = false;
+    }
+
+    public Map<Object, SLTAssetInstance> getInstancesByLayerId() {
+        return instancesByLayerId;
+    }
+
+    public void setInstancesByLayerId(Map<Object, SLTAssetInstance> instancesByLayerId) {
+        this.instancesByLayerId = instancesByLayerId;
+    }
+
+    public Map<Object, SLTAssetInstance> getInstancesByLayerIndex() {
+        return instancesByLayerIndex;
+    }
+
+    public void setInstancesByLayerIndex(Map<Object, SLTAssetInstance> instancesByLayerIndex) {
+        this.instancesByLayerIndex = instancesByLayerIndex;
     }
 
     public Map<String, String> getProperties() {
@@ -29,44 +46,44 @@ public class SLTCell implements Cloneable {
         this.properties = properties;
     }
 
-    public Boolean getIsBocked() {
-        return isBocked;
+    public Boolean getIsBlocked() {
+        return isBlocked;
     }
 
-    public void setIsBocked(Boolean isBocked) {
-        this.isBocked = isBocked;
+    public void setIsBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
     }
 
-    public SLTAssetInstance getAssetInstance() {
-        return assetInstance;
+    public int getRow() {
+        return row;
     }
 
-    public void setAssetInstance(SLTAssetInstance assetInstance) {
-        this.assetInstance = assetInstance;
+    public void setRow(int row) {
+        this.row = row;
     }
 
-    public int getX() {
-        return x;
+    public int getCol() {
+        return col;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setCol(int col) {
+        this.col = col;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public void setAssetInstance(String layerId, int layerIndex, SLTAssetInstance assetInstance) {
+        if (!isBlocked) {
+            instancesByLayerId.put(layerId, assetInstance);
+            instancesByLayerId.put(layerIndex, assetInstance);
+        }
     }
 
     @Override
     public SLTCell clone() {
-        SLTCell cell = new SLTCell(x, y);
-        cell.setAssetInstance(assetInstance);
+        SLTCell cell = new SLTCell(row, col);
         cell.setProperties(properties);
-        cell.setIsBocked(isBocked);
+        cell.setIsBlocked(isBlocked);
+        cell.setInstancesByLayerId(instancesByLayerId);
+        cell.setInstancesByLayerIndex(instancesByLayerIndex);
         return cell;
     }
 }

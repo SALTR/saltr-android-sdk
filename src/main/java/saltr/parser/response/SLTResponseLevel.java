@@ -9,13 +9,22 @@ package saltr.parser.response;
 import java.io.Serializable;
 
 public class SLTResponseLevel implements Serializable {
-    private Long id;
+    private String id;
     private Integer order;
     private Integer index;
+    private Integer localIndex;
     private String url;
     private Integer version;
     private Object properties;
     private Long activeVariationId;
+
+    public Integer getLocalIndex() {
+        return localIndex;
+    }
+
+    public void setLocalIndex(Integer localIndex) {
+        this.localIndex = localIndex;
+    }
 
     public Integer getIndex() {
         return index;
@@ -33,11 +42,11 @@ public class SLTResponseLevel implements Serializable {
         this.activeVariationId = activeVariationId;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

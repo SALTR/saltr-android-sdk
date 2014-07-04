@@ -10,21 +10,21 @@ import java.util.List;
 
 public class SLTLevelPack implements Comparable<SLTLevelPack> {
     private String token;
-    private List<SLTLevel> levelStructureList;
+    private List<SLTLevel> levels;
     private int index;
 
-    public SLTLevelPack(String token, int index, List<SLTLevel> levelStructureList) {
+    public SLTLevelPack(String token, int index, List<SLTLevel> levels) {
         this.token = token;
         this.index = index;
-        this.levelStructureList = levelStructureList;
+        this.levels = levels;
     }
 
     public String getToken() {
         return token;
     }
 
-    public List<SLTLevel> getLevelStructureList() {
-        return levelStructureList;
+    public List<SLTLevel> getLevels() {
+        return levels;
     }
 
     public int getIndex() {

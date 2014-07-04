@@ -13,11 +13,13 @@ public class SLTLevelBoard {
     private Integer cols;
     private SLTCell[][] cells;
     private Map<String, String> properties;
+    private Map<String, Integer> layers;
 
-    public SLTLevelBoard(SLTCell[][] cells, Map<String, String> properties) {
+    public SLTLevelBoard(SLTCell[][] cells, Map<String, Integer> layers, Map<String, String> properties) {
         this.cells = cells;
         cols = cells.length;
         rows = cells[0].length;
+        this.layers = layers;
         this.properties = properties;
     }
 
@@ -35,5 +37,9 @@ public class SLTLevelBoard {
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    public Map<String, Integer> getLayers() {
+        return layers;
     }
 }

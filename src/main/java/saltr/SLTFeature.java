@@ -11,40 +11,28 @@ import java.util.Map;
 public class SLTFeature {
     private String token;
     private Map<String, String> properties;
-    private Map<String, String> defaultProperties;
+    private Boolean required;
 
-    public SLTFeature(String token, Map<String, String> properties) {
+    public SLTFeature(String token, Map<String, String> properties, Boolean required) {
         this.token = token;
         this.properties = properties;
-    }
-
-    public SLTFeature(String token, Map<String, String> properties, Map<String, String> defaultProperties) {
-        this.token = token;
-        this.properties = properties;
-        this.defaultProperties = defaultProperties;
+        this.required = required;
     }
 
     public String getToken() {
         return token;
     }
 
-    public Map<String, String> getDefaultProperties() {
-        return defaultProperties;
-    }
-
     public Map<String, String> getProperties() {
-        return properties == null ? defaultProperties : properties;
+        return properties;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public Boolean getRequired() {
+        return required;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public void setDefaultProperties(Map<String, String> defaultProperties) {
-        this.defaultProperties = defaultProperties;
+    @Override
+    public String toString() {
+        return "[SALTR] Feature { token : " + token + ", value : " + properties + "}";
     }
 }

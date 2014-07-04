@@ -24,109 +24,118 @@ public class SLTLevelBoardParser {
     }
 
     public static SLTLevelBoard parseLevelBoard(SLTResponseBoard boardNode, SLTLevelSettings levelSettings) {
-        Map<String, String> boardProperties = null;
-        SLTCell[][] cells = parseBoardCells(boardNode, levelSettings);
+        Map<String, String> boardProperties = new HashMap<>();
         if (boardNode.getProperties() != null && boardNode.getProperties().getBoard() != null) {
             boardProperties = boardNode.getProperties().getBoard();
         }
-        return new SLTLevelBoard(cells, boardProperties);
-    }
 
-    private static SLTCell[][] parseBoardCells(SLTResponseBoard boardNode, SLTLevelSettings levelSettings) {
-        SLTCell[][] cells = new SLTCell[boardNode.getCols()][boardNode.getRows()];
-        createEmptyBoard(cells, boardNode);
-        Map<String, SLTCompositeInfo> composites = parseComposites(boardNode.getComposites(), cells, levelSettings);
-        List<SLTChunk> boardChunks = parseChunks(boardNode.getChunks(), cells, levelSettings);
-        generateComposites(composites);
-        generateChunks(boardChunks);
+        SLTCell[][] cells = new SLTCell[][]{};
+        initializeCells(cells, boardNode);
 
-        return cells;
-    }
-
-    private static void generateChunks(List<SLTChunk> chunks) {
-        for (SLTChunk chunk : chunks) {
-            chunk.generate();
+        Map<String, Integer> layers = new HashMap<>();
+        int index = 0;
+        for (SLTResponseBoardLayer layerNode : boardNode.getLayers()) {
+            SLTLevelBoardLayer layer = new SLTLevelBoardLayer(layerNode.getLayerId(), index++, layerNode.getFixedAssets(),
+                    layerNode.getChunks());
+            parseLayer(layer, cells, levelSettings);
+            layers.put(layer.getLayerId(), layer.getLayerIndex());
         }
+
+        return new SLTLevelBoard(cells, layers, boardProperties);
     }
 
-    private static void generateComposites(Map<String, SLTCompositeInfo> composites) {
-        for (Map.Entry<String, SLTCompositeInfo> entry : composites.entrySet()) {
-            entry.getValue().generate();
+    private static void parseLayer(SLTLevelBoardLayer layer, SLTCell[][] cells, SLTLevelSettings levelSettings) {
+        parseFixedAssets(layer, cells, levelSettings);
+        parseChunks(layer, cells, levelSettings);
+    }
+
+    private static void initializeCells(SLTCell[][] cells, SLTResponseBoard boardNode) {
+        List<List<Integer>> blockedCells;
+        if (boardNode.getBlockedCells() != null && !boardNode.getBlockedCells().isEmpty()) {
+            blockedCells = boardNode.getBlockedCells();
         }
-    }
+        else {
+            blockedCells = new ArrayList<>();
+        }
 
-    private static void createEmptyBoard(SLTCell[][] board, SLTResponseBoard boardNode) {
-        List<List<Integer>> blockedCells = boardNode.getBlockedCells() != null ? boardNode.getBlockedCells() : new ArrayList<List<Integer>>();
-        List<SLTResponseCustomPropertyCell> cellProperties = boardNode.getProperties() != null && boardNode.getProperties().getCell() != null
-                ? boardNode.getProperties().getCell() : new ArrayList<SLTResponseCustomPropertyCell>();
-        int length;
-        int cols = board.length;
-        for (int j = 0; j < cols; ++j) {
-            int rows = board[j].length;
-            for (int i = 0; i < rows; ++i) {
-                SLTCell cell = new SLTCell(j, i);
-                board[j][i] = cell;
-                length = cellProperties.size();
-                for (int n = 0; n < length; n++) {
-                    SLTResponseCustomPropertyCell property = cellProperties.get(n);
-                    if (property.getCoords().get(0).equals(j) && property.getCoords().get(1).equals(1)) {
-                        cell.setProperties(property.getValue());
-                        break;
-                    }
-                }
-                length = blockedCells.size();
-                for (int n = 0; n < length; n++) {
-                    List<Integer> blockedCell = blockedCells.get(n);
-                    if (blockedCell.get(0).equals(j) && blockedCell.get(1).equals(i)) {
-                        cell.setIsBocked(true);
-                        break;
-                    }
-                }
+        List<SLTResponseBoardPropertyCell> cellProperties;
+        if (boardNode.getProperties() != null && boardNode.getProperties().getCell() != null) {
+            cellProperties = boardNode.getProperties().getCell();
+        }
+        else {
+            cellProperties = new ArrayList<>();
+        }
+
+        int rows = cells.length;
+        int cols = cells[0].length;
+
+        for (int i = 0; i < cols; ++i) {
+            for (int j = 0; j < rows; ++j) {
+                SLTCell cell = new SLTCell(i, j);
+                cells[i][j] = cell;
+            }
+        }
+
+        //assigning cell properties
+        for (int p = 0, pLen = cellProperties.size(); p < pLen; ++p) {
+            SLTResponseBoardPropertyCell property = cellProperties.get(p);
+            SLTCell cell2 = cells[property.getCoords().get(0)][property.getCoords().get(1)];
+            if (cell2 != null) {
+                cell2.setProperties(property.getValue());
+            }
+        }
+
+        //blocking cells
+        for (int b = 0, bLen = blockedCells.size(); b < bLen; ++b) {
+            List<Integer> blockedCell = blockedCells.get(b);
+            SLTCell cell3 = cells[blockedCell.get(0)][blockedCell.get(1)];
+            ;
+            if (cell3 != null) {
+                cell3.setIsBlocked(true);
             }
         }
     }
 
-    private static List<SLTChunk> parseChunks(List<SLTResponseBoardChunk> chunkNodes, SLTCell[][] cellMatrix, SLTLevelSettings levelSettings) {
-        List<SLTChunk> chunks = new ArrayList<>();
-        List<List<Integer>> cellNodes;
-        List<SLTCell> chunkCells;
-        List<SLTResponseBoardChunkAsset> assetNodes;
-        List<SLTChunkAssetInfo> chunkAssetInfoList;
-        SLTChunk chunk;
-        for (SLTResponseBoardChunk chunkNode : chunkNodes) {
-            cellNodes = chunkNode.getCells();
-            chunkCells = new ArrayList<>();
+    private static void parseFixedAssets(SLTLevelBoardLayer layer, SLTCell[][] cells, SLTLevelSettings levelSettings) {
+        List<SLTResponseBoardFixedAsset> fixedAssetsNode = layer.getFixedAssetsNodes();
+        Map<String, SLTAsset> assetMap = levelSettings.getAssetMap();
+        Map<String, String> stateMap = levelSettings.getStateMap();
+
+        for (int i = 0, iLen = fixedAssetsNode.size(); i < iLen; ++i) {
+            SLTResponseBoardFixedAsset fixedAsset = fixedAssetsNode.get(i);
+            SLTAsset asset = assetMap.get(fixedAsset.getAssetId());
+            String state = stateMap.get(fixedAsset.getStateId());
+            int[][] cellPositions = fixedAsset.getCells();
+
+            for (int j = 0, jLen = cellPositions.length; j < jLen; ++j) {
+                int[] position = cellPositions[j];
+                SLTCell cell = cells[position[0]][position[1]];
+                cell.setAssetInstance(layer.getLayerId(), layer.getLayerIndex(), new SLTAssetInstance(asset.getToken(), state, asset.getProperties()));
+            }
+        }
+    }
+
+    private static void parseChunks(SLTLevelBoardLayer layer, SLTCell[][] cellMatrix, SLTLevelSettings levelSettings) {
+        List<SLTResponseBoardChunk> chunkNodes = layer.getChunkNodes();
+        for (int i = 0, len = chunkNodes.size(); i < len; i++) {
+            SLTResponseBoardChunk chunkNode = chunkNodes.get(i);
+            List<List<Integer>> cellNodes = chunkNode.getCells();
+            List<SLTCell> chunkCells = new ArrayList<>();
             for (List<Integer> cellNode : cellNodes) {
                 chunkCells.add(cellMatrix[cellNode.get(0)][cellNode.get(1)]);
             }
 
-            assetNodes = chunkNode.getAssets();
-            chunkAssetInfoList = new ArrayList<>();
+            List<SLTResponseBoardChunkAsset> assetNodes = chunkNode.getAssets();
+            List<SLTChunkAssetRule> chunkAssetRules = new ArrayList<>();
             for (SLTResponseBoardChunkAsset assetNode : assetNodes) {
-                chunkAssetInfoList.add(new SLTChunkAssetInfo(assetNode.getAssetId(), assetNode.getCount(), assetNode.getStateId()));
+                chunkAssetRules.add(new SLTChunkAssetRule(assetNode.getAssetId(), assetNode.getStateId(), assetNode.getDistributionType(), assetNode.getDistributionValue()));
             }
-
-            chunk = new SLTChunk(chunkCells, chunkAssetInfoList, levelSettings);
-            chunks.add(chunk);
+            new SLTChunk(layer, chunkCells, chunkAssetRules, levelSettings);
         }
-        return chunks;
-    }
-
-
-    private static Map<String, SLTCompositeInfo> parseComposites(List<SLTResponseBoardCompositeAsset> compositeNodes, SLTCell[][] cellMatrix, SLTLevelSettings levelSettings) {
-        SLTCompositeInfo compositeInfo;
-        Map<String, SLTCompositeInfo> compositesMap = new HashMap<>();
-        for (SLTResponseBoardCompositeAsset compositeNode : compositeNodes) {
-            List<Integer> cellPosition = compositeNode.getCell() != null ? compositeNode.getCell() : compositeNode.getPosition();
-            compositeInfo = new SLTCompositeInfo(compositeNode.getAssetId(), compositeNode.getStateId(),
-                    cellMatrix[cellPosition.get(1)][cellPosition.get(0)], levelSettings);
-            compositesMap.put(compositeInfo.getAssetId(), compositeInfo);
-        }
-        return compositesMap;
     }
 
     public static SLTLevelSettings parseLevelSettings(SLTResponseLevelData rootNode) {
-        return new SLTLevelSettings(parseBoardAssets(rootNode.getAssets()), rootNode.getKeySets(), rootNode.getAssetStates());
+        return new SLTLevelSettings(parseBoardAssets(rootNode.getAssets()), rootNode.getAssetStates());
     }
 
     private static Map<String, SLTAsset> parseBoardAssets(Map<String, SLTResponseAsset> assetNodes) {
@@ -138,11 +147,20 @@ public class SLTLevelBoardParser {
     }
 
     private static SLTAsset parseAsset(SLTResponseAsset assetNode) {
-        String type = assetNode.getType() != null ? assetNode.getType() : assetNode.getType_key();
-        if (assetNode.getCells() != null || assetNode.getCellInfos() != null) { /*if asset is composite asset*/
-            List<List<Integer>> cellInfos = assetNode.getCellInfos() != null ? assetNode.getCellInfos() : assetNode.getCells();
-            return new SLTCompositeAsset(cellInfos, type, assetNode.getKeys());
+        String token = null;
+        Object properties = null;
+
+        if (assetNode.getToken() != null) {
+            token = assetNode.getToken();
         }
-        return new SLTAsset(type, assetNode.getKeys());
+        else if (assetNode.getType() != null) {
+            token = assetNode.getType();
+        }
+
+        if (assetNode.getProperties() != null) {
+            properties = assetNode.getProperties();
+        }
+
+        return new SLTAsset(token, properties);
     }
 }

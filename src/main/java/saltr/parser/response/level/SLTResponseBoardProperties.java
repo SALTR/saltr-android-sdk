@@ -9,9 +9,9 @@ package saltr.parser.response.level;
 import java.util.List;
 import java.util.Map;
 
-public class SLTResponseCustomProperties {
+public class SLTResponseBoardProperties {
     private Map<String, String> board;
-    private List<SLTResponseCustomPropertyCell> cell;
+    private List<SLTResponseBoardPropertyCell> cell;
 
     public Map<String, String> getBoard() {
         return board;
@@ -21,11 +21,11 @@ public class SLTResponseCustomProperties {
         this.board = board;
     }
 
-    public List<SLTResponseCustomPropertyCell> getCell() {
+    public List<SLTResponseBoardPropertyCell> getCell() {
         return cell;
     }
 
-    public void setCell(List<SLTResponseCustomPropertyCell> cell) {
+    public void setCell(List<SLTResponseBoardPropertyCell> cell) {
         this.cell = cell;
     }
 }

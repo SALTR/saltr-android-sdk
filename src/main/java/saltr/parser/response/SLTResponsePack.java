@@ -15,7 +15,7 @@ public class SLTResponsePack implements Serializable {
     private String token;
     private Integer order;
     private Integer index;
-    private List<SLTResponseLevel> levelList;
+    private List<SLTResponseLevel> levels;
 
     public Integer getIndex() {
         return index;
@@ -57,11 +57,11 @@ public class SLTResponsePack implements Serializable {
         this.order = order;
     }
 
-    public List<SLTResponseLevel> getLevelList() {
-        return levelList;
+    public List<SLTResponseLevel> getLevels() {
+        return levels;
     }
 
-    public void setLevelList(List<SLTResponseLevel> levelList) {
-        this.levelList = levelList;
+    public void setLevels(List<SLTResponseLevel> levels) {
+        this.levels = levels;
     }
 }

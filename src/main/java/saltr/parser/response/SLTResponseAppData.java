@@ -16,8 +16,17 @@ public class SLTResponseAppData implements Serializable {
     private List<SLTResponseFeature> featureList;
     private List<SLTResponseFeature> features;
     private List<SLTResponseExperiment> experimentInfo;
+    private List<SLTResponseExperiment> experiments;
     private UUID saltId;
     private UUID saltrUserId;
+
+    public List<SLTResponseExperiment> getExperiments() {
+        return experiments;
+    }
+
+    public void setExperiments(List<SLTResponseExperiment> experiments) {
+        this.experiments = experiments;
+    }
 
     public List<SLTResponseFeature> getFeatures() {
         return features;

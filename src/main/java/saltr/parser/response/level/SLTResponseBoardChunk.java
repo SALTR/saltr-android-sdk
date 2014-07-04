@@ -9,15 +9,15 @@ package saltr.parser.response.level;
 import java.util.List;
 
 public class SLTResponseBoardChunk {
-    private String chunkId;
+    private Long chunkId;
     private List<SLTResponseBoardChunkAsset> assets;
     private List<List<Integer>> cells;
 
-    public String getChunkId() {
+    public Long getChunkId() {
         return chunkId;
     }
 
-    public void setChunkId(String chunkId) {
+    public void setChunkId(Long chunkId) {
         this.chunkId = chunkId;
     }
 

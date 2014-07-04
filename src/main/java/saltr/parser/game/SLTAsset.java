@@ -7,23 +7,23 @@
 package saltr.parser.game;
 
 public class SLTAsset {
-    private Object keys;
-    private String type;
+    private Object properties;
+    private String token;
 
-    public SLTAsset(String type, Object keys) {
-        this.type = type;
-        this.keys = keys;
+    public SLTAsset(String token, Object properties) {
+        this.token = token;
+        this.properties = properties;
     }
 
-    public Object getKeys() {
-        return keys;
+    public Object getProperties() {
+        return properties;
     }
 
-    public String getType() {
-        return type;
+    public String getToken() {
+        return token;
     }
 
     public String toString() {
-        return "[Asset] type: " + type + ", " + " keys: " + keys;
+        return "[Asset] token: " + token + ", " + " properties: " + properties;
     }
 }
