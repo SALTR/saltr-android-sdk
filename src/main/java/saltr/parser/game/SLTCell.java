@@ -6,6 +6,7 @@
  */
 package saltr.parser.game;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SLTCell implements Cloneable {
@@ -13,45 +14,16 @@ public class SLTCell implements Cloneable {
     private int col;
     private Map<String, String> properties;
     private Boolean isBlocked;
-    private Map<Object, SLTAssetInstance> instancesByLayerId;
-    private Map<Object, SLTAssetInstance> instancesByLayerIndex;
+    private Map<String, SLTAssetInstance> instancesByLayerId;
+    private Map<String, SLTAssetInstance> instancesByLayerIndex;
 
     public SLTCell(int row, int col) {
         this.row = row;
         this.col = col;
+        properties = new HashMap<>();
         isBlocked = false;
-    }
-
-    public Map<Object, SLTAssetInstance> getInstancesByLayerId() {
-        return instancesByLayerId;
-    }
-
-    public void setInstancesByLayerId(Map<Object, SLTAssetInstance> instancesByLayerId) {
-        this.instancesByLayerId = instancesByLayerId;
-    }
-
-    public Map<Object, SLTAssetInstance> getInstancesByLayerIndex() {
-        return instancesByLayerIndex;
-    }
-
-    public void setInstancesByLayerIndex(Map<Object, SLTAssetInstance> instancesByLayerIndex) {
-        this.instancesByLayerIndex = instancesByLayerIndex;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public Boolean getIsBlocked() {
-        return isBlocked;
-    }
-
-    public void setIsBlocked(Boolean isBlocked) {
-        this.isBlocked = isBlocked;
+        instancesByLayerId = new HashMap<>();
+        instancesByLayerIndex = new HashMap<>();
     }
 
     public int getRow() {
@@ -70,11 +42,48 @@ public class SLTCell implements Cloneable {
         this.col = col;
     }
 
+    public Boolean getIsBlocked() {
+        return isBlocked;
+    }
+
+    public void setIsBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public SLTAssetInstance getAssetInstanceByLayerId(String layerId) {
+        return instancesByLayerId.get(layerId);
+    }
+
+    public SLTAssetInstance getAssetInstanceByLayerIndex(int layerIndex) {
+        return instancesByLayerIndex.get(layerIndex);
+    }
+
+    public void setInstancesByLayerId(Map<String,SLTAssetInstance> instancesByLayerId) {
+        this.instancesByLayerId = instancesByLayerId;
+    }
+
+    public void setInstancesByLayerIndex(Map<String,SLTAssetInstance> instancesByLayerIndex) {
+        this.instancesByLayerIndex = instancesByLayerIndex;
+    }
+
     public void setAssetInstance(String layerId, int layerIndex, SLTAssetInstance assetInstance) {
         if (!isBlocked) {
             instancesByLayerId.put(layerId, assetInstance);
-            instancesByLayerId.put(layerIndex, assetInstance);
+            instancesByLayerIndex.put(String.valueOf(layerIndex), assetInstance);
         }
+    }
+
+    public void removeAssetInstance(String layerId, int layerIndex) {
+        instancesByLayerId.remove(layerId);
+        instancesByLayerIndex.remove(String.valueOf(layerIndex));
     }
 
     @Override

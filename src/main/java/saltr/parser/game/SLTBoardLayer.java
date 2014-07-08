@@ -6,21 +6,13 @@
  */
 package saltr.parser.game;
 
-import saltr.parser.response.level.SLTResponseBoardChunk;
-
-import java.util.List;
-
-public class SLTLevelBoardLayer {
+public class SLTBoardLayer {
     private String layerId;
     private int layerIndex;
-    private List fixedAssetsNodes;
-    private List<SLTResponseBoardChunk> chunkNodes;
 
-    public SLTLevelBoardLayer(String layerId, int layerIndex, List fixedAssetsNodes, List<SLTResponseBoardChunk> chunkNodes) {
+    public SLTBoardLayer(String layerId, int layerIndex) {
         this.layerId = layerId;
         this.layerIndex = layerIndex;
-        this.fixedAssetsNodes = fixedAssetsNodes;
-        this.chunkNodes = chunkNodes;
     }
 
     public String getLayerId() {
@@ -29,13 +21,5 @@ public class SLTLevelBoardLayer {
 
     public int getLayerIndex() {
         return layerIndex;
-    }
-
-    public List getFixedAssetsNodes() {
-        return fixedAssetsNodes;
-    }
-
-    public List<SLTResponseBoardChunk> getChunkNodes() {
-        return chunkNodes;
     }
 }

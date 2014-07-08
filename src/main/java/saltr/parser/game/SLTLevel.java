@@ -16,14 +16,12 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private String contentUrl;
     private int index;
     private Object properties;
-    private Map<String, SLTLevelBoard> boards;
+    private Map<String, SLTMatchBoard> boards;
     private Boolean contentReady;
     private String version;
-    private SLTResponseLevelData rootNode;
-    private SLTLevelSettings levelSettings;
-    private Map<String, SLTResponseBoard> boardsNode;
     private int packIndex;
     private int localIndex;
+    private Map<String, SLTAsset> assetMap;
 
     public SLTLevel(String id, int index, int localIndex, int packIndex, String contentUrl, Object properties, String version) {
         this.id = id;
@@ -64,35 +62,49 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return packIndex;
     }
 
-    public SLTLevelBoard getBoard(String id) {
+    public SLTMatchBoard getBoard(String id) {
         return boards.get(id);
     }
 
     public void updateContent(SLTResponseLevelData rootNode) throws Exception {
-        this.rootNode = rootNode;
-
+        Map<String, SLTResponseBoard> boardsNode = null;
         if (rootNode.getBoards() != null) {
             boardsNode = rootNode.getBoards();
         }
         else {
-            throw new Exception("Boards node is not found.");
+            throw new Exception("[SALTR: ERROR] Level content's 'boards' node can not be found.");
         }
 
         properties = rootNode.getProperties();
-        levelSettings = SLTLevelBoardParser.parseLevelSettings(rootNode);
-        generateAllBoards();
+
+        try {
+            assetMap = SLTLevelParser.parseLevelAssets(rootNode);
+        }
+        catch (Exception e) {
+            throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+        }
+
+        try {
+            boards = SLTLevelParser.parseLevelContent(boardsNode, assetMap);
+        }
+        catch (Exception e) {
+            throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+        }
+
+        regenerateAllBoards();
         contentReady = true;
     }
 
-    public void generateAllBoards() {
-        if (boardsNode != null) {
-            boards = SLTLevelBoardParser.parseLevelBoards(boardsNode, levelSettings);
+    public void regenerateAllBoards() {
+        for (Map.Entry<String, SLTMatchBoard> entry : boards.entrySet()) {
+            entry.getValue().regenerateChunks();
         }
     }
 
-    public void generateBoard(String boardId) {
-        if (boardsNode != null && boardsNode.get(boardId) != null) {
-            boards.put(boardId, SLTLevelBoardParser.parseLevelBoard(boardsNode.get(boardId), levelSettings));
+    public void regenerateBoard(String boardId) {
+        if (boards != null && boards.get(boardId) != null) {
+            SLTMatchBoard board = boards.get(boardId);
+            board.regenerateChunks();
         }
     }
 

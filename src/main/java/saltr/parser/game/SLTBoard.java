@@ -7,27 +7,22 @@
 package saltr.parser.game;
 
 import java.util.List;
+import java.util.Map;
 
-public class SLTAssetInstance {
-    protected List<SLTAssetState> states;
-    protected Object properties;
-    protected String token;
+public class SLTBoard {
+    private Map<String, String> properties;
+    protected List<SLTBoardLayer> layers;
 
-    public SLTAssetInstance(String token, List<SLTAssetState> states, Object properties) {
-        this.states = states;
+    public SLTBoard(List<SLTBoardLayer> layers, Map<String, String> properties) {
         this.properties = properties;
-        this.token = token;
+        this.layers = layers;
     }
 
-    public List<SLTAssetState> getStates() {
-        return states;
-    }
-
-    public Object getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public String getToken() {
-        return token;
+    public List<SLTBoardLayer> getLayers() {
+        return layers;
     }
 }

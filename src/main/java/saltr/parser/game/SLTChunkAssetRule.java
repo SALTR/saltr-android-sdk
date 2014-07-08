@@ -6,15 +6,17 @@
  */
 package saltr.parser.game;
 
+import java.util.List;
+
 public class SLTChunkAssetRule {
     private String assetId;
-    private String stateId;
+    private List<String> stateIds;
     private String distributionType;
     private int distributionValue;
 
-    public SLTChunkAssetRule(String assetId, String stateId, String distributionType, int distributionValue) {
+    public SLTChunkAssetRule(String assetId, String distributionType, int distributionValue, List<String> stateIds) {
         this.assetId = assetId;
-        this.stateId = stateId;
+        this.stateIds = stateIds;
         this.distributionType = distributionType;
         this.distributionValue = distributionValue;
     }
@@ -23,31 +25,15 @@ public class SLTChunkAssetRule {
         return assetId;
     }
 
-    public void setAssetId(String assetId) {
-        this.assetId = assetId;
-    }
-
-    public String getStateId() {
-        return stateId;
-    }
-
-    public void setStateId(String stateId) {
-        this.stateId = stateId;
+    public List<String> getStateIds() {
+        return stateIds;
     }
 
     public String getDistributionType() {
         return distributionType;
     }
 
-    public void setDistributionType(String distributionType) {
-        this.distributionType = distributionType;
-    }
-
     public int getDistributionValue() {
         return distributionValue;
-    }
-
-    public void setDistributionValue(int distributionValue) {
-        this.distributionValue = distributionValue;
     }
 }

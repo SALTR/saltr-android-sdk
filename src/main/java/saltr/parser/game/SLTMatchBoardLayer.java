@@ -6,28 +6,26 @@
  */
 package saltr.parser.game;
 
+import saltr.parser.response.level.SLTResponseBoardChunk;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class SLTAssetInstance {
-    protected List<SLTAssetState> states;
-    protected Object properties;
-    protected String token;
+public class SLTMatchBoardLayer extends SLTBoardLayer {
+    private List<SLTChunk> chunks;
 
-    public SLTAssetInstance(String token, List<SLTAssetState> states, Object properties) {
-        this.states = states;
-        this.properties = properties;
-        this.token = token;
+    public SLTMatchBoardLayer(String layerId, int layerIndex) {
+        super(layerId, layerIndex);
+        this.chunks = new ArrayList<>();
     }
 
-    public List<SLTAssetState> getStates() {
-        return states;
+    public void regenerateChunks() {
+        for (SLTChunk chunk : chunks) {
+            chunk.generateContent();
+        }
     }
 
-    public Object getProperties() {
-        return properties;
-    }
-
-    public String getToken() {
-        return token;
+    public void addChunk(SLTChunk chunk) {
+        chunks.add(chunk);
     }
 }

@@ -6,12 +6,13 @@
  */
 package saltr.parser.response.level;
 
+import java.util.List;
 import java.util.Set;
 
 public class SLTResponseBoardFixedAsset {
     private Long assetId;
     private Long stateId;
-    private Set<Long> states;
+    private List<String> states;
     private int[][] cells;
 
     public int[][] getCells() {
@@ -38,11 +39,11 @@ public class SLTResponseBoardFixedAsset {
         this.stateId = stateId;
     }
 
-    public Set<Long> getStates() {
+    public List<String> getStates() {
         return states;
     }
 
-    public void setStates(Set<Long> states) {
+    public void setStates(List<String> states) {
         this.states = states;
     }
 

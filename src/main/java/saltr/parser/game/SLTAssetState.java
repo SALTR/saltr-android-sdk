@@ -6,23 +6,20 @@
  */
 package saltr.parser.game;
 
+public class SLTAssetState {
+    private String token;
+    private Object properties;
 
-import java.util.Map;
-
-public class SLTLevelSettings {
-    private Map<String, SLTAsset> assetMap;
-    private Map<String, String> stateMap;
-
-    public SLTLevelSettings(Map<String, SLTAsset> assetMap, Map<String, String> stateMap) {
-        this.assetMap = assetMap;
-        this.stateMap = stateMap;
+    public SLTAssetState(String token, Object properties) {
+        this.token = token;
+        this.properties = properties;
     }
 
-    public Map<String, SLTAsset> getAssetMap() {
-        return assetMap;
+    public String getToken() {
+        return token;
     }
 
-    public Map<String, String> getStateMap() {
-        return stateMap;
+    public Object getProperties() {
+        return properties;
     }
 }

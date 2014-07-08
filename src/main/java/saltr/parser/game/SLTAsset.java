@@ -6,13 +6,19 @@
  */
 package saltr.parser.game;
 
-public class SLTAsset {
-    private Object properties;
-    private String token;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    public SLTAsset(String token, Object properties) {
-        this.token = token;
+public class SLTAsset {
+    protected Object properties;
+    protected Map<String, SLTAssetState> stateMap;
+    protected String token;
+
+    public SLTAsset(String token, Map<String, SLTAssetState> stateMap, Object properties) {
         this.properties = properties;
+        this.stateMap = stateMap;
+        this.token = token;
     }
 
     public Object getProperties() {
@@ -25,5 +31,20 @@ public class SLTAsset {
 
     public String toString() {
         return "[Asset] token: " + token + ", " + " properties: " + properties;
+    }
+
+    public SLTAssetInstance getInstance(List<String> stateIds) {
+        return new SLTAssetInstance(token, getInstanceStates(stateIds), properties);
+    }
+
+    protected List<SLTAssetState> getInstanceStates(List<String> stateIds) {
+        List<SLTAssetState> states = new ArrayList<>();
+        for (String stateId : stateIds) {
+            SLTAssetState state = stateMap.get(stateId);
+            if (state != null) {
+                states.add(state);
+            }
+        }
+        return states;
     }
 }

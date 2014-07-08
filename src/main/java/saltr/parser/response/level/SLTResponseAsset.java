@@ -13,7 +13,7 @@ public class SLTResponseAsset {
     private Map<String, Integer> keys;
     private String type;
     private String token;
-    private List<Long> states;
+    private List<SLTResponseBoardChunkAssetState> states;
     private Object cells;
     private Object properties;
 
@@ -49,19 +49,19 @@ public class SLTResponseAsset {
         this.type = type;
     }
 
-    public List<Long> getStates() {
-        return states;
-    }
-
-    public void setStates(List<Long> states) {
-        this.states = states;
-    }
-
     public Object getCells() {
         return cells;
     }
 
     public void setCells(Object cells) {
         this.cells = cells;
+    }
+
+    public List<SLTResponseBoardChunkAssetState> getStates() {
+        return states;
+    }
+
+    public void setStates(List<SLTResponseBoardChunkAssetState> states) {
+        this.states = states;
     }
 }

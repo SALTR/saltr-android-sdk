@@ -105,10 +105,10 @@ public class SLTSaltr {
 
     public List<SLTLevel> getAllLevels() {
         List<SLTLevel> allLevels = new ArrayList<>();
-        for (int i = 0, len = levelPacks.size(); i < len; ++i) {
-            List<SLTLevel> levels = levelPacks.get(i).getLevels();
-            for (int j = 0, len2 = levels.size(); j < len2; ++j) {
-                allLevels.add(levels.get(j));
+        for (SLTLevelPack pack : levelPacks) {
+            List<SLTLevel> levels = pack.getLevels();
+            for (SLTLevel level : levels) {
+                allLevels.add(level);
             }
         }
 
@@ -117,8 +117,8 @@ public class SLTSaltr {
 
     public int getAllLevelsCount() {
         int count = 0;
-        for (int i = 0, len = levelPacks.size(); i < len; ++i) {
-            count += levelPacks.get(i).getLevels().size();
+        for (SLTLevelPack pack : levelPacks) {
+            count += pack.getLevels().size();
         }
 
         return count;
@@ -126,14 +126,14 @@ public class SLTSaltr {
 
     public SLTLevel getLevelByGlobalIndex(int index) {
         int levelsSum = 0;
-        for (int i = 0, len = levelPacks.size(); i < len; ++i) {
-            int packLength = levelPacks.get(i).getLevels().size();
+        for (SLTLevelPack pack : levelPacks) {
+            int packLength = pack.getLevels().size();
             if (index >= levelsSum + packLength) {
                 levelsSum += packLength;
             }
             else {
                 int localIndex = index - levelsSum;
-                return levelPacks.get(i).getLevels().get(localIndex);
+                return pack.getLevels().get(localIndex);
             }
         }
         return null;
@@ -141,13 +141,13 @@ public class SLTSaltr {
 
     public SLTLevelPack getPackByLevelGlobalIndex(int index) {
         int levelsSum = 0;
-        for (int i = 0, len = levelPacks.size(); i < len; ++i) {
-            int packLength = levelPacks.get(i).getLevels().size();
+        for (SLTLevelPack pack : levelPacks) {
+            int packLength = pack.getLevels().size();
             if (index >= levelsSum + packLength) {
                 levelsSum += packLength;
             }
             else {
-                return levelPacks.get(i);
+                return pack;
             }
         }
         return null;

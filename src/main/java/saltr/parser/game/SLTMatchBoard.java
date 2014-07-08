@@ -6,21 +6,19 @@
  */
 package saltr.parser.game;
 
+import java.util.List;
 import java.util.Map;
 
-public class SLTLevelBoard {
+public class SLTMatchBoard extends SLTBoard {
     private Integer rows;
     private Integer cols;
     private SLTCell[][] cells;
-    private Map<String, String> properties;
-    private Map<String, Integer> layers;
 
-    public SLTLevelBoard(SLTCell[][] cells, Map<String, Integer> layers, Map<String, String> properties) {
+    public SLTMatchBoard(SLTCell[][] cells, List<SLTBoardLayer> layers, Map<String, String> properties) {
+        super(layers, properties);
         this.cells = cells;
         cols = cells.length;
         rows = cells[0].length;
-        this.layers = layers;
-        this.properties = properties;
     }
 
     public Integer getRows() {
@@ -35,11 +33,10 @@ public class SLTLevelBoard {
         return cells;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public Map<String, Integer> getLayers() {
-        return layers;
+    public void regenerateChunks() {
+        for (SLTBoardLayer boardLayer : layers) {
+            SLTMatchBoardLayer layer = (SLTMatchBoardLayer) boardLayer;
+            layer.regenerateChunks();
+        }
     }
 }

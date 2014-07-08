@@ -4,30 +4,27 @@
  * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
  * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
  */
-package saltr.parser.game;
+package saltr.parser.response.level;
 
 import java.util.List;
 
-public class SLTAssetInstance {
-    protected List<SLTAssetState> states;
-    protected Object properties;
-    protected String token;
+public class SLTResponseBoardChunkAssetState {
+    private String token;
+    private Object properties;
 
-    public SLTAssetInstance(String token, List<SLTAssetState> states, Object properties) {
-        this.states = states;
-        this.properties = properties;
-        this.token = token;
+    public String getToken() {
+        return token;
     }
 
-    public List<SLTAssetState> getStates() {
-        return states;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Object getProperties() {
         return properties;
     }
 
-    public String getToken() {
-        return token;
+    public void setProperties(Object properties) {
+        this.properties = properties;
     }
 }
