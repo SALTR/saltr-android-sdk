@@ -1,8 +1,5 @@
-/**
- * Copyright Teoken LLC. (c) 2013. All rights reserved.
- * Copying or usage of any piece of this source code without written notice from Teoken LLC is a major crime.
- * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
- * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
+/*
+ * Copyright (c) 2014 Plexonic Ltd
  */
 package saltr.parser.game;
 
@@ -66,11 +63,11 @@ public class SLTCell implements Cloneable {
         return instancesByLayerIndex.get(layerIndex);
     }
 
-    public void setInstancesByLayerId(Map<String,SLTAssetInstance> instancesByLayerId) {
+    public void setInstancesByLayerId(Map<String, SLTAssetInstance> instancesByLayerId) {
         this.instancesByLayerId = instancesByLayerId;
     }
 
-    public void setInstancesByLayerIndex(Map<String,SLTAssetInstance> instancesByLayerIndex) {
+    public void setInstancesByLayerIndex(Map<String, SLTAssetInstance> instancesByLayerIndex) {
         this.instancesByLayerIndex = instancesByLayerIndex;
     }
 

@@ -1,8 +1,5 @@
-/**
- * Copyright Teoken LLC. (c) 2013. All rights reserved.
- * Copying or usage of any piece of this source code without written notice from Teoken LLC is a major crime.
- * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
- * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
+/*
+ * Copyright (c) 2014 Plexonic Ltd
  */
 package saltr;
 
@@ -306,7 +303,8 @@ public class SLTSaltr {
 
         if (deviceId != null) {
             args.put("deviceId", deviceId);
-        } else {
+        }
+        else {
             throw new Exception("Field 'deviceId' is a required.");
         }
 
@@ -341,7 +339,8 @@ public class SLTSaltr {
 
         if (deviceId != null) {
             args.put("deviceId", deviceId);
-        } else {
+        }
+        else {
             throw new Error("Field 'deviceId' is a required.");
         }
 
@@ -449,7 +448,8 @@ public class SLTSaltr {
 
         if (deviceId != null) {
             args.put("deviceId", deviceId);
-        } else {
+        }
+        else {
             throw new Error("Field 'deviceId' is a required.");
         }
 

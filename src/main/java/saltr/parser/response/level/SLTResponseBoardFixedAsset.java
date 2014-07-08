@@ -1,13 +1,9 @@
-/**
- * Copyright Teoken LLC. (c) 2013. All rights reserved.
- * Copying or usage of any piece of this source code without written notice from Teoken LLC is a major crime.
- * Այս կոդը Թեոկեն ՍՊԸ ընկերության սեփականությունն է:
- * Առանց գրավոր թույլտվության այս կոդի պատճենահանումը կամ օգտագործումը քրեական հանցագործություն է:
+/*
+ * Copyright (c) 2014 Plexonic Ltd
  */
 package saltr.parser.response.level;
 
 import java.util.List;
-import java.util.Set;
 
 public class SLTResponseBoardFixedAsset {
     private Long assetId;
