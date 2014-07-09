@@ -10,7 +10,7 @@ public class SLTResponseAsset {
     private Map<String, Integer> keys;
     private String type;
     private String token;
-    private List<SLTResponseBoardChunkAssetState> states;
+    private Map<String, SLTResponseBoardChunkAssetState> states;
     private Object cells;
     private Object properties;
 
@@ -54,11 +54,11 @@ public class SLTResponseAsset {
         this.cells = cells;
     }
 
-    public List<SLTResponseBoardChunkAssetState> getStates() {
+    public Map<String, SLTResponseBoardChunkAssetState> getStates() {
         return states;
     }
 
-    public void setStates(List<SLTResponseBoardChunkAssetState> states) {
+    public void setStates(Map<String, SLTResponseBoardChunkAssetState> states) {
         this.states = states;
     }
 }

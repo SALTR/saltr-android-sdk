@@ -26,7 +26,7 @@ public class SLTLevelParser {
             boardProperties = boardNode.getProperties().getBoard();
         }
 
-        SLTCell[][] cells = new SLTCell[][]{};
+        SLTCell[][] cells = new SLTCell[boardNode.getCols()][boardNode.getRows()];
         initializeCells(cells, boardNode);
 
         List<SLTBoardLayer> layers = new ArrayList<>();
@@ -65,11 +65,8 @@ public class SLTLevelParser {
             cellProperties = new ArrayList<>();
         }
 
-        int rows = cells.length;
-        int cols = cells[0].length;
-
-        for (int i = 0; i < cols; ++i) {
-            for (int j = 0; j < rows; ++j) {
+        for (int i = 0; i < boardNode.getRows(); ++i) {
+            for (int j = 0; j < boardNode.getCols(); ++j) {
                 SLTCell cell = new SLTCell(i, j);
                 cells[i][j] = cell;
             }
@@ -152,12 +149,10 @@ public class SLTLevelParser {
         return new SLTAsset(token, statesMap, properties);
     }
 
-    private static Map<String, SLTAssetState> parseAssetStates(List<SLTResponseBoardChunkAssetState> stateNodes) {
+    private static Map<String, SLTAssetState> parseAssetStates(Map<String, SLTResponseBoardChunkAssetState> stateNodes) {
         Map<String, SLTAssetState> statesMap = new HashMap<>();
-        int index = 0;
-        for (SLTResponseBoardChunkAssetState state : stateNodes) {
-            statesMap.put(String.valueOf(index), parseAssetState(state));
-            index++;
+        for (Map.Entry<String, SLTResponseBoardChunkAssetState> entry : stateNodes.entrySet()) {
+            statesMap.put(entry.getKey(), parseAssetState(entry.getValue()));
         }
 
         return statesMap;

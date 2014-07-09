@@ -512,7 +512,8 @@ public class SLTSaltr {
     }
 
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
-        sltLevel.updateContent((SLTResponseLevelData) content);
+        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
+        sltLevel.updateContent(level);
         saltrHttpDataHandler.onSuccess(this);
     }
 
@@ -534,7 +535,7 @@ public class SLTSaltr {
         }
 
         if (data != null) {
-            levelContentLoadSuccessHandler(properties.getLevel(), gson.fromJson(data.toString(), SLTResponseLevelData.class));
+            levelContentLoadSuccessHandler(properties.getLevel(), data);
         }
         else {
             levelContentLoadFailHandler();
