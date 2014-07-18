@@ -3,9 +3,8 @@
  */
 package saltr;
 
-import saltr.parser.game.SLTLevel;
-import saltr.parser.game.SLTLevelPack;
-import saltr.parser.response.*;
+import saltr.game.SLTLevel;
+import saltr.game.SLTLevelPack;
 
 import java.util.*;
 
