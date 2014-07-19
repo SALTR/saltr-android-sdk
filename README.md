@@ -58,10 +58,10 @@ The SDK's library classes have the following packages:
 - saltr - main and root package for the library;
 - saltr.game - the game related classes contained here;
 - saltr.game.cavas2d - classes related to 2D games;
-- saltr.game.matching - classes related to matching or board based games;
 - saltr.game.repository - local data repository classes (implementation widely varies with the platform);
 - saltr.game.response - here are the set of classes that map with response data received from SALTR;
 - saltr.game.status - status classes representing warnings and error statuses withing library code;
+- saltr.game.matching - classes related to matching or board based games;
 
 
 4. DOCUMENTATION
