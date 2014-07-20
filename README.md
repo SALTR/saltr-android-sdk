@@ -3,7 +3,7 @@ SALTR Android SDK
 
 This is the README file of the SALTR Android SDK.
 
-To check out the project from GitHub:
+To clone the project from GitHub:
 <a href="https://github.com/plexonic/saltr-android-sdk.git">https://github.com/plexonic/saltr-android-sdk.git</a>
 
 To download the latest ZIP:
