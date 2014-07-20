@@ -33,7 +33,7 @@ public class SLT2DLevelParser extends SLTLevelParser {
         return boards;
     }
 
-    private SLT2DBoard parseLevelBoard(SLTResponseBoard boardNode, assetMap:Dictionary) {
+    /*private SLT2DBoard parseLevelBoard(SLTResponseBoard boardNode, assetMap:Dictionary) {
         var boardProperties:Object = {};
         if (boardNode.hasOwnProperty("properties") && boardNode.properties.hasOwnProperty("board")) {
             boardProperties = boardNode.properties.board;
@@ -51,5 +51,5 @@ public class SLT2DLevelParser extends SLTLevelParser {
         var height:Number = boardNode.hasOwnProperty("height") ? boardNode.height : 0;
 
         return new SLT2DBoard(width, height, layers, boardProperties);
-    }
+    }*/
 }

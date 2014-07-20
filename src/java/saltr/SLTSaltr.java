@@ -21,31 +21,35 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class SLTSaltr {
+    public static final String CLIENT = "AS3-Mobile";
+    public static final String API_VERSION = "1.0.1";
+    
     private static SLTSaltr saltr;
 
-    protected Gson gson;
+    private String socialId;
+    private String deviceId;
+    private boolean connected;
+    private String clientKey;
+    private String saltrUserId;
+    private boolean isLoading;
 
-    protected String socialId;
-    protected String deviceId;
-    protected boolean connected;
-    protected String clientKey;
-    protected String saltrUserId;
-    protected boolean isLoading;
+    private ISLTRepository repository;
 
-    protected ISLTRepository repository;
+    private Map<String, SLTFeature> activeFeatures;
+    private Map<String, SLTFeature> developerFeatures;
 
-    protected Map<String, SLTFeature> activeFeatures;
-    protected Map<String, SLTFeature> developerFeatures;
-    protected List<SLTLevelPack> levelPacks;
-    protected List<SLTExperiment> experiments;
+    private List<SLTExperiment> experiments;
+    private List<SLTLevelPack> levelPacks;
 
-    protected SLTDataHandler saltrHttpDataHandler;
+    private SLTDataHandler saltrHttpDataHandler;
 
-    private int requestIdleTimeout;
     private boolean devMode;
     private boolean started;
     private boolean useNoLevels;
     private boolean useNoFeatures;
+    private String levelType;
+
+    private Gson gson;
 
     private SLTSaltr(String clientKey, String deviceId, boolean useCache, ContextWrapper contextWrapper) {
         this.clientKey = clientKey;
@@ -58,7 +62,6 @@ public class SLTSaltr {
 
         devMode = false;
         started = false;
-        requestIdleTimeout = 0;
 
         activeFeatures = new HashMap<>();
         developerFeatures = new HashMap<>();
@@ -92,10 +95,6 @@ public class SLTSaltr {
         this.devMode = devMode;
     }
 
-    public void setRequestIdleTimeout(int requestIdleTimeout) {
-        this.requestIdleTimeout = requestIdleTimeout;
-    }
-
     public void setLevelPacks(List<SLTLevelPack> levelPacks) {
         this.levelPacks = levelPacks;
     }
@@ -119,6 +118,14 @@ public class SLTSaltr {
         }
 
         return count;
+    }
+
+    public List<SLTExperiment> getExperiments() {
+        return experiments;
+    }
+
+    public void setSocialId(String socialId) {
+        this.socialId = socialId;
     }
 
     public SLTLevel getLevelByGlobalIndex(int index) {
@@ -148,14 +155,6 @@ public class SLTSaltr {
             }
         }
         return null;
-    }
-
-    public List<SLTExperiment> getExperiments() {
-        return experiments;
-    }
-
-    public void setSocialId(String socialId) {
-        this.socialId = socialId;
     }
 
     public List<String> getActiveFeatureTokens() {
@@ -276,6 +275,9 @@ public class SLTSaltr {
     }
 
     public void addProperties(Object basicProperties, Object customProperties) throws Exception {
+        if (basicProperties == null && customProperties == null || saltrUserId == null) {
+            return;
+        }
 
         SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
         SLTHttpConnection connection = createAddPropConnection(basicProperties, customProperties);
@@ -328,8 +330,23 @@ public class SLTSaltr {
         RequestParams params = new RequestParams();
         params.put("args", gson.toJson(args));
         params.put("cmd", SLTConfig.CMD_ADD_PROPERTIES);
+        params.put("action", SLTConfig.CMD_ADD_PROPERTIES);
 
         return new SLTHttpConnection(SLTConfig.SALTR_API_URL, params);
+    }
+
+    protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
+        String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
+
+        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.LEVEL);
+        details.setLevel(level);
+
+        try {
+            SLTHttpConnection connection = new SLTHttpConnection(dataUrl);
+            connection.call(this, details);
+        } catch (Exception e) {
+            loadFromSaltrFailCallback(details);
+        }
     }
 
     private SLTHttpConnection createAppDataConnection(Object basicProperties, Object customProperties) throws Exception {
@@ -494,21 +511,6 @@ public class SLTSaltr {
     private Object loadLevelContentFromDisk(SLTLevel sltLevel) {
         String url = MessageFormat.format(SLTConfig.LOCAL_LEVEL_CONTENT_PACKAGE_URL_TEMPLATE, sltLevel.getPackIndex(), sltLevel.getLocalIndex());
         return repository.getObjectFromApplication(url);
-    }
-
-
-    protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
-        String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
-
-        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.LEVEL);
-        details.setLevel(level);
-
-        try {
-            SLTHttpConnection connection = new SLTHttpConnection(dataUrl);
-            connection.call(this, details);
-        } catch (Exception e) {
-            loadFromSaltrFailCallback(details);
-        }
     }
 
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {

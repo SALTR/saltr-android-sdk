@@ -3,25 +3,45 @@
  */
 package saltr.game;
 
+import saltr.game.canvas2d.SLT2DLevelParser;
 import saltr.response.level.SLTResponseBoard;
 import saltr.response.level.SLTResponseLevelData;
 
 import java.util.Map;
 
 public class SLTLevel implements Comparable<SLTLevel> {
+    protected Map<String, SLTBoard> boards;
+
     private String id;
-    private String contentUrl;
+    private String levelType;
     private int index;
-    private Object properties;
-    private Map<String, SLTMatchBoard> boards;
-    private Boolean contentReady;
-    private String version;
-    private int packIndex;
     private int localIndex;
+    private int packIndex;
+    private String contentUrl;
+    private Object properties;
+    private String version;
+
+    private Boolean contentReady;
     private Map<String, SLTAsset> assetMap;
 
-    public SLTLevel(String id, int index, int localIndex, int packIndex, String contentUrl, Object properties, String version) {
+    public static final String LEVEL_TYPE_NONE = "noLevels";
+    public static final String LEVEL_TYPE_MATCHING = "matching";
+    public static final String LEVEL_TYPE_2DCANVAS = "canvas2D";
+
+    public static SLTLevelParser getParser(String levelType) {
+        switch (levelType) {
+            case LEVEL_TYPE_MATCHING:
+                return SLTMatchingLevelParser.getInstance();
+            case LEVEL_TYPE_2DCANVAS:
+                return SLT2DLevelParser.getInstance();
+        }
+        return null;
+    }
+
+
+    public SLTLevel(String id, String levelType, int index, int localIndex, int packIndex, String contentUrl, Object properties, String version) {
         this.id = id;
+        this.levelType = levelType;
         this.index = index;
         this.localIndex = localIndex;
         this.packIndex = packIndex;
@@ -59,7 +79,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return packIndex;
     }
 
-    public SLTMatchBoard getBoard(String id) {
+    public SLTBoard getBoard(String id) {
         return boards.get(id);
     }
 
@@ -74,32 +94,41 @@ public class SLTLevel implements Comparable<SLTLevel> {
 
         properties = rootNode.getProperties();
 
-        try {
-            assetMap = SLTLevelParser.parseLevelAssets(rootNode);
-        } catch (Exception e) {
-            throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
-        }
+        SLTLevelParser parser = getParser(levelType);
 
-        try {
-            boards = SLTLevelParser.parseLevelContent(boardsNode, assetMap);
-        } catch (Exception e) {
-            throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
-        }
+        if (parser != null) {
+            try {
+                assetMap = SLTLevelParser.parseLevelAssets(rootNode);
+            } catch (Exception e) {
+                throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+            }
 
-        regenerateAllBoards();
-        contentReady = true;
+            try {
+                boards = SLTLevelParser.parseLevelContent(boardsNode, assetMap);
+            } catch (Exception e) {
+                throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+            }
+
+            if (boards != null) {
+                regenerateAllBoards();
+                contentReady = true;
+            }
+        }
+        else {
+            new SLTStatusLevelsParserMissing();
+        }
     }
 
     public void regenerateAllBoards() {
-        for (Map.Entry<String, SLTMatchBoard> entry : boards.entrySet()) {
-            entry.getValue().regenerateChunks();
+        for (Map.Entry<String, SLTBoard> entry : boards.entrySet()) {
+            entry.getValue().regenerate();
         }
     }
 
     public void regenerateBoard(String boardId) {
         if (boards != null && boards.get(boardId) != null) {
-            SLTMatchBoard board = boards.get(boardId);
-            board.regenerateChunks();
+            SLTBoard board = boards.get(boardId);
+            board.regenerate();
         }
     }
 

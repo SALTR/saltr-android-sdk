@@ -5,6 +5,7 @@ package saltr;
 
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
+import saltr.response.*;
 
 import java.util.*;
 
@@ -26,12 +27,16 @@ public class SLTDeserializer {
         return experiments;
     }
 
-    public static List<SLTLevelPack> decodeLevels(SLTResponseAppData data) {
+    public static List<SLTLevelPack> decodeLevels(SLTResponseAppData rootNode) {
 
-        List<SLTResponsePack> levelPackNodes = data.getLevelPacks();
+        List<SLTResponsePack> levelPackNodes = rootNode.getLevelPacks();
+        String levelType = SLTLevel.LEVEL_TYPE_MATCHING;
+
+        if (rootNode.getLevelType() != null) {
+            levelType = rootNode.getLevelType();
+        }
+
         List<SLTLevelPack> levelPacks = new ArrayList<>();
-
-
         int index = -1;
         if (levelPackNodes != null) {
             for (SLTResponsePack levelPackNode : levelPackNodes) {
@@ -41,7 +46,7 @@ public class SLTDeserializer {
                 for (SLTResponseLevel levelNode : levelNodes) {
                     ++index;
                     int localIndex = levelNode.getIndex() != null ? levelNode.getIndex() : levelNode.getLocalIndex();
-                    levels.add(new SLTLevel(levelNode.getId(), index, localIndex, packIndex, levelNode.getUrl(),
+                    levels.add(new SLTLevel(levelNode.getId(), levelType, index, localIndex, packIndex, levelNode.getUrl(),
                             levelNode.getProperties(), levelNode.getVersion().toString()));
                 }
                 Collections.sort(levels);
@@ -56,9 +61,9 @@ public class SLTDeserializer {
         Map<String, SLTFeature> features = new HashMap<>();
         List<SLTResponseFeature> featuresNodes = data.getFeatures();
         if (featuresNodes != null) {
-            SLTFeature feature;
             for (SLTResponseFeature featureNode : featuresNodes) {
-                feature = new SLTFeature(featureNode.getToken(), featureNode.getData(), featureNode.getRequired());
+                Map<String, String> properties = (featureNode.getData() != null) ? featureNode.getData() : featureNode.getProperties();
+                SLTFeature feature = new SLTFeature(featureNode.getToken(), properties, featureNode.getRequired());
                 features.put(featureNode.getToken(), feature);
             }
         }

@@ -16,6 +16,15 @@ public class SLTResponseAppData implements Serializable {
     private List<SLTResponseExperiment> experiments;
     private UUID saltId;
     private UUID saltrUserId;
+    private String levelType;
+
+    public String getLevelType() {
+        return levelType;
+    }
+
+    public void setLevelType(String levelType) {
+        this.levelType = levelType;
+    }
 
     public List<SLTResponseExperiment> getExperiments() {
         return experiments;
