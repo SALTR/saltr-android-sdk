@@ -28,7 +28,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
 
     @Override
     public String getObjectVersion(String name) {
-        String path = cacheDirectory + File.separator + name.replace(".", "") + "_VERSION_";
+        String path = cacheDirectory + File.separator + name.replace("", "") + "_VERSION_";
         Object obj = getInternal(path);
         if (obj == null) {
             return null;
@@ -41,7 +41,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
     public void cacheObject(String name, String version, Object object) {
         String path = cacheDirectory + File.separator + name;
         saveInternal(path, object);
-        path = cacheDirectory + File.separator + name.replace(".", "") + "_VERSION_";
+        path = cacheDirectory + File.separator + name.replace("", "") + "_VERSION_";
         Map<String, String> map = new HashMap<>();
         map.put("_VERSION_", version);
         saveInternal(path, map);
