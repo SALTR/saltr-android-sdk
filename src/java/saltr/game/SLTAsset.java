@@ -30,11 +30,7 @@ public class SLTAsset {
         return "[Asset] token: " + token + ", " + " properties: " + properties;
     }
 
-    public SLTAssetInstance getInstance(List<String> stateIds) {
-        return new SLTAssetInstance(token, getInstanceStates(stateIds), properties);
-    }
-
-    protected List<SLTAssetState> getInstanceStates(List<String> stateIds) {
+    public List<SLTAssetState> getInstanceStates(List<String> stateIds) {
         List<SLTAssetState> states = new ArrayList<>();
         for (String stateId : stateIds) {
             SLTAssetState state = stateMap.get(stateId);

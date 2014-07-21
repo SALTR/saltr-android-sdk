@@ -4,8 +4,10 @@
 package saltr.game;
 
 import saltr.game.canvas2d.SLT2DLevelParser;
+import saltr.game.matching.SLTMatchingLevelParser;
 import saltr.response.level.SLTResponseBoard;
 import saltr.response.level.SLTResponseLevelData;
+import saltr.status.SLTStatusLevelsParserMissing;
 
 import java.util.Map;
 
@@ -95,16 +97,15 @@ public class SLTLevel implements Comparable<SLTLevel> {
         properties = rootNode.getProperties();
 
         SLTLevelParser parser = getParser(levelType);
-
         if (parser != null) {
             try {
-                assetMap = SLTLevelParser.parseLevelAssets(rootNode);
+                assetMap = parser.parseLevelAssets(rootNode);
             } catch (Exception e) {
                 throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
             }
 
             try {
-                boards = SLTLevelParser.parseLevelContent(boardsNode, assetMap);
+                boards = parser.parseLevelContent(boardsNode, assetMap);
             } catch (Exception e) {
                 throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
             }

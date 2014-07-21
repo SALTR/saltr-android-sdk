@@ -22,4 +22,10 @@ public class SLTBoard {
     public List<SLTBoardLayer> getLayers() {
         return layers;
     }
+
+    public void regenerate() {
+        for (SLTBoardLayer layer: layers) {
+            layer.regenerate();
+        }
+    }
 }

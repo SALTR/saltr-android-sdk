@@ -11,6 +11,33 @@ public class SLTResponseBoardChunkAsset {
     private Integer distributionValue;
     private String stateId;
     private List<String> states;
+    private Integer x;
+    private Integer y;
+    private Integer rotation;
+
+    public Integer getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(Integer rotation) {
+        this.rotation = rotation;
+    }
+
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
+    }
+
+    public Integer getX() {
+        return x;
+    }
+
+    public void setX(Integer x) {
+        this.x = x;
+    }
 
     public String getAssetId() {
         return assetId;

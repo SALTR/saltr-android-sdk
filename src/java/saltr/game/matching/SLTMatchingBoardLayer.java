@@ -1,17 +1,20 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.game;
+package saltr.game.matching;
+
+import saltr.game.SLTBoard;
+import saltr.game.SLTBoardLayer;
 
 import java.util.List;
 import java.util.Map;
 
-public class SLTMatchBoard extends SLTBoard {
+public class SLTMatchingBoardLayer extends SLTBoard {
     private Integer rows;
     private Integer cols;
     private SLTCell[][] cells;
 
-    public SLTMatchBoard(SLTCell[][] cells, List<SLTBoardLayer> layers, Map<String, String> properties) {
+    public SLTMatchingBoardLayer(SLTCell[][] cells, List<SLTBoardLayer> layers, Map<String, String> properties) {
         super(layers, properties);
         this.cells = cells;
         cols = cells.length;
@@ -33,7 +36,7 @@ public class SLTMatchBoard extends SLTBoard {
     public void regenerateChunks() {
         for (SLTBoardLayer boardLayer : layers) {
             SLTMatchBoardLayer layer = (SLTMatchBoardLayer) boardLayer;
-            layer.regenerateChunks();
+            layer.regenerate();
         }
     }
 }

@@ -1,13 +1,17 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.game;
+package saltr.game.matching;
 
+
+import saltr.game.SLTAsset;
+import saltr.game.SLTAssetInstance;
 
 import java.util.*;
 
 public class SLTChunk {
-    private SLTMatchBoardLayer layer;
+    private String layerToken;
+    private int layerIndex;
     private List<SLTChunkAssetRule> chunkAssetRules;
     private List<SLTCell> chunkCells;
     private List<SLTCell> availableCells;
@@ -17,8 +21,9 @@ public class SLTChunk {
         return (new Double((Math.random() * (1 + max - min)) + min)).intValue();
     }
 
-    public SLTChunk(SLTMatchBoardLayer layer, List<SLTCell> chunkCells, List<SLTChunkAssetRule> chunkAssetRules, Map<String, SLTAsset> assetMap) {
-        this.layer = layer;
+    public SLTChunk(String layerToken, int layerIndex, List<SLTCell> chunkCells, List<SLTChunkAssetRule> chunkAssetRules, Map<String, SLTAsset> assetMap) {
+        this.layerToken = layerToken;
+        this.layerIndex = layerIndex;
         this.chunkCells = chunkCells;
         this.chunkAssetRules = chunkAssetRules;
         this.assetMap = assetMap;
@@ -62,7 +67,7 @@ public class SLTChunk {
 
     private void resetChunkCells() {
         for (SLTCell chunkCell : chunkCells) {
-            chunkCell.removeAssetInstance(layer.getLayerId(), layer.getLayerIndex());
+            chunkCell.removeAssetInstance(layerToken, layerIndex);
         }
     }
 
@@ -84,12 +89,10 @@ public class SLTChunk {
             for (SLTChunkAssetRule assetRule : ratioChunkAssetRules) {
                 Integer proportion = assetRule.getDistributionValue() / ratioSum * availableCellsNum;
                 int count = proportion; //assigning number to int to floor the value;
-
                 Map<String, Object> fractionAsset = new HashMap<>();
                 fractionAsset.put("fraction", proportion - count);
                 fractionAsset.put("assetRule", assetRule);
                 fractionAssets.add(fractionAsset);
-
                 generateAssetInstances(count, assetRule.getAssetId(), assetRule.getStateIds());
             }
 
@@ -134,7 +137,7 @@ public class SLTChunk {
         for (int i = 0; i < count; ++i) {
             int randCellIndex = (int) (Math.random() * availableCells.size());
             SLTCell randCell = availableCells.get(randCellIndex);
-            randCell.setAssetInstance(layer.getLayerId(), layer.getLayerIndex(), asset.getInstance(stateIds));
+            randCell.setAssetInstance(layerToken, layerIndex, new SLTAssetInstance(asset.getToken(), asset.getInstanceStates(stateIds), asset.getProperties()));
             availableCells.subList(randCellIndex, randCellIndex + 1).clear();
             if (availableCells.isEmpty()) {
                 return;

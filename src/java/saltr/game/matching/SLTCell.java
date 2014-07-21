@@ -1,7 +1,9 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.game;
+package saltr.game.matching;
+
+import saltr.game.SLTAssetInstance;
 
 import java.util.HashMap;
 import java.util.Map;

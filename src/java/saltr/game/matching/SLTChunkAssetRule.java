@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.game;
+package saltr.game.matching;
 
 import java.util.List;
 

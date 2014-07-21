@@ -1,7 +1,10 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.game;
+package saltr.game.matching;
+
+import saltr.game.SLTBoardLayer;
+import saltr.game.matching.SLTChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,7 @@ public class SLTMatchBoardLayer extends SLTBoardLayer {
         this.chunks = new ArrayList<>();
     }
 
-    public void regenerateChunks() {
+    public void regenerate() {
         for (SLTChunk chunk : chunks) {
             chunk.generateContent();
         }

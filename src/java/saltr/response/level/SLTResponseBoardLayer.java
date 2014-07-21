@@ -9,6 +9,15 @@ public class SLTResponseBoardLayer {
     private String layerId;
     private List<SLTResponseBoardChunk> chunks;
     private List<SLTResponseBoardFixedAsset> fixedAssets;
+    private List<SLTResponseBoardChunkAsset> assets;
+
+    public List<SLTResponseBoardChunkAsset> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(List<SLTResponseBoardChunkAsset> assets) {
+        this.assets = assets;
+    }
 
     public String getLayerId() {
         return layerId;

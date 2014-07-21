@@ -17,6 +17,25 @@ public class SLTResponseBoard {
     private Object position;
     private SLTResponseBoardProperties properties;
 
+    private Integer width;
+    private Integer height;
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
     public List<SLTResponseBoardLayer> getLayers() {
         return layers;
     }

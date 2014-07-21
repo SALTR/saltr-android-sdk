@@ -23,4 +23,9 @@ public class SLT2DBoardLayer extends SLTBoardLayer {
     public void addAssetInstance(SLT2DAssetInstance instance) {
         assetInstances.add(instance);
     }
+
+    @Override
+    public void regenerate() {
+
+    }
 }

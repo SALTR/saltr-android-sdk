@@ -3,20 +3,22 @@
  */
 package saltr.game;
 
-public class SLTBoardLayer {
-    private String layerId;
-    private int layerIndex;
+public abstract class SLTBoardLayer {
+    private String token;
+    private int index;
 
-    public SLTBoardLayer(String layerId, int layerIndex) {
-        this.layerId = layerId;
-        this.layerIndex = layerIndex;
+    public SLTBoardLayer(String token, int index) {
+        this.token = token;
+        this.index = index;
     }
 
-    public String getLayerId() {
-        return layerId;
+    public String getToken() {
+        return token;
     }
 
-    public int getLayerIndex() {
-        return layerIndex;
+    public int getIndex() {
+        return index;
     }
+
+    public abstract void regenerate();
 }

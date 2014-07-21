@@ -252,7 +252,6 @@ public class SLTSaltr {
 
     public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTDataHandler saltrHttpDataHandler) throws Exception {
         this.saltrHttpDataHandler = saltrHttpDataHandler;
-
         Object content;
         if (!connected) {
             if (useCache) {
@@ -264,7 +263,7 @@ public class SLTSaltr {
             levelContentLoadSuccessHandler(sltLevel, content);
         }
         else {
-            if (!useCache || sltLevel.getVersion() != getCachedLevelVersion(sltLevel)) {
+            if (!useCache || sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
                 loadLevelContentFromSaltr(sltLevel);
             }
             else {
@@ -349,6 +348,37 @@ public class SLTSaltr {
         }
     }
 
+    void loadFromSaltrSuccessCallback(Object data, SLTCallBackProperties properties) throws Exception {
+        if (data != null) {
+            cacheLevelContent(properties.getLevel(), data);
+        }
+        else {
+            data = loadLevelContentInternally(properties.getLevel());
+        }
+
+        if (data != null) {
+            levelContentLoadSuccessHandler(properties.getLevel(), data);
+        }
+        else {
+            levelContentLoadFailHandler();
+        }
+    }
+
+    void loadFromSaltrFailCallback(SLTCallBackProperties properties) throws Exception {
+        Object contentData = loadLevelContentInternally(properties.getLevel());
+        levelContentLoadSuccessHandler(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
+    }
+
+    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
+        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
+        sltLevel.updateContent(level);
+        saltrHttpDataHandler.onSuccess(this);
+    }
+
+    protected void levelContentLoadFailHandler() {
+        saltrHttpDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
+    }
+
     private SLTHttpConnection createAppDataConnection(Object basicProperties, Object customProperties) throws Exception {
         Map<String, Object> args = new HashMap<>();
 
@@ -385,7 +415,7 @@ public class SLTSaltr {
         return new SLTHttpConnection(SLTConfig.SALTR_API_URL, params);
     }
 
-    protected void appDataLoadSuccessCallback(String json) throws Exception {
+    void appDataLoadSuccessCallback(String json) throws Exception {
         SLTResponse<SLTResponseAppData> data = gson.fromJson(json, new TypeToken<SLTResponse<SLTResponseAppData>>() {
         }.getType());
 
@@ -436,7 +466,7 @@ public class SLTSaltr {
         }
     }
 
-    protected void appDataLoadFailCallback() {
+    void appDataLoadFailCallback() {
         isLoading = false;
         saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
     }
@@ -511,41 +541,5 @@ public class SLTSaltr {
     private Object loadLevelContentFromDisk(SLTLevel sltLevel) {
         String url = MessageFormat.format(SLTConfig.LOCAL_LEVEL_CONTENT_PACKAGE_URL_TEMPLATE, sltLevel.getPackIndex(), sltLevel.getLocalIndex());
         return repository.getObjectFromApplication(url);
-    }
-
-    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
-        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
-        sltLevel.updateContent(level);
-        saltrHttpDataHandler.onSuccess(this);
-    }
-
-    protected void contentDataLoadSuccessCallback(SLTLevel level, SLTResponseLevelData data) throws Exception {
-        level.updateContent(data);
-        saltrHttpDataHandler.onSuccess(this);
-    }
-
-    protected void levelContentLoadFailHandler() {
-        saltrHttpDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
-    }
-
-    protected void loadFromSaltrSuccessCallback(Object data, SLTCallBackProperties properties) throws Exception {
-        if (data != null) {
-            cacheLevelContent(properties.getLevel(), data);
-        }
-        else {
-            data = loadLevelContentInternally(properties.getLevel());
-        }
-
-        if (data != null) {
-            levelContentLoadSuccessHandler(properties.getLevel(), data);
-        }
-        else {
-            levelContentLoadFailHandler();
-        }
-    }
-
-    protected void loadFromSaltrFailCallback(SLTCallBackProperties properties) throws Exception {
-        Object contentData = loadLevelContentInternally(properties.getLevel());
-        contentDataLoadSuccessCallback(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
     }
 }
