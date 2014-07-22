@@ -13,7 +13,7 @@ public class SLT2DBoardLayer extends SLTBoardLayer {
 
     public SLT2DBoardLayer(String layerId, int layerIndex) {
         super(layerId, layerIndex);
-        this.assetInstances = new ArrayList<>();
+        this.assetInstances = new ArrayList<SLT2DAssetInstance>();
     }
 
     public List<SLT2DAssetInstance> getAssetInstances() {

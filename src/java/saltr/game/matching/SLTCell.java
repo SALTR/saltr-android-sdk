@@ -19,10 +19,10 @@ public class SLTCell implements Cloneable {
     public SLTCell(int row, int col) {
         this.row = row;
         this.col = col;
-        properties = new HashMap<>();
+        properties = new HashMap<String, String>();
         isBlocked = false;
-        instancesByLayerId = new HashMap<>();
-        instancesByLayerIndex = new HashMap<>();
+        instancesByLayerId = new HashMap<String, SLTAssetInstance>();
+        instancesByLayerIndex = new HashMap<String, SLTAssetInstance>();
     }
 
     public int getRow() {

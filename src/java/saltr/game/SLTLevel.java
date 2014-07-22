@@ -31,12 +31,12 @@ public class SLTLevel implements Comparable<SLTLevel> {
     public static final String LEVEL_TYPE_2DCANVAS = "canvas2D";
 
     public static SLTLevelParser getParser(String levelType) {
-        switch (levelType) {
-            case LEVEL_TYPE_MATCHING:
-                return SLTMatchingLevelParser.getInstance();
-            case LEVEL_TYPE_2DCANVAS:
-                return SLT2DLevelParser.getInstance();
-        }
+    	if (levelType.equals(LEVEL_TYPE_MATCHING)) {
+    	    return SLTMatchingLevelParser.getInstance();
+    	}
+    	else if (levelType.equals(LEVEL_TYPE_2DCANVAS)) {
+            return SLT2DLevelParser.getInstance();
+    	}
         return null;
     }
 

@@ -38,9 +38,9 @@ public class SLTChunk {
 
         availableCells = cloneList(chunkCells);
 
-        List<SLTChunkAssetRule> countChunkAssetRules = new ArrayList<>();
-        List<SLTChunkAssetRule> ratioChunkAssetRules = new ArrayList<>();
-        List<SLTChunkAssetRule> randomChunkAssetRules = new ArrayList<>();
+        List<SLTChunkAssetRule> countChunkAssetRules = new ArrayList<SLTChunkAssetRule>();
+        List<SLTChunkAssetRule> ratioChunkAssetRules = new ArrayList<SLTChunkAssetRule>();
+        List<SLTChunkAssetRule> randomChunkAssetRules = new ArrayList<SLTChunkAssetRule>();
 
         for (SLTChunkAssetRule assetRule : this.chunkAssetRules) {
             if (assetRule.getDistributionType().equals("count")) {
@@ -84,12 +84,12 @@ public class SLTChunk {
         }
         int availableCellsNum = availableCells.size();
 
-        List<Map<String, Object>> fractionAssets = new ArrayList<>();
+        List<Map<String, Object>> fractionAssets = new ArrayList<Map<String, Object>>();
         if (ratioSum != 0) {
             for (SLTChunkAssetRule assetRule : ratioChunkAssetRules) {
                 Integer proportion = assetRule.getDistributionValue() / ratioSum * availableCellsNum;
                 int count = proportion; //assigning number to int to floor the value;
-                Map<String, Object> fractionAsset = new HashMap<>();
+                Map<String, Object> fractionAsset = new HashMap<String, Object>();
                 fractionAsset.put("fraction", proportion - count);
                 fractionAsset.put("assetRule", assetRule);
                 fractionAssets.add(fractionAsset);

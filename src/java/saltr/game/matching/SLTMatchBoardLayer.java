@@ -14,7 +14,7 @@ public class SLTMatchBoardLayer extends SLTBoardLayer {
 
     public SLTMatchBoardLayer(String layerId, int layerIndex) {
         super(layerId, layerIndex);
-        this.chunks = new ArrayList<>();
+        this.chunks = new ArrayList<SLTChunk>();
     }
 
     public void regenerate() {

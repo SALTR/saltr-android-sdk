@@ -31,7 +31,7 @@ public class SLTAsset {
     }
 
     public List<SLTAssetState> getInstanceStates(List<String> stateIds) {
-        List<SLTAssetState> states = new ArrayList<>();
+        List<SLTAssetState> states = new ArrayList<SLTAssetState>();
         for (String stateId : stateIds) {
             SLTAssetState state = stateMap.get(stateId);
             if (state != null) {

@@ -17,7 +17,7 @@ public abstract class SLTLevelParser {
 
     public Map<String, SLTAsset> parseLevelAssets(SLTResponseLevelData rootNode) {
         Map<String, SLTResponseAsset> assetNodes = rootNode.getAssets();
-        Map<String, SLTAsset> assetMap = new HashMap<>();
+        Map<String, SLTAsset> assetMap = new HashMap<String, SLTAsset>();
         for (Map.Entry<String, SLTResponseAsset> entry : assetNodes.entrySet()) {
             assetMap.put(entry.getKey(), parseAsset(entry.getValue()));
         }
@@ -45,7 +45,7 @@ public abstract class SLTLevelParser {
     }
 
     private Map<String, SLTAssetState> parseAssetStates(Map<String, SLTResponseBoardChunkAssetState> stateNodes) {
-        Map<String, SLTAssetState> statesMap = new HashMap<>();
+        Map<String, SLTAssetState> statesMap = new HashMap<String, SLTAssetState>();
         for (Map.Entry<String, SLTResponseBoardChunkAssetState> entry : stateNodes.entrySet()) {
             statesMap.put(entry.getKey(), parseAssetState(entry.getValue()));
         }

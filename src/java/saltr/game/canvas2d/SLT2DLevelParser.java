@@ -29,7 +29,7 @@ public class SLT2DLevelParser extends SLTLevelParser {
 
     @Override
     public Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap) {
-        Map<String, SLTBoard> boards = new HashMap<>();
+        Map<String, SLTBoard> boards = new HashMap<String, SLTBoard>();
         for (Map.Entry<String, SLTResponseBoard> entry : boardNodes.entrySet()) {
             boards.put(entry.getKey(), parseLevelBoard(entry.getValue(), assetMap));
         }
@@ -37,12 +37,12 @@ public class SLT2DLevelParser extends SLTLevelParser {
     }
 
     private SLT2DBoard parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
-        Map<String, String> boardProperties = new HashMap<>();
+        Map<String, String> boardProperties = new HashMap<String, String>();
         if (boardNode.getProperties() != null && boardNode.getProperties().getBoard() != null) {
             boardProperties = boardNode.getProperties().getBoard();
         }
 
-        List<SLTBoardLayer> layers = new ArrayList<>();
+        List<SLTBoardLayer> layers = new ArrayList<SLTBoardLayer>();
         int i = 0;
         for (SLTResponseBoardLayer layerNode : boardNode.getLayers()) {
             SLT2DBoardLayer layer = parseLayer(layerNode, i, assetMap);

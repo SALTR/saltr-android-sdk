@@ -12,7 +12,7 @@ import java.util.*;
 public class SLTDeserializer {
 
     public static List<SLTExperiment> decodeExperiments(SLTResponseAppData rootNode) {
-        List<SLTExperiment> experiments = new ArrayList<>();
+        List<SLTExperiment> experiments = new ArrayList<SLTExperiment>();
         List<SLTResponseExperiment> experimentNodes = rootNode.getExperiments() != null ? rootNode.getExperiments() : rootNode.getExperimentInfo();
 
         if (experimentNodes != null) {
@@ -36,12 +36,12 @@ public class SLTDeserializer {
             levelType = rootNode.getLevelType();
         }
 
-        List<SLTLevelPack> levelPacks = new ArrayList<>();
+        List<SLTLevelPack> levelPacks = new ArrayList<SLTLevelPack>();
         int index = -1;
         if (levelPackNodes != null) {
             for (SLTResponsePack levelPackNode : levelPackNodes) {
                 List<SLTResponseLevel> levelNodes = levelPackNode.getLevels();
-                List<SLTLevel> levels = new ArrayList<>();
+                List<SLTLevel> levels = new ArrayList<SLTLevel>();
                 int packIndex = levelPackNode.getIndex();
                 for (SLTResponseLevel levelNode : levelNodes) {
                     ++index;
@@ -58,7 +58,7 @@ public class SLTDeserializer {
     }
 
     public static Map<String, SLTFeature> decodeFeatures(SLTResponseAppData data) {
-        Map<String, SLTFeature> features = new HashMap<>();
+        Map<String, SLTFeature> features = new HashMap<String, SLTFeature>();
         List<SLTResponseFeature> featuresNodes = data.getFeatures();
         if (featuresNodes != null) {
             for (SLTResponseFeature featureNode : featuresNodes) {

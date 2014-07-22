@@ -42,7 +42,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
         String path = cacheDirectory + File.separator + name;
         saveInternal(path, object);
         path = cacheDirectory + File.separator + name.replace("", "") + "_VERSION_";
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("_VERSION_", version);
         saveInternal(path, map);
     }

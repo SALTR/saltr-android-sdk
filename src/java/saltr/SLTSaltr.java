@@ -3,22 +3,27 @@
  */
 package saltr;
 
-import android.content.ContextWrapper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.loopj.android.http.RequestParams;
+import java.net.MalformedURLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
-import saltr.response.SLTResponse;
-import saltr.response.SLTResponseAppData;
-import saltr.response.level.SLTResponseLevelData;
 import saltr.repository.ISLTRepository;
 import saltr.repository.SLTDummyRepository;
 import saltr.repository.SLTMobileRepository;
-import saltr.status.*;
+import saltr.resource.SLTHttpsConnection;
+import saltr.response.SLTResponse;
+import saltr.response.SLTResponseAppData;
+import saltr.status.SLTStatus;
+import android.content.ContextWrapper;
 
-import java.text.MessageFormat;
-import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class SLTSaltr {
     public static final String CLIENT = "AS3-Mobile";
@@ -41,7 +46,8 @@ public class SLTSaltr {
     private List<SLTExperiment> experiments;
     private List<SLTLevelPack> levelPacks;
 
-    private SLTDataHandler saltrHttpDataHandler;
+    private SLTIDataHandler appDataHandler;
+    private SLTIDataHandler levelDataHandler;
 
     private boolean devMode;
     private boolean started;
@@ -63,10 +69,10 @@ public class SLTSaltr {
         devMode = false;
         started = false;
 
-        activeFeatures = new HashMap<>();
-        developerFeatures = new HashMap<>();
-        experiments = new ArrayList<>();
-        levelPacks = new ArrayList<>();
+        activeFeatures = new HashMap<String, SLTFeature>();
+        developerFeatures = new HashMap<String, SLTFeature>();
+        experiments = new ArrayList<SLTExperiment>();
+        levelPacks = new ArrayList<SLTLevelPack>();
 
         repository = useCache ? new SLTMobileRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
@@ -100,7 +106,7 @@ public class SLTSaltr {
     }
 
     public List<SLTLevel> getAllLevels() {
-        List<SLTLevel> allLevels = new ArrayList<>();
+        List<SLTLevel> allLevels = new ArrayList<SLTLevel>();
         for (SLTLevelPack pack : levelPacks) {
             List<SLTLevel> levels = pack.getLevels();
             for (SLTLevel level : levels) {
@@ -158,7 +164,7 @@ public class SLTSaltr {
     }
 
     public List<String> getActiveFeatureTokens() {
-        List<String> tokens = new ArrayList<>();
+        List<String> tokens = new ArrayList<String>();
         for (Map.Entry<String, SLTFeature> entry : activeFeatures.entrySet()) {
             tokens.add(entry.getValue().getToken());
         }
@@ -232,26 +238,26 @@ public class SLTSaltr {
         started = true;
     }
 
-    public void connect(SLTDataHandler saltrHttpDataHandler, Object basicProperties, Object customProperties) throws Exception {
-        this.saltrHttpDataHandler = saltrHttpDataHandler;
+    public void connect(SLTIDataHandler appDataHandler, Object basicProperties, Object customProperties) {
+        this.appDataHandler = appDataHandler;
         if (isLoading || !started) {
             return;
         }
 
-        isLoading = true;
-
-        SLTHttpConnection connection = createAppDataConnection(basicProperties, customProperties);
-        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.APP);
+        isLoading = true;                
 
         try {
-            connection.call(this, details);
+        	SLTHttpsConnection connection = createAppDataConnection(basicProperties, customProperties);
+            connection.execute();            
+        } catch (MalformedURLException e) {
+        	
         } catch (Exception e) {
             appDataLoadFailCallback();
         }
     }
 
-    public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTDataHandler saltrHttpDataHandler) throws Exception {
-        this.saltrHttpDataHandler = saltrHttpDataHandler;
+    public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) throws Exception {
+        this.levelDataHandler = levelDataHandler;
         Object content;
         if (!connected) {
             if (useCache) {
@@ -260,7 +266,7 @@ public class SLTSaltr {
             else {
                 content = loadLevelContentFromDisk(sltLevel);
             }
-            levelContentLoadSuccessHandler(sltLevel, content);
+//            levelContentLoadSuccessHandler(sltLevel, content);
         }
         else {
             if (!useCache || sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
@@ -268,7 +274,7 @@ public class SLTSaltr {
             }
             else {
                 content = loadLevelContentFromCache(sltLevel);
-                levelContentLoadSuccessHandler(sltLevel, content);
+//                levelContentLoadSuccessHandler(sltLevel, content);
             }
         }
     }
@@ -278,33 +284,25 @@ public class SLTSaltr {
             return;
         }
 
-        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
-        SLTHttpConnection connection = createAddPropConnection(basicProperties, customProperties);
-
+        SLTHttpsConnection connection = createPlayerPropertiesConnection(basicProperties, customProperties);
+        
         try {
             if (connection != null) {
-                connection.call(this, details);
-            }
-            else {
-                System.err.println("error");
+                connection.execute();
             }
         } catch (Exception e) {
             System.err.println("error");
         }
     }
-
-    private SLTHttpConnection createAddPropConnection(Object basicProperties, Object customProperties) throws Exception {
-        if (basicProperties != null && customProperties != null || saltrUserId != null) {
-            return null;
-        }
-
-        Map<String, Object> args = new HashMap<>();
+    
+    private SLTHttpsConnection createPlayerPropertiesConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception  {
+    	Map<String, Object> args = new HashMap<String, Object>();
 
         args.put("clientKey", clientKey);
 
         if (deviceId != null) {
             args.put("deviceId", deviceId);
-        }
+         }
         else {
             throw new Exception("Field 'deviceId' is a required.");
         }
@@ -325,62 +323,79 @@ public class SLTSaltr {
         if (customProperties != null) {
             args.put("customProperties", customProperties);
         }
+        
+        SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
+			
+			@Override
+			public void onSuccess(SLTSaltr saltr) {
+				System.out.println("success");
+				
+			}
+			
+			@Override
+			public void onFailure(SLTStatus status) {
+				System.out.println("error");
+				
+			}
+		});        
 
-        RequestParams params = new RequestParams();
-        params.put("args", gson.toJson(args));
-        params.put("cmd", SLTConfig.CMD_ADD_PROPERTIES);
-        params.put("action", SLTConfig.CMD_ADD_PROPERTIES);
-
-        return new SLTHttpConnection(SLTConfig.SALTR_API_URL, params);
+        connection.setParameters("args", gson.toJson(args));
+        connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
+        connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
+        
+        connection.setUrl(SLTConfig.SALTR_API_URL);
+        
+        return connection;
     }
 
-    protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
+
+    protected void loadLevelContentFromSaltr(SLTLevel level) {
         String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
 
-        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.LEVEL);
-        details.setLevel(level);
-
         try {
-            SLTHttpConnection connection = new SLTHttpConnection(dataUrl);
-            connection.call(this, details);
+        	SLTHttpsConnection connection = new SLTHttpsConnection(levelDataHandler);
+        	connection.setUrl(dataUrl);
+        	connection.execute();    
+        } catch (MalformedURLException e) {
+        	
         } catch (Exception e) {
-            loadFromSaltrFailCallback(details);
+//            loadFromSaltrFailCallback(null);
         }
     }
 
-    void loadFromSaltrSuccessCallback(Object data, SLTCallBackProperties properties) throws Exception {
-        if (data != null) {
-            cacheLevelContent(properties.getLevel(), data);
-        }
-        else {
-            data = loadLevelContentInternally(properties.getLevel());
-        }
+//    void loadFromSaltrSuccessCallback(Object data) throws Exception {
+//        if (data != null) {
+//            cacheLevelContent(properties.getLevel(), data);
+//        }
+//        else {
+//            data = loadLevelContentInternally(properties.getLevel());
+//        }
+//
+//        if (data != null) {
+//            levelContentLoadSuccessHandler(properties.getLevel(), data);
+//        }
+//        else {
+//            levelContentLoadFailHandler();
+//        }
+//    }
+//
+//    void loadFromSaltrFailCallback(SLTCallBackProperties properties) throws Exception {
+//        Object contentData = loadLevelContentInternally(properties.getLevel());
+//        levelContentLoadSuccessHandler(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
+//    }
+//
+//    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
+//        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
+//        sltLevel.updateContent(level);
+//        saltrHttpDataHandler.onSuccess(this);
+//    }
+//
+//    protected void levelContentLoadFailHandler() {
+//        saltrHttpDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
+//    }
 
-        if (data != null) {
-            levelContentLoadSuccessHandler(properties.getLevel(), data);
-        }
-        else {
-            levelContentLoadFailHandler();
-        }
-    }
-
-    void loadFromSaltrFailCallback(SLTCallBackProperties properties) throws Exception {
-        Object contentData = loadLevelContentInternally(properties.getLevel());
-        levelContentLoadSuccessHandler(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
-    }
-
-    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
-        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
-        sltLevel.updateContent(level);
-        saltrHttpDataHandler.onSuccess(this);
-    }
-
-    protected void levelContentLoadFailHandler() {
-        saltrHttpDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
-    }
-
-    private SLTHttpConnection createAppDataConnection(Object basicProperties, Object customProperties) throws Exception {
-        Map<String, Object> args = new HashMap<>();
+    private SLTHttpsConnection createAppDataConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception {
+        Map<String, Object> args = new HashMap<String, Object>();
 
         args.put("clientKey", clientKey);
 
@@ -408,11 +423,15 @@ public class SLTSaltr {
         }
 
 
-        RequestParams params = new RequestParams();
-        params.put("args", gson.toJson(args));
-        params.put("cmd", SLTConfig.CMD_APP_DATA);
+        SLTHttpsConnection connection = new SLTHttpsConnection(appDataHandler);
+                
+        connection.setParameters("args", gson.toJson(args));
+        connection.setParameters("cmd", SLTConfig.CMD_APP_DATA);
+        connection.setParameters("action", SLTConfig.CMD_APP_DATA);
+        
+        connection.setUrl(SLTConfig.SALTR_API_URL);
 
-        return new SLTHttpConnection(SLTConfig.SALTR_API_URL, params);
+        return connection;
     }
 
     void appDataLoadSuccessCallback(String json) throws Exception {
@@ -420,7 +439,7 @@ public class SLTSaltr {
         }.getType());
 
         if (data == null) {
-            saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+//            saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
             return;
         }
 
@@ -431,65 +450,65 @@ public class SLTSaltr {
             syncDeveloperFeatures();
         }
 
-        if (data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
-            Map<String, SLTFeature> saltrFeatures;
-            try {
-                saltrFeatures = SLTDeserializer.decodeFeatures(response);
-            } catch (Exception e) {
-                saltrFeatures = null;
-                saltrHttpDataHandler.onFailure(new SLTStatusFeaturesParseError());
-            }
-
-            try {
-                experiments = SLTDeserializer.decodeExperiments(response);
-            } catch (Exception e) {
-                saltrHttpDataHandler.onFailure(new SLTStatusExperimentsParseError());
-            }
-
-            try {
-                levelPacks = SLTDeserializer.decodeLevels(response);
-            } catch (Exception e) {
-                saltrHttpDataHandler.onFailure(new SLTStatusLevelsParseError());
-            }
-
-            saltrUserId = response.getSaltrUserId().toString();
-            connected = true;
-            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
-
-            activeFeatures = saltrFeatures;
-            saltrHttpDataHandler.onSuccess(this);
-
-            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
-        }
-        else {
-            saltrHttpDataHandler.onFailure(new SLTStatus(data.getErrorCode(), data.getResponseMessage()));
-        }
+//        if (data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
+//            Map<String, SLTFeature> saltrFeatures;
+//            try {
+//                saltrFeatures = SLTDeserializer.decodeFeatures(response);
+//            } catch (Exception e) {
+//                saltrFeatures = null;
+//                saltrHttpDataHandler.onFailure(new SLTStatusFeaturesParseError());
+//            }
+//
+//            try {
+//                experiments = SLTDeserializer.decodeExperiments(response);
+//            } catch (Exception e) {
+//                saltrHttpDataHandler.onFailure(new SLTStatusExperimentsParseError());
+//            }
+//
+//            try {
+//                levelPacks = SLTDeserializer.decodeLevels(response);
+//            } catch (Exception e) {
+//                saltrHttpDataHandler.onFailure(new SLTStatusLevelsParseError());
+//            }
+//
+//            saltrUserId = response.getSaltrUserId().toString();
+//            connected = true;
+//            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
+//
+//            activeFeatures = saltrFeatures;
+//            saltrHttpDataHandler.onSuccess(this);
+//
+//            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+//        }
+//        else {
+//            saltrHttpDataHandler.onFailure(new SLTStatus(data.getErrorCode(), data.getResponseMessage()));
+//        }
     }
 
     void appDataLoadFailCallback() {
         isLoading = false;
-        saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+//        saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
     }
 
     public void syncDeveloperFeatures() throws Exception {
-        SLTHttpConnection connection = createSyncFeaturesConnection();
-        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.FEATURE);
-        try {
-            connection.call(this, details);
-        } catch (Exception e) {
-        }
+//        SLTHttpConnection connection = createSyncFeaturesConnection();
+//        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.FEATURE);
+//        try {
+//            connection.call(this, details);
+//        } catch (Exception e) {
+//        }
     }
 
-    private SLTHttpConnection createSyncFeaturesConnection() throws Exception {
-        List<Map<String, String>> featureList = new ArrayList<>();
+    private SLTHttpsConnection createSyncFeaturesConnection() throws MalformedURLException, Exception {
+        List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
-            Map<String, String> tempMap = new HashMap<>();
+            Map<String, String> tempMap = new HashMap<String, String>();
             tempMap.put("token", entry.getValue().getToken());
             tempMap.put("value", gson.toJson(entry.getValue().getProperties()));
             featureList.add(tempMap);
         }
 
-        Map<String, Object> args = new HashMap<>();
+        Map<String, Object> args = new HashMap<String, Object>();
         args.put("clientKey", clientKey);
         args.put("developerFeatures", featureList);
 
@@ -508,11 +527,25 @@ public class SLTSaltr {
             args.put("saltrUserId", saltrUserId);
         }
 
-        RequestParams params = new RequestParams();
-        params.put("args", gson.toJson(args));
-        params.put("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
+        SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
+			
+			@Override
+			public void onSuccess(SLTSaltr saltr) {
+				System.out.println("[Saltr] Dev feature Sync is complete.");
+			}
+			
+			@Override
+			public void onFailure(SLTStatus status) {
+				System.out.println("[Saltr] Dev feature Sync has failed.");
+			}
+		});
 
-        return new SLTHttpConnection(SLTConfig.SALTR_URL, params);
+        
+        connection.setParameters("args", gson.toJson(args));
+        connection.setParameters("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
+        connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
+
+        return connection;
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

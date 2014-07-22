@@ -6,7 +6,7 @@ package saltr;
 
 import saltr.status.SLTStatus;
 
-public interface SLTDataHandler {
+public interface SLTIDataHandler {
     public void onSuccess(SLTSaltr saltr);
 
     public void onFailure(SLTStatus status);
