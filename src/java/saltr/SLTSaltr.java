@@ -19,17 +19,16 @@ import saltr.repository.SLTMobileRepository;
 import saltr.resource.SLTHttpsConnection;
 import saltr.response.SLTResponse;
 import saltr.response.SLTResponseAppData;
-import saltr.status.SLTStatus;
+import saltr.response.level.SLTResponseLevelData;
+import saltr.status.*;
 import android.content.ContextWrapper;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class SLTSaltr {
-    public static final String CLIENT = "AS3-Mobile";
+    public static final String CLIENT = "Android";
     public static final String API_VERSION = "1.0.1";
-    
-    private static SLTSaltr saltr;
 
     private String socialId;
     private String deviceId;
@@ -57,7 +56,7 @@ public class SLTSaltr {
 
     private Gson gson;
 
-    private SLTSaltr(String clientKey, String deviceId, boolean useCache, ContextWrapper contextWrapper) {
+    public SLTSaltr(String clientKey, String deviceId, boolean useCache, ContextWrapper contextWrapper) {
         this.clientKey = clientKey;
         this.deviceId = deviceId;
         isLoading = false;
@@ -76,13 +75,6 @@ public class SLTSaltr {
 
         repository = useCache ? new SLTMobileRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
-    }
-
-    public static SLTSaltr getInstance(String clientKey, String deviceId, boolean useCache, ContextWrapper contextWrapper) {
-        if (saltr == null) {
-            saltr = new SLTSaltr(clientKey, deviceId, useCache, contextWrapper);
-        }
-        return saltr;
     }
 
     public void setRepository(ISLTRepository repository) {
@@ -266,7 +258,7 @@ public class SLTSaltr {
             else {
                 content = loadLevelContentFromDisk(sltLevel);
             }
-//            levelContentLoadSuccessHandler(sltLevel, content);
+            levelContentLoadSuccessHandler(sltLevel, content);
         }
         else {
             if (!useCache || sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
@@ -274,7 +266,7 @@ public class SLTSaltr {
             }
             else {
                 content = loadLevelContentFromCache(sltLevel);
-//                levelContentLoadSuccessHandler(sltLevel, content);
+                levelContentLoadSuccessHandler(sltLevel, content);
             }
         }
     }
@@ -349,7 +341,7 @@ public class SLTSaltr {
     }
 
 
-    protected void loadLevelContentFromSaltr(SLTLevel level) {
+    protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
         String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
 
         try {
@@ -357,42 +349,43 @@ public class SLTSaltr {
         	connection.setUrl(dataUrl);
         	connection.execute();    
         } catch (MalformedURLException e) {
-        	
+            e.printStackTrace();
+            loadFromSaltrFailCallback(level);
         } catch (Exception e) {
-//            loadFromSaltrFailCallback(null);
+            loadFromSaltrFailCallback(level);
         }
     }
 
-//    void loadFromSaltrSuccessCallback(Object data) throws Exception {
-//        if (data != null) {
-//            cacheLevelContent(properties.getLevel(), data);
-//        }
-//        else {
-//            data = loadLevelContentInternally(properties.getLevel());
-//        }
-//
-//        if (data != null) {
-//            levelContentLoadSuccessHandler(properties.getLevel(), data);
-//        }
-//        else {
-//            levelContentLoadFailHandler();
-//        }
-//    }
-//
-//    void loadFromSaltrFailCallback(SLTCallBackProperties properties) throws Exception {
-//        Object contentData = loadLevelContentInternally(properties.getLevel());
-//        levelContentLoadSuccessHandler(properties.getLevel(), gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
-//    }
-//
-//    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
-//        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
-//        sltLevel.updateContent(level);
-//        saltrHttpDataHandler.onSuccess(this);
-//    }
-//
-//    protected void levelContentLoadFailHandler() {
-//        saltrHttpDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
-//    }
+    void loadFromSaltrSuccessCallback(Object data, SLTLevel sltLevel) throws Exception {
+        if (data != null) {
+            cacheLevelContent(sltLevel, data);
+        }
+        else {
+            data = loadLevelContentInternally(sltLevel);
+        }
+
+        if (data != null) {
+            levelContentLoadSuccessHandler(sltLevel, data);
+        }
+        else {
+            levelContentLoadFailHandler();
+        }
+    }
+
+    void loadFromSaltrFailCallback(SLTLevel sltLevel) throws Exception {
+        Object contentData = loadLevelContentInternally(sltLevel);
+        levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
+    }
+
+    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
+        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
+        sltLevel.updateContent(level);
+        levelDataHandler.onSuccess(this);
+    }
+
+    protected void levelContentLoadFailHandler() {
+        levelDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
+    }
 
     private SLTHttpsConnection createAppDataConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception {
         Map<String, Object> args = new HashMap<String, Object>();
@@ -439,7 +432,7 @@ public class SLTSaltr {
         }.getType());
 
         if (data == null) {
-//            saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
             return;
         }
 
@@ -450,53 +443,53 @@ public class SLTSaltr {
             syncDeveloperFeatures();
         }
 
-//        if (data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
-//            Map<String, SLTFeature> saltrFeatures;
-//            try {
-//                saltrFeatures = SLTDeserializer.decodeFeatures(response);
-//            } catch (Exception e) {
-//                saltrFeatures = null;
-//                saltrHttpDataHandler.onFailure(new SLTStatusFeaturesParseError());
-//            }
-//
-//            try {
-//                experiments = SLTDeserializer.decodeExperiments(response);
-//            } catch (Exception e) {
-//                saltrHttpDataHandler.onFailure(new SLTStatusExperimentsParseError());
-//            }
-//
-//            try {
-//                levelPacks = SLTDeserializer.decodeLevels(response);
-//            } catch (Exception e) {
-//                saltrHttpDataHandler.onFailure(new SLTStatusLevelsParseError());
-//            }
-//
-//            saltrUserId = response.getSaltrUserId().toString();
-//            connected = true;
-//            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
-//
-//            activeFeatures = saltrFeatures;
-//            saltrHttpDataHandler.onSuccess(this);
-//
-//            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
-//        }
-//        else {
-//            saltrHttpDataHandler.onFailure(new SLTStatus(data.getErrorCode(), data.getResponseMessage()));
-//        }
+        if (data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
+            Map<String, SLTFeature> saltrFeatures;
+            try {
+                saltrFeatures = SLTDeserializer.decodeFeatures(response);
+            } catch (Exception e) {
+                saltrFeatures = null;
+                appDataHandler.onFailure(new SLTStatusFeaturesParseError());
+            }
+
+            try {
+                experiments = SLTDeserializer.decodeExperiments(response);
+            } catch (Exception e) {
+                appDataHandler.onFailure(new SLTStatusExperimentsParseError());
+            }
+
+            try {
+                levelPacks = SLTDeserializer.decodeLevels(response);
+            } catch (Exception e) {
+                appDataHandler.onFailure(new SLTStatusLevelsParseError());
+            }
+
+            saltrUserId = response.getSaltrUserId().toString();
+            connected = true;
+            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
+
+            activeFeatures = saltrFeatures;
+            appDataHandler.onSuccess(this);
+
+            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+        }
+        else {
+            appDataHandler.onFailure(new SLTStatus(data.getErrorCode(), data.getResponseMessage()));
+        }
     }
 
     void appDataLoadFailCallback() {
         isLoading = false;
-//        saltrHttpDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+        appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
     }
 
     public void syncDeveloperFeatures() throws Exception {
-//        SLTHttpConnection connection = createSyncFeaturesConnection();
-//        SLTCallBackProperties details = new SLTCallBackProperties(SLTDataType.FEATURE);
-//        try {
-//            connection.call(this, details);
-//        } catch (Exception e) {
-//        }
+
+        try {
+            SLTHttpsConnection connection = createSyncFeaturesConnection();
+            connection.execute();
+        } catch (Exception e) {
+        }
     }
 
     private SLTHttpsConnection createSyncFeaturesConnection() throws MalformedURLException, Exception {
@@ -544,6 +537,8 @@ public class SLTSaltr {
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
         connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
+
+        connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
 
         return connection;
     }

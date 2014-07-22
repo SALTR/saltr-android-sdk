@@ -9,7 +9,7 @@ public class SLTConfig {
     public static final String CMD_DEV_SYNC_FEATURES = "syncFeatures";
 
     public static final String SALTR_API_URL = "http://api.saltr.com/call";
-    public static final String SALTR_URL = "http://saltr.com/call";
+    public static final String SALTR_DEVAPI_URL = "https://devapi.saltr.com/call";
 
     public static final String APP_DATA_URL_CACHE = "app_data_cache.json";
     public static final String LOCAL_LEVELPACK_PACKAGE_URL = "saltr/level_packs.json";
