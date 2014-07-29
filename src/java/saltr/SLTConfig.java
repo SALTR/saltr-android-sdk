@@ -8,7 +8,7 @@ public class SLTConfig {
     public static final String CMD_ADD_PROPERTIES = "addProperties";
     public static final String CMD_DEV_SYNC_FEATURES = "syncFeatures";
 
-    public static final String SALTR_API_URL = "http://api.saltr.com/call";
+    public static final String SALTR_API_URL = "https://api.saltr.com/call";
     public static final String SALTR_DEVAPI_URL = "https://devapi.saltr.com/call";
 
     public static final String APP_DATA_URL_CACHE = "app_data_cache.json";

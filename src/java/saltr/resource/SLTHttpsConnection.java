@@ -28,6 +28,7 @@ public class SLTHttpsConnection extends AsyncTask<String, Void, String> {
 	private SLTIDataHandler dataHandler;
 	private List<NameValuePair> params;
 	private URL url;
+    private String response;
 	
 	public SLTHttpsConnection(SLTIDataHandler dataHandler) {
         params = new ArrayList<NameValuePair>();
@@ -35,14 +36,12 @@ public class SLTHttpsConnection extends AsyncTask<String, Void, String> {
 	}
 
 	@Override
-	protected String doInBackground(String... arg) {	
+	protected String doInBackground(String... arg) {
+        response = null;
+        StringBuilder builder = new StringBuilder();
 		try {		
 			URLConnection connection = url.openConnection();
-
 			String line;
-
-			StringBuilder builder = new StringBuilder();
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					connection.getInputStream()));
 
@@ -50,11 +49,15 @@ public class SLTHttpsConnection extends AsyncTask<String, Void, String> {
 				builder.append(line);
 			}
 		} catch (MalformedURLException e) {
+            dataHandler.onFailure(null);
 			e.printStackTrace();
 		} catch (IOException e) {
+            dataHandler.onFailure(null);
 			e.printStackTrace();
 		}
-		return null;
+		response = builder.toString();
+        dataHandler.onSuccess();
+        return response;
 	}
 
 	protected void onPostExecute(Long result) {
