@@ -3,28 +3,22 @@
  */
 package saltr;
 
-import java.net.MalformedURLException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import android.content.ContextWrapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
 import saltr.repository.ISLTRepository;
 import saltr.repository.SLTDummyRepository;
 import saltr.repository.SLTMobileRepository;
-import saltr.resource.SLTHttpsConnection;
 import saltr.response.SLTResponse;
 import saltr.response.SLTResponseAppData;
 import saltr.response.level.SLTResponseLevelData;
 import saltr.status.*;
-import android.content.ContextWrapper;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.net.MalformedURLException;
+import java.text.MessageFormat;
+import java.util.*;
 
 public class SLTSaltr {
     public static final String CLIENT = "Android";
@@ -236,13 +230,13 @@ public class SLTSaltr {
             return;
         }
 
-        isLoading = true;                
+        isLoading = true;
 
         try {
         	SLTHttpsConnection connection = createAppDataConnection(basicProperties, customProperties);
-            connection.execute();            
+            connection.execute(this);
         } catch (MalformedURLException e) {
-        	
+
         } catch (Exception e) {
             appDataLoadFailCallback();
         }
@@ -277,16 +271,16 @@ public class SLTSaltr {
         }
 
         SLTHttpsConnection connection = createPlayerPropertiesConnection(basicProperties, customProperties);
-        
+
         try {
             if (connection != null) {
-                connection.execute();
+                connection.execute(this);
             }
         } catch (Exception e) {
             System.err.println("error");
         }
     }
-    
+
     private SLTHttpsConnection createPlayerPropertiesConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception  {
     	Map<String, Object> args = new HashMap<String, Object>();
 
@@ -315,28 +309,29 @@ public class SLTSaltr {
         if (customProperties != null) {
             args.put("customProperties", customProperties);
         }
-        
+
+        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
         SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
-			
+
 			@Override
-			public void onSuccess(SLTSaltr saltr) {
+			public void onSuccess() {
 				System.out.println("success");
-				
+
 			}
-			
+
 			@Override
 			public void onFailure(SLTStatus status) {
 				System.out.println("error");
-				
+
 			}
-		});        
+		}, props);
 
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
         connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
-        
+
         connection.setUrl(SLTConfig.SALTR_API_URL);
-        
+
         return connection;
     }
 
@@ -345,9 +340,11 @@ public class SLTSaltr {
         String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
 
         try {
-        	SLTHttpsConnection connection = new SLTHttpsConnection(levelDataHandler);
+            SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.LEVEL);
+            props.setLevel(level);
+        	SLTHttpsConnection connection = new SLTHttpsConnection(levelDataHandler, props);
         	connection.setUrl(dataUrl);
-        	connection.execute();    
+        	connection.execute(this);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             loadFromSaltrFailCallback(level);
@@ -380,7 +377,7 @@ public class SLTSaltr {
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
         SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
         sltLevel.updateContent(level);
-        levelDataHandler.onSuccess(this);
+        levelDataHandler.onSuccess();
     }
 
     protected void levelContentLoadFailHandler() {
@@ -415,13 +412,13 @@ public class SLTSaltr {
             args.put("customProperties", customProperties);
         }
 
+        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.APP);
+        SLTHttpsConnection connection = new SLTHttpsConnection(appDataHandler, props);
 
-        SLTHttpsConnection connection = new SLTHttpsConnection(appDataHandler);
-                
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_APP_DATA);
         connection.setParameters("action", SLTConfig.CMD_APP_DATA);
-        
+
         connection.setUrl(SLTConfig.SALTR_API_URL);
 
         return connection;
@@ -469,7 +466,7 @@ public class SLTSaltr {
             repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
 
             activeFeatures = saltrFeatures;
-            appDataHandler.onSuccess(this);
+            appDataHandler.onSuccess();
 
             System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
         }
@@ -483,11 +480,11 @@ public class SLTSaltr {
         appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
     }
 
-    public void syncDeveloperFeatures() throws Exception {
+    public void syncDeveloperFeatures() {
 
         try {
             SLTHttpsConnection connection = createSyncFeaturesConnection();
-            connection.execute();
+            connection.execute(this);
         } catch (Exception e) {
         }
     }
@@ -520,10 +517,11 @@ public class SLTSaltr {
             args.put("saltrUserId", saltrUserId);
         }
 
+        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.FEATURE);
         SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
 			
 			@Override
-			public void onSuccess(SLTSaltr saltr) {
+			public void onSuccess() {
 				System.out.println("[Saltr] Dev feature Sync is complete.");
 			}
 			
@@ -531,7 +529,7 @@ public class SLTSaltr {
 			public void onFailure(SLTStatus status) {
 				System.out.println("[Saltr] Dev feature Sync has failed.");
 			}
-		});
+		}, props);
 
         
         connection.setParameters("args", gson.toJson(args));

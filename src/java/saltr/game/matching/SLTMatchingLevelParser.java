@@ -41,8 +41,8 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
             cellProperties = new ArrayList<SLTResponseBoardPropertyCell>();
         }
 
-        for (int i = 0; i < boardNode.getRows(); ++i) {
-            for (int j = 0; j < boardNode.getCols(); ++j) {
+        for (int i = 0; i < boardNode.getCols(); ++i) {
+            for (int j = 0; j < boardNode.getRows(); ++j) {
                 SLTCell cell = new SLTCell(i, j);
                 cells[i][j] = cell;
             }

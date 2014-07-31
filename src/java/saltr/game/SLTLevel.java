@@ -106,7 +106,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
 
             try {
                 boards = parser.parseLevelContent(boardsNode, assetMap);
-            } catch (Exception e) {
+             } catch (Exception e) {
                 throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
             }
 
