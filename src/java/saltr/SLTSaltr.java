@@ -13,7 +13,7 @@ import saltr.repository.SLTDummyRepository;
 import saltr.repository.SLTMobileRepository;
 import saltr.response.SLTResponse;
 import saltr.response.SLTResponseAppData;
-import saltr.response.level.SLTResponseLevelData;
+import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.*;
 
 import java.net.MalformedURLException;
@@ -226,7 +226,7 @@ public class SLTSaltr {
     }
 
     //TODO::@daal why we don't call SLTIDataHandler.onFailure in case if "if (isLoading || !started)". Is this code correct? if we override this.appDataHandler with new one the old handler will be lost
-    public void connect(SLTIDataHandler appDataHandler, Object basicProperties, Object customProperties) {
+    public void connect(final SLTIDataHandler appDataHandler, Object basicProperties, Object customProperties) {
         this.appDataHandler = appDataHandler;
         if (isLoading || !started) {
             return;
@@ -235,10 +235,58 @@ public class SLTSaltr {
         isLoading = true;
 
         try {
-            SLTHttpsConnection connection = createAppDataConnection(basicProperties, customProperties);
-            connection.execute(this);
-        } catch (MalformedURLException e) {
+            ApiCall apiCall = new ApiCall();
+            if(deviceId == null) {
+                throw new Exception("deviceId field is required and can't be null.");
+            }
+            apiCall.loadAppData(clientKey,deviceId,socialId,saltrUserId,basicProperties,customProperties,
+                    new SLTIAppDataDelegate() {
+                        @Override
+                        public void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> data) {
+                            SLTResponseAppData response = data.getResponseData();
+                            isLoading = false;
 
+                            if (devMode) {
+                                syncDeveloperFeatures();
+                            }
+
+                            Map<String, SLTFeature> saltrFeatures;
+                            try {
+                                saltrFeatures = SLTDeserializer.decodeFeatures(response);
+                            } catch (Exception e) {
+                                saltrFeatures = null;
+                                appDataHandler.onFailure(new SLTStatusFeaturesParseError());
+                            }
+
+                            try {
+                                experiments = SLTDeserializer.decodeExperiments(response);
+                            } catch (Exception e) {
+                                appDataHandler.onFailure(new SLTStatusExperimentsParseError());
+                            }
+
+                            try {
+                                levelPacks = SLTDeserializer.decodeLevels(response);
+                            } catch (Exception e) {
+                                appDataHandler.onFailure(new SLTStatusLevelsParseError());
+                            }
+
+                            saltrUserId = response.getSaltrUserId().toString();
+                            connected = true;
+                            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
+
+                            activeFeatures = saltrFeatures;
+                            appDataHandler.onSuccess();
+
+                            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+                        }
+
+                        @Override
+                        public void appDataLoadFailCallback() {
+                            isLoading = false;
+                            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+                        }
+                    }
+                    );
         } catch (Exception e) {
             appDataLoadFailCallback();
         }
@@ -317,21 +365,7 @@ public class SLTSaltr {
         }
 
         SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
-        SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
-
-            //TODO::@daal. What is this?
-            @Override
-            public void onSuccess() {
-                System.out.println("success");
-
-            }
-
-            @Override
-            public void onFailure(SLTStatus status) {
-                System.out.println("error");
-
-            }
-        }, props);
+        SLTHttpsConnection connection = new SLTHttpsConnection();
 
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
@@ -378,11 +412,11 @@ public class SLTSaltr {
 
     void loadFromSaltrFailCallback(SLTLevel sltLevel) throws Exception {
         Object contentData = loadLevelContentInternally(sltLevel);
-        levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelData.class));
+        levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
     }
 
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) throws Exception {
-        SLTResponseLevelData level = gson.fromJson(content.toString(), SLTResponseLevelData.class);
+        SLTResponseLevelContentData level = gson.fromJson(content.toString(), SLTResponseLevelContentData.class);
         sltLevel.updateContent(level);
         levelDataHandler.onSuccess();
     }

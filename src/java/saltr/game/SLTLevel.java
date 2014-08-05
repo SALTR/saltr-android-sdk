@@ -6,7 +6,7 @@ package saltr.game;
 import saltr.game.canvas2d.SLT2DLevelParser;
 import saltr.game.matching.SLTMatchingLevelParser;
 import saltr.response.level.SLTResponseBoard;
-import saltr.response.level.SLTResponseLevelData;
+import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.SLTStatusLevelsParserMissing;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private int localIndex;
     private int packIndex;
     private String contentUrl;
-    //TODO:: @daal why properties is Object? Can't be a map?
+    //TODO:: @daal why properties is Object? Can't be a map? and what types should have map's keys and values
     private Object properties;
     private String version;
 
@@ -88,7 +88,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return boards.get(id);
     }
 
-    public void updateContent(SLTResponseLevelData rootNode) throws Exception {
+    public void updateContent(SLTResponseLevelContentData rootNode) throws Exception {
         Map<String, SLTResponseBoard> boardsNode = null;
         if (rootNode.getBoards() != null) {
             boardsNode = rootNode.getBoards();

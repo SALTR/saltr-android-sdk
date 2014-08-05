@@ -5,8 +5,7 @@ package saltr.response.level;
 
 import java.util.Map;
 
-//TODO:: @daal. May be SLTResponseLevelContentData?
-public class SLTResponseLevelData {
+public class SLTResponseLevelContentData {
     private Map<String, SLTResponseBoard> boards;
     private Map<String, String> assetStates;
     private Map<String, SLTResponseAsset> assets;

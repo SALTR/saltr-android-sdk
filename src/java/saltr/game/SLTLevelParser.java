@@ -3,19 +3,16 @@
  */
 package saltr.game;
 
-import saltr.game.matching.*;
 import saltr.response.level.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class SLTLevelParser {
 
     public abstract Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap);
 
-    public Map<String, SLTAsset> parseLevelAssets(SLTResponseLevelData rootNode) {
+    public Map<String, SLTAsset> parseLevelAssets(SLTResponseLevelContentData rootNode) {
         Map<String, SLTResponseAsset> assetNodes = rootNode.getAssets();
         Map<String, SLTAsset> assetMap = new HashMap<String, SLTAsset>();
         for (Map.Entry<String, SLTResponseAsset> entry : assetNodes.entrySet()) {
