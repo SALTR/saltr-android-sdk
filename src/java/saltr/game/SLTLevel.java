@@ -11,6 +11,8 @@ import saltr.status.SLTStatusLevelsParserMissing;
 
 import java.util.Map;
 
+
+//TODO:: @daal. Why Comparable?
 public class SLTLevel implements Comparable<SLTLevel> {
     protected Map<String, SLTBoard> boards;
 
@@ -20,6 +22,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private int localIndex;
     private int packIndex;
     private String contentUrl;
+    //TODO:: @daal why properties is Object? Can't be a map?
     private Object properties;
     private String version;
 
@@ -116,6 +119,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
             }
         }
         else {
+            //TODO:: @daal. What does this mean?
             new SLTStatusLevelsParserMissing();
         }
     }

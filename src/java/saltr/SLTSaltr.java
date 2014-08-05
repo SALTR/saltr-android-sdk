@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.*;
 
+//TODO:: @daal Figure out all this exception issues. Also do something with System.out.prints
 public class SLTSaltr {
     public static final String CLIENT = "Android";
     public static final String API_VERSION = "1.0.1";
@@ -92,7 +93,7 @@ public class SLTSaltr {
     }
 
     public List<SLTLevel> getAllLevels() {
-        List<SLTLevel> allLevels = new ArrayList<SLTLevel>();
+        List<SLTLevel> allLevels = new ArrayList<>();
         for (SLTLevelPack pack : levelPacks) {
             List<SLTLevel> levels = pack.getLevels();
             for (SLTLevel level : levels) {
@@ -224,6 +225,7 @@ public class SLTSaltr {
         started = true;
     }
 
+    //TODO::@daal why we don't call SLTIDataHandler.onFailure in case if "if (isLoading || !started)". Is this code correct? if we override this.appDataHandler with new one the old handler will be lost
     public void connect(SLTIDataHandler appDataHandler, Object basicProperties, Object customProperties) {
         this.appDataHandler = appDataHandler;
         if (isLoading || !started) {
@@ -233,7 +235,7 @@ public class SLTSaltr {
         isLoading = true;
 
         try {
-        	SLTHttpsConnection connection = createAppDataConnection(basicProperties, customProperties);
+            SLTHttpsConnection connection = createAppDataConnection(basicProperties, customProperties);
             connection.execute(this);
         } catch (MalformedURLException e) {
 
@@ -255,6 +257,7 @@ public class SLTSaltr {
             levelContentLoadSuccessHandler(sltLevel, content);
         }
         else {
+            //TODO::@daal sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel)) ??? Or not equals?
             if (!useCache || sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
                 loadLevelContentFromSaltr(sltLevel);
             }
@@ -265,6 +268,7 @@ public class SLTSaltr {
         }
     }
 
+    //TODO:: @daal why we throw Exception type exception? Let's have some SLTException
     public void addProperties(Object basicProperties, Object customProperties) throws Exception {
         if (basicProperties == null && customProperties == null || saltrUserId == null) {
             return;
@@ -273,6 +277,7 @@ public class SLTSaltr {
         SLTHttpsConnection connection = createPlayerPropertiesConnection(basicProperties, customProperties);
 
         try {
+            //TODO:: @daal  Can connection be null?
             if (connection != null) {
                 connection.execute(this);
             }
@@ -281,14 +286,15 @@ public class SLTSaltr {
         }
     }
 
+    //TODO:: @daal why we throw Exception type exception? What if we will have one more high level class for building SLTHttpsConnections and executing them?
     private SLTHttpsConnection createPlayerPropertiesConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception  {
-    	Map<String, Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
 
         if (deviceId != null) {
             args.put("deviceId", deviceId);
-         }
+        }
         else {
             throw new Exception("Field 'deviceId' is a required.");
         }
@@ -313,18 +319,19 @@ public class SLTSaltr {
         SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
         SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
 
-			@Override
-			public void onSuccess() {
-				System.out.println("success");
+            //TODO::@daal. What is this?
+            @Override
+            public void onSuccess() {
+                System.out.println("success");
 
-			}
+            }
 
-			@Override
-			public void onFailure(SLTStatus status) {
-				System.out.println("error");
+            @Override
+            public void onFailure(SLTStatus status) {
+                System.out.println("error");
 
-			}
-		}, props);
+            }
+        }, props);
 
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
@@ -519,19 +526,19 @@ public class SLTSaltr {
 
         SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.FEATURE);
         SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
-			
-			@Override
-			public void onSuccess() {
-				System.out.println("[Saltr] Dev feature Sync is complete.");
-			}
-			
-			@Override
-			public void onFailure(SLTStatus status) {
-				System.out.println("[Saltr] Dev feature Sync has failed.");
-			}
-		}, props);
 
-        
+            @Override
+            public void onSuccess() {
+                System.out.println("[Saltr] Dev feature Sync is complete.");
+            }
+
+            @Override
+            public void onFailure(SLTStatus status) {
+                System.out.println("[Saltr] Dev feature Sync has failed.");
+            }
+        }, props);
+
+
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
         connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);

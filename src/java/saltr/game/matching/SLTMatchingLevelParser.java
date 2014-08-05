@@ -25,6 +25,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
     }
 
     private static void initializeCells(SLTCell[][] cells, SLTResponseBoard boardNode) {
+        //TODO:: @daal . What if? List<List<Integer>> blockedCells = boardNode.getBlockedCells() == null ? boardNode.getBlockedCells() : new ArrayList<List<Integer>>();
         List<List<Integer>> blockedCells;
         if (boardNode.getBlockedCells() != null && !boardNode.getBlockedCells().isEmpty()) {
             blockedCells = boardNode.getBlockedCells();
@@ -33,6 +34,8 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
             blockedCells = new ArrayList<List<Integer>>();
         }
 
+
+        //TODO:: @daal. Same here?
         List<SLTResponseBoardPropertyCell> cellProperties;
         if (boardNode.getProperties() != null && boardNode.getProperties().getCell() != null) {
             cellProperties = boardNode.getProperties().getCell();
@@ -43,8 +46,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
 
         for (int i = 0; i < boardNode.getCols(); ++i) {
             for (int j = 0; j < boardNode.getRows(); ++j) {
-                SLTCell cell = new SLTCell(i, j);
-                cells[i][j] = cell;
+                cells[i][j] = new SLTCell(i, j);
             }
         }
 

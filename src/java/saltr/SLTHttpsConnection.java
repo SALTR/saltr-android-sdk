@@ -18,59 +18,62 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO:: @daal Why this class has saltr property?
 class SLTHttpsConnection extends AsyncTask<SLTSaltr, Void, String> {
-	
-	private SLTIDataHandler dataHandler;
-	private List<NameValuePair> params;
-	private URL url;
+
+    private SLTIDataHandler dataHandler;
+    private List<NameValuePair> params;
+    private URL url;
     private SLTCallBackProperties properties;
-	
-	SLTHttpsConnection(SLTIDataHandler dataHandler, SLTCallBackProperties properties) {
+
+    SLTHttpsConnection(SLTIDataHandler dataHandler, SLTCallBackProperties properties) {
         params = new ArrayList<NameValuePair>();
-		this.dataHandler = dataHandler;
+        this.dataHandler = dataHandler;
         this.properties = properties;
-	}
+    }
 
     @Override
-	protected String doInBackground(SLTSaltr... arg) {
+    protected String doInBackground(SLTSaltr... arg) {
         SLTSaltr saltr = arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
 
-		try {		
-			URLConnection connection = url.openConnection();
-			String line;
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					connection.getInputStream()));
+        try {
+            URLConnection connection = url.openConnection();
+            String line;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
 
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
-			}
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
 
             response = builder.toString();
 
             onSuccess(saltr, response);
-		} catch (IOException e) {
+        } catch (IOException e) {
             onFailure(saltr);
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
         return response;
-	}
+    }
 
-	protected void onPostExecute(Long result) {
-		System.out.println("Downloaded " + result + " bytes");
-	}
-	
-	void setParameters(String key, Object value) {
-		params.add(new BasicNameValuePair(key, value.toString()));
-	}
-	
-	void setUrl(String urlStr) throws MalformedURLException {
-		String paramString = URLEncodedUtils.format(params, "utf-8");
-		urlStr += "?" + paramString;
-		url = new URL(urlStr);
-	}
+    protected void onPostExecute(Long result) {
+        System.out.println("Downloaded " + result + " bytes");
+    }
 
+    void setParameters(String key, Object value) {
+        params.add(new BasicNameValuePair(key, value.toString()));
+    }
+
+    void setUrl(String urlStr) throws MalformedURLException {
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+        urlStr += "?" + paramString;
+        url = new URL(urlStr);
+    }
+
+
+    //TODO @daal. What is this? Why is this.dataHandler for?
     private void onSuccess(SLTSaltr saltr, String responseData) {
         try {
             if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
