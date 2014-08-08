@@ -381,6 +381,10 @@ public class SLTSaltr {
         String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
 
         try {
+
+            ApiCall apiCall = new ApiCall();
+            apiCall.loadLevelContent(level);
+
             SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.LEVEL);
             props.setLevel(level);
         	SLTHttpsConnection connection = new SLTHttpsConnection(levelDataHandler, props);

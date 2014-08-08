@@ -34,7 +34,9 @@ public class ApiCall {
         SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties);
 
         Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("api", this);
+        params.put("params", )
         params.put("dataType", SLTDataType.APP);
         connection.execute(params);
     }
@@ -74,9 +76,10 @@ public class ApiCall {
         return connection;
     }
 
-    public void onSuccess(String responseData, SLTDataType dataType) {
+    public void onSuccess(String response, Object... arg) {
+        SLTDataType dataType = (SLTDataType)arg[1];//(SLTDataType)params.get("dataType");
         if(dataType.equals(SLTDataType.APP)) {
-            SLTResponse<SLTResponseAppData> data = gson.fromJson(responseData, new TypeToken<SLTResponse<SLTResponseAppData>>() {
+            SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
             }.getType());
 
             //TODO::@Daal . @xcho says RESULT_ERROR will not work double check why
@@ -84,6 +87,9 @@ public class ApiCall {
                 appDataDelegate.appDataLoadFailCallback();
             }
             appDataDelegate.appDataLoadSuccessCallback(data);
+        }
+        else if (dataType.equals(SLTDataType.LEVEL)){
+
         }
     }
 

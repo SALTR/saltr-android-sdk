@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 //TODO:: @daal Why this class has saltr property?
-class SLTHttpsConnection extends AsyncTask<Map<String,Object>, Void, String> {
+class SLTHttpsConnection extends AsyncTask<Object, Void, String> {
 
     private List<NameValuePair> params;
     private URL url;
@@ -30,9 +30,8 @@ class SLTHttpsConnection extends AsyncTask<Map<String,Object>, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Map<String,Object>... arg) {
-        ApiCall api = (ApiCall)arg[0].get("api");
-        SLTDataType dataType = (SLTDataType)arg[0].get("dataType");
+    protected String doInBackground(Object... arg) {
+        ApiCall api = (ApiCall)arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
 
@@ -48,7 +47,8 @@ class SLTHttpsConnection extends AsyncTask<Map<String,Object>, Void, String> {
 
             response = builder.toString();
 
-            onSuccess(api, response, dataType);
+            api.onSuccess(response, arg);
+//            onSuccess(api, response, params);
         } catch (IOException e) {
             onFailure(api);
             e.printStackTrace();
@@ -72,8 +72,8 @@ class SLTHttpsConnection extends AsyncTask<Map<String,Object>, Void, String> {
 
 
     //TODO @daal. What is this? Why is this.dataHandler for?
-    private void onSuccess(ApiCall api, String responseData, SLTDataType dataType) {
-        api.onSuccess(responseData, dataType);
+    private void onSuccess(ApiCall api, Object... arg) {
+//        api.onSuccess(arg);
 
 //        try {
 //            if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
