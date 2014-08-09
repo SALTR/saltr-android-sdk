@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+//TODO:: @daal why this duplicated properties?
 public class SLTResponseAppData implements Serializable {
     private List<SLTResponsePack> levelPackList;
     private List<SLTResponsePack> levelPacks;

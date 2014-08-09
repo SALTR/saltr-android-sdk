@@ -3,6 +3,7 @@
  */
 package saltr.game;
 
+import saltr.game.matching.SLTMatchingLevelParser;
 import saltr.response.level.*;
 
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public abstract class SLTLevelParser {
         return statesMap;
     }
 
+    //TODO:@daal looks like this method should be moved to SLTMatchingLevelParser?
     protected SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode) {
         String token = null;
         Object properties = null;

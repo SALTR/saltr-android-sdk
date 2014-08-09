@@ -15,7 +15,6 @@ public class SLTResponse<T> {
     }
 
     public String getStatus() {
-
         return status;
     }
 

@@ -96,7 +96,7 @@ class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
     }
 
     private void onFailure(ApiCall api) {
-        api.onFailure();
+        api.onFailure(callbackParams);
 //        if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
 //            saltr.appDataLoadFailCallback();
 //        }
