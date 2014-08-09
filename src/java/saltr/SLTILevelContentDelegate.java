@@ -4,5 +4,12 @@
 
 package saltr;
 
+import saltr.game.SLTLevel;
+import saltr.response.SLTResponse;
+import saltr.response.level.SLTResponseLevelContentData;
+
 public interface SLTILevelContentDelegate {
+
+    void loadFromSaltrSuccessCallback(SLTResponseLevelContentData data, SLTLevel sltLevel);
+    void loadFromSaltrFailCallback(SLTLevel sltLevel);
 }

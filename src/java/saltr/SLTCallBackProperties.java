@@ -7,7 +7,7 @@ package saltr;
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
 
-//TODO:: @daal. Lets rename to SLTCallbackProperties. What is this class about?
+//TODO:: @daal. What is this class about?
 class SLTCallBackProperties {
     private SLTDataType dataType;
     private SLTLevelPack pack;

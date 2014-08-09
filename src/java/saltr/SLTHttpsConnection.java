@@ -20,17 +20,20 @@ import java.util.List;
 import java.util.Map;
 
 //TODO:: @daal Why this class has saltr property?
-class SLTHttpsConnection extends AsyncTask<Object, Void, String> {
+class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
 
     private List<NameValuePair> params;
     private URL url;
 
-    SLTHttpsConnection() {
+    private Map<String, Object> callbackParams;
+
+    SLTHttpsConnection(Map<String, Object> callParams) {
         params = new ArrayList<NameValuePair>();
+        this.callbackParams = callParams;
     }
 
     @Override
-    protected String doInBackground(Object... arg) {
+    protected String doInBackground(ApiCall... arg) {
         ApiCall api = (ApiCall)arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
@@ -47,8 +50,7 @@ class SLTHttpsConnection extends AsyncTask<Object, Void, String> {
 
             response = builder.toString();
 
-            api.onSuccess(response, arg);
-//            onSuccess(api, response, params);
+            api.onSuccess(response, callbackParams);
         } catch (IOException e) {
             onFailure(api);
             e.printStackTrace();
