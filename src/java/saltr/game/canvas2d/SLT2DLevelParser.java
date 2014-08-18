@@ -57,30 +57,25 @@ public class SLT2DLevelParser extends SLTLevelParser {
     }
 
     private SLT2DBoardLayer parseLayer(SLTResponseBoardLayer layerNode, int layerIndex, Map<String, SLTAsset> assetMap) {
-        String layerId = layerNode.getLayerId();
-        SLT2DBoardLayer layer = new SLT2DBoardLayer(layerId, layerIndex);
+        SLT2DBoardLayer layer = new SLT2DBoardLayer(layerNode.getLayerId(), layerIndex);
         parseAssetInstances(layer, layerNode.getAssets(), assetMap);
         return layer;
     }
 
     private void parseAssetInstances(SLT2DBoardLayer layer, List<SLTResponseBoardChunkAsset> assetNodes,  Map<String, SLTAsset> assetMap) {
         for (SLTResponseBoardChunkAsset assetInstanceNode : assetNodes) {
-            Integer x = assetInstanceNode.getX();
-            Integer y = assetInstanceNode.getY();
-            Integer rotation = assetInstanceNode.getRotation();
             SLTAsset asset = assetMap.get(assetInstanceNode.getAssetId());
             List<String> stateIds = assetInstanceNode.getStates();
-            layer.addAssetInstance(new SLT2DAssetInstance(asset.getToken(), asset.getInstanceStates(stateIds), asset.getProperties(), x, y, rotation));
+            layer.addAssetInstance(new SLT2DAssetInstance(asset.getToken(), asset.getInstanceStates(stateIds),
+                    asset.getProperties(), assetInstanceNode.getX(), assetInstanceNode.getY(), assetInstanceNode.getRotation()));
         }
     }
 
     @Override
     protected SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode) {
-        String token = stateNode.getToken();
-        Object properties = stateNode.getProperties();
         int pivotX = stateNode.getPivotX() != null ? stateNode.getPivotX() : 0;
         int pivotY = stateNode.getPivotY() != null ? stateNode.getPivotY() : 0;
 
-        return new SLT2DAssetState(token, properties, pivotX, pivotY);
+        return new SLT2DAssetState(stateNode.getToken(), stateNode.getProperties(), pivotX, pivotY);
     }
 }

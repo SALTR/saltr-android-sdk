@@ -4,6 +4,7 @@
 package saltr.response;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class SLTResponseLevel implements Serializable {
     private String id;
@@ -12,7 +13,7 @@ public class SLTResponseLevel implements Serializable {
     private Integer localIndex;
     private String url;
     private Integer version;
-    private Object properties;
+    private Map<String, Object> properties;
     private Long activeVariationId;
 
     public Integer getLocalIndex() {
@@ -71,11 +72,11 @@ public class SLTResponseLevel implements Serializable {
         this.version = version;
     }
 
-    public Object getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
-    public void setProperties(Object properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 }

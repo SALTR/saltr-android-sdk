@@ -28,8 +28,8 @@ public class ApiCall {
         connection.execute(this);
     }
 
-
-    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) throws MalformedURLException, Exception  {
+    //TODO:: @daal why we throw Exception type exception? What if we will have one more high level class for building SLTHttpsConnections and executing them?
+    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) throws Exception  {
         Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
@@ -78,11 +78,10 @@ public class ApiCall {
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
         try {
             connection.setUrl(dataUrl);
+            connection.execute(this);
         } catch (MalformedURLException e) {
-            //TODO::return fail callback
-
+            onFailure(callbackParams);
         }
-        connection.execute(this);
 
     }
 
@@ -174,8 +173,7 @@ public class ApiCall {
             SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
             }.getType());
 
-            //TODO::@Daal . @xcho says RESULT_ERROR will not work double check why
-            if(data == null || !data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
+            if(data == null || data.getStatus().equals(SLTConfig.RESULT_ERROR)) {
                 appDataDelegate.appDataLoadFailCallback();
             }
             appDataDelegate.appDataLoadSuccessCallback(data);

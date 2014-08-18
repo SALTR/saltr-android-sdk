@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-//TODO:: @daal Why this class has saltr property?
 class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
 
     private List<NameValuePair> params;
@@ -34,7 +33,7 @@ class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
 
     @Override
     protected String doInBackground(ApiCall... arg) {
-        ApiCall api = (ApiCall)arg[0];
+        ApiCall api = arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
 
@@ -52,14 +51,10 @@ class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
 
             api.onSuccess(response, callbackParams);
         } catch (IOException e) {
-            onFailure(api);
+            api.onFailure(callbackParams);
             e.printStackTrace();
         }
         return response;
-    }
-
-    protected void onPostExecute(Long result) {
-        System.out.println("Downloaded " + result + " bytes");
     }
 
     void setParameters(String key, Object value) {
@@ -70,48 +65,5 @@ class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
         String paramString = URLEncodedUtils.format(params, "utf-8");
         urlStr += "?" + paramString;
         url = new URL(urlStr);
-    }
-
-
-    //TODO @daal. What is this? Why is this.dataHandler for?
-    private void onSuccess(ApiCall api, Object... arg) {
-//        api.onSuccess(arg);
-
-//        try {
-//            if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
-//                saltr.appDataLoadSuccessCallback(responseData);
-//            }
-//            else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
-//                saltr.loadFromSaltrSuccessCallback(responseData, properties.getLevel());
-//            }
-//            else if (properties.getDataType().getValue().equals(SLTDataType.PLAYER_PROPERTY.getValue())) {
-//                System.out.println("success");
-//            }
-//            else if (properties.getDataType().getValue().equals(SLTDataType.FEATURE.getValue())) {
-//                System.out.println("[Saltr] Dev feature Sync is complete.");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    private void onFailure(ApiCall api) {
-        api.onFailure(callbackParams);
-//        if (properties.getDataType().getValue().equals(SLTDataType.APP.getValue())) {
-//            saltr.appDataLoadFailCallback();
-//        }
-//        else if (properties.getDataType().getValue().equals(SLTDataType.LEVEL.getValue())) {
-//            try {
-//                saltr.loadFromSaltrFailCallback(properties.getLevel());
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        else if (properties.getDataType().getValue().equals(SLTDataType.PLAYER_PROPERTY.getValue())) {
-//            System.err.println("error");
-//        }
-//        else if (properties.getDataType().getValue().equals(SLTDataType.FEATURE.getValue())) {
-//            System.err.println("[Saltr] Dev feature Sync has failed.");
-//        }
     }
 }

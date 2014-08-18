@@ -13,15 +13,13 @@ public class SLTDeserializer {
 
     public static List<SLTExperiment> decodeExperiments(SLTResponseAppData rootNode) {
         List<SLTExperiment> experiments = new ArrayList<SLTExperiment>();
-        List<SLTResponseExperiment> experimentNodes = rootNode.getExperiments() != null ? rootNode.getExperiments() : rootNode.getExperimentInfo();
+        List<SLTResponseExperiment> experimentNodes = rootNode.getExperiments();
 
         if (experimentNodes != null) {
             for (SLTResponseExperiment experimentNode : experimentNodes) {
-                String token = experimentNode.getToken();
-                String partition = experimentNode.getPartition() != null ? experimentNode.getPartition() : experimentNode.getPartitionName();
-                String type = experimentNode.getType();
+
                 List<String> customEvents = experimentNode.getCustomEventList();
-                experiments.add(new SLTExperiment(token, partition, type, customEvents));
+                experiments.add(new SLTExperiment(experimentNode.getToken(), experimentNode.getPartition(), experimentNode.getType(), customEvents));
             }
         }
         return experiments;
@@ -45,8 +43,7 @@ public class SLTDeserializer {
                 int packIndex = levelPackNode.getIndex();
                 for (SLTResponseLevel levelNode : levelNodes) {
                     ++index;
-                    int localIndex = levelNode.getIndex() != null ? levelNode.getIndex() : levelNode.getLocalIndex();
-                    levels.add(new SLTLevel(levelNode.getId(), levelType, index, localIndex, packIndex, levelNode.getUrl(),
+                    levels.add(new SLTLevel(levelNode.getId(), levelType, index, levelNode.getIndex(), packIndex, levelNode.getUrl(),
                             levelNode.getProperties(), levelNode.getVersion().toString()));
                 }
                 Collections.sort(levels);
@@ -62,7 +59,7 @@ public class SLTDeserializer {
         List<SLTResponseFeature> featuresNodes = data.getFeatures();
         if (featuresNodes != null) {
             for (SLTResponseFeature featureNode : featuresNodes) {
-                Map<String, String> properties = (featureNode.getData() != null) ? featureNode.getData() : featureNode.getProperties();
+                Map<String, String> properties = featureNode.getProperties();
                 SLTFeature feature = new SLTFeature(featureNode.getToken(), properties, featureNode.getRequired());
                 features.put(featureNode.getToken(), feature);
             }

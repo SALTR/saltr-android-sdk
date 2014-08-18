@@ -307,8 +307,7 @@ public class SLTSaltr {
             levelContentLoadSuccessHandler(sltLevel, gson.fromJson(content.toString(), SLTResponseLevelContentData.class));
         }
         else {
-            //TODO::@daal sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel)) ??? Or not equals?
-            if (!useCache || sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
+            if (!useCache || !sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
                 loadLevelContentFromSaltr(sltLevel);
             }
             else {
@@ -330,60 +329,7 @@ public class SLTSaltr {
 
         ApiCall apiCall = new ApiCall();
         apiCall.addProperties(clientKey,deviceId,socialId,saltrUserId,basicProperties, customProperties);
-
-//        SLTHttpsConnection connection = createPlayerPropertiesConnection(basicProperties, customProperties);
-//        try {
-//            //TODO:: @daal  Can connection be null?
-//            if (connection != null) {
-//                connection.execute(this);
-//            }
-//        } catch (Exception e) {
-//            System.err.println("error");
-//        }
     }
-
-    //TODO:: @daal why we throw Exception type exception? What if we will have one more high level class for building SLTHttpsConnections and executing them?
-//    private SLTHttpsConnection createPlayerPropertiesConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception  {
-//        Map<String, Object> args = new HashMap<>();
-//
-//        args.put("clientKey", clientKey);
-//
-//        if (deviceId != null) {
-//            args.put("deviceId", deviceId);
-//        }
-//        else {
-//            throw new Exception("Field 'deviceId' is a required.");
-//        }
-//
-//        if (socialId != null) {
-//            args.put("socialId", socialId);
-//
-//        }
-//
-//        if (saltrUserId != null) {
-//            args.put("saltrUserId", saltrUserId);
-//        }
-//
-//        if (basicProperties != null) {
-//            args.put("basicProperties", basicProperties);
-//        }
-//
-//        if (customProperties != null) {
-//            args.put("customProperties", customProperties);
-//        }
-//
-//        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.PLAYER_PROPERTY);
-//        SLTHttpsConnection connection = new SLTHttpsConnection();
-//
-//        connection.setParameters("args", gson.toJson(args));
-//        connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
-//        connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
-//
-//        connection.setUrl(SLTConfig.SALTR_API_URL);
-//
-//        return connection;
-//    }
-
 
     protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
         try {
@@ -416,132 +362,11 @@ public class SLTSaltr {
         }
     }
 
-//    void loadFromSaltrSuccessCallback(Object data, SLTLevel sltLevel) throws Exception {
-//        if (data != null) {
-//            cacheLevelContent(sltLevel, data);
-//        }
-//        else {
-//            data = loadLevelContentInternally(sltLevel);
-//        }
-//
-//        if (data != null) {
-//            levelContentLoadSuccessHandler(sltLevel, data);
-//        }
-//        else {
-//            levelContentLoadFailHandler();
-//        }
-//    }
-
-//    void loadFromSaltrFailCallback(SLTLevel sltLevel) throws Exception {
-//        Object contentData = loadLevelContentInternally(sltLevel);
-//        levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
-//    }
-
     //TODO:: @daal why this method throws exception? Isn't that better to catch it here and call fail calback?
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, SLTResponseLevelContentData level) throws Exception {
         sltLevel.updateContent(level);
         levelDataHandler.onSuccess();
     }
-
-//    protected void levelContentLoadFailHandler() {
-//        levelDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
-//    }
-
-//    private SLTHttpsConnection createAppDataConnection(Object basicProperties, Object customProperties) throws MalformedURLException, Exception {
-//        Map<String, Object> args = new HashMap<String, Object>();
-//
-//        args.put("clientKey", clientKey);
-//
-//        if (deviceId != null) {
-//            args.put("deviceId", deviceId);
-//        }
-//        else {
-//            throw new Error("Field 'deviceId' is a required.");
-//        }
-//
-//        if (socialId != null) {
-//            args.put("socialId", socialId);
-//        }
-//
-//        if (saltrUserId != null) {
-//            args.put("saltrUserId", saltrUserId);
-//        }
-//
-//        if (basicProperties != null) {
-//            args.put("basicProperties", basicProperties);
-//        }
-//
-//        if (customProperties != null) {
-//            args.put("customProperties", customProperties);
-//        }
-//
-//        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.APP);
-//        SLTHttpsConnection connection = new SLTHttpsConnection(appDataHandler, props);
-//
-//        connection.setParameters("args", gson.toJson(args));
-//        connection.setParameters("cmd", SLTConfig.CMD_APP_DATA);
-//        connection.setParameters("action", SLTConfig.CMD_APP_DATA);
-//
-//        connection.setUrl(SLTConfig.SALTR_API_URL);
-//
-//        return connection;
-//    }
-
-//    void appDataLoadSuccessCallback(String json) throws Exception {
-//        SLTResponse<SLTResponseAppData> data = gson.fromJson(json, new TypeToken<SLTResponse<SLTResponseAppData>>() {
-//        }.getType());
-//
-//        if (data == null) {
-//            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
-//            return;
-//        }
-//
-//        SLTResponseAppData response = data.getResponseData();
-//        isLoading = false;
-//
-//        if (devMode) {
-//            syncDeveloperFeatures();
-//        }
-//
-//        if (data.getStatus().equals(SLTConfig.RESULT_SUCCEED)) {
-//            Map<String, SLTFeature> saltrFeatures;
-//            try {
-//                saltrFeatures = SLTDeserializer.decodeFeatures(response);
-//            } catch (Exception e) {
-//                saltrFeatures = null;
-//                appDataHandler.onFailure(new SLTStatusFeaturesParseError());
-//            }
-//
-//            try {
-//                experiments = SLTDeserializer.decodeExperiments(response);
-//            } catch (Exception e) {
-//                appDataHandler.onFailure(new SLTStatusExperimentsParseError());
-//            }
-//
-//            try {
-//                levelPacks = SLTDeserializer.decodeLevels(response);
-//            } catch (Exception e) {
-//                appDataHandler.onFailure(new SLTStatusLevelsParseError());
-//            }
-//
-//            saltrUserId = response.getSaltrUserId().toString();
-//            connected = true;
-//            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
-//
-//            activeFeatures = saltrFeatures;
-//            appDataHandler.onSuccess();
-//
-//            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
-//        }
-//        else {
-//            appDataHandler.onFailure(new SLTStatus(data.getErrorCode(), data.getResponseMessage()));
-//        }
-//    }
-
-//    void appDataLoadFailCallback() {
-//        isLoading = false;
-//        appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
-//    }
 
     public void syncDeveloperFeatures() {
         try {
@@ -554,58 +379,6 @@ public class SLTSaltr {
         } catch (Exception e) {
         }
     }
-
-//    private SLTHttpsConnection createSyncFeaturesConnection() throws MalformedURLException, Exception {
-//        List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
-//        for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
-//            Map<String, String> tempMap = new HashMap<String, String>();
-//            tempMap.put("token", entry.getValue().getToken());
-//            tempMap.put("value", gson.toJson(entry.getValue().getProperties()));
-//            featureList.add(tempMap);
-//        }
-//
-//        Map<String, Object> args = new HashMap<String, Object>();
-//        args.put("clientKey", clientKey);
-//        args.put("developerFeatures", featureList);
-//
-//        if (deviceId != null) {
-//            args.put("deviceId", deviceId);
-//        }
-//        else {
-//            throw new Error("Field 'deviceId' is a required.");
-//        }
-//
-//        if (socialId != null) {
-//            args.put("socialId", socialId);
-//        }
-//
-//        if (saltrUserId != null) {
-//            args.put("saltrUserId", saltrUserId);
-//        }
-//
-//        SLTCallBackProperties props = new SLTCallBackProperties(SLTDataType.FEATURE);
-//        SLTHttpsConnection connection = new SLTHttpsConnection(new SLTIDataHandler() {
-//
-//            @Override
-//            public void onSuccess() {
-//                System.out.println("[Saltr] Dev feature Sync is complete.");
-//            }
-//
-//            @Override
-//            public void onFailure(SLTStatus status) {
-//                System.out.println("[Saltr] Dev feature Sync has failed.");
-//            }
-//        }, props);
-//
-//
-//        connection.setParameters("args", gson.toJson(args));
-//        connection.setParameters("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
-//        connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
-//
-//        connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
-//
-//        return connection;
-//    }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {
         String cachedFileName = MessageFormat.format(SLTConfig.LOCAL_LEVEL_CONTENT_CACHE_URL_TEMPLATE, sltLevel.getPackIndex(), sltLevel.getLocalIndex());

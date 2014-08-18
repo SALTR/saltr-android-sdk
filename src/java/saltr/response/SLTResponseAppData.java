@@ -7,13 +7,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-//TODO:: @daal why this duplicated properties?
 public class SLTResponseAppData implements Serializable {
-    private List<SLTResponsePack> levelPackList;
     private List<SLTResponsePack> levelPacks;
-    private List<SLTResponseFeature> featureList;
     private List<SLTResponseFeature> features;
-    private List<SLTResponseExperiment> experimentInfo;
     private List<SLTResponseExperiment> experiments;
     private UUID saltId;
     private UUID saltrUserId;
@@ -49,30 +45,6 @@ public class SLTResponseAppData implements Serializable {
 
     public void setLevelPacks(List<SLTResponsePack> levelPacks) {
         this.levelPacks = levelPacks;
-    }
-
-    public List<SLTResponsePack> getLevelPackList() {
-        return levelPackList;
-    }
-
-    public void setLevelPackList(List<SLTResponsePack> levelPackList) {
-        this.levelPackList = levelPackList;
-    }
-
-    public List<SLTResponseFeature> getFeatureList() {
-        return featureList;
-    }
-
-    public void setFeatureList(List<SLTResponseFeature> featureList) {
-        this.featureList = featureList;
-    }
-
-    public List<SLTResponseExperiment> getExperimentInfo() {
-        return experimentInfo;
-    }
-
-    public void setExperimentInfo(List<SLTResponseExperiment> experimentInfo) {
-        this.experimentInfo = experimentInfo;
     }
 
     public UUID getSaltId() {
