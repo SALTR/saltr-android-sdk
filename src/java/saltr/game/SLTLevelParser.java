@@ -51,20 +51,5 @@ public abstract class SLTLevelParser {
         return statesMap;
     }
 
-    //TODO:@daal looks like this method should be moved to SLTMatchingLevelParser?
-    // might be changed
-    protected SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode) {
-        String token = null;
-        Object properties = null;
-
-        if (stateNode.getToken() != null) {
-            token = stateNode.getToken();
-        }
-
-        if (stateNode.getProperties() != null) {
-            properties = stateNode.getProperties();
-        }
-
-        return new SLTAssetState(token, properties);
-    }
+    protected abstract SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode);
 }
