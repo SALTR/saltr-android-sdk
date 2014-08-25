@@ -5,6 +5,7 @@ package saltr.repository;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +65,7 @@ public class SLTDummyRepository extends ContextWrapper implements ISLTRepository
             fin.close();
             ois.close();
         } catch (Exception e) {
-            System.err.println("[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SLTDummyRepository.getObjectFromApplication", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
         }
         return object;
     }

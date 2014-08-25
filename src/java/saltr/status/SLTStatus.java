@@ -3,6 +3,8 @@
  */
 package saltr.status;
 
+import android.util.Log;
+
 public class SLTStatus {
     public static final int AUTHORIZATION_ERROR = 1001;
     public static final int VALIDATION_ERROR = 1002;
@@ -26,7 +28,7 @@ public class SLTStatus {
     public SLTStatus(int statusCode, String statusMessage) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
-        System.err.println(statusMessage);
+        Log.e("SLTStatus.constructor", statusMessage);
     }
 
     public String getStatusMessage() {

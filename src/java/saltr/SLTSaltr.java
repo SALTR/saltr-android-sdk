@@ -4,6 +4,7 @@
 package saltr;
 
 import android.content.ContextWrapper;
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import saltr.game.SLTLevel;
@@ -20,7 +21,6 @@ import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.*;
 
-//TODO:: @daal Figure out all this exception issues. Also do something with System.out.prints
 public class SLTSaltr {
     public static final String CLIENT = "Android";
     public static final String API_VERSION = "1.0.1";
@@ -277,7 +277,7 @@ public class SLTSaltr {
                             activeFeatures = saltrFeatures;
                             appDataHandler.onSuccess();
 
-                            System.out.println("[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+                            Log.i("SLTSaltr.connect", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
                         }
 
                         @Override

@@ -5,6 +5,7 @@ package saltr.repository;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.util.Log;
 
 import java.io.*;
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
             fin.close();
             ois.close();
         } catch (Exception e) {
-            System.err.println("[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SLTMobileRepository.getInternal", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
         }
         return object;
     }
@@ -88,7 +89,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
             out.close();
             oos.close();
         } catch (IOException e) {
-            System.err.println("[MobileStorageEngine] : error while saving object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SLTMobileRepository.saveInternal", "[MobileStorageEngine] : error while saving object.\n', message : '" + e.getMessage() + "'");
         }
     }
 }
