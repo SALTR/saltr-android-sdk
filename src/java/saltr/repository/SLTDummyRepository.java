@@ -65,7 +65,7 @@ public class SLTDummyRepository extends ContextWrapper implements ISLTRepository
             fin.close();
             ois.close();
         } catch (Exception e) {
-            Log.e("SLTDummyRepository.getObjectFromApplication", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SALTR", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
         }
         return object;
     }

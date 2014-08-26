@@ -28,7 +28,7 @@ public class SLTStatus {
     public SLTStatus(int statusCode, String statusMessage) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
-        Log.e("SLTStatus.constructor", statusMessage);
+        Log.e("SALTR", statusMessage);
     }
 
     public String getStatusMessage() {

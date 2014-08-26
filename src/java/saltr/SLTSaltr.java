@@ -277,7 +277,7 @@ public class SLTSaltr {
                             activeFeatures = saltrFeatures;
                             appDataHandler.onSuccess();
 
-                            Log.i("SLTSaltr.connect", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+                            Log.i("SALTR", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
                         }
 
                         @Override

@@ -75,7 +75,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
             fin.close();
             ois.close();
         } catch (Exception e) {
-            Log.e("SLTMobileRepository.getInternal", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SALTR", "[MobileStorageEngine] : error while getting object.\n', message : '" + e.getMessage() + "'");
         }
         return object;
     }
@@ -89,7 +89,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
             out.close();
             oos.close();
         } catch (IOException e) {
-            Log.e("SLTMobileRepository.saveInternal", "[MobileStorageEngine] : error while saving object.\n', message : '" + e.getMessage() + "'");
+            Log.e("SALTR", "[MobileStorageEngine] : error while saving object.\n', message : '" + e.getMessage() + "'");
         }
     }
 }
