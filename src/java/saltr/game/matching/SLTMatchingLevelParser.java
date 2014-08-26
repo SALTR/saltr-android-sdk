@@ -121,7 +121,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
                 chunkAssetRules.add(new SLTChunkAssetRule(assetNode.getAssetId(), assetNode.getDistributionType(),
                         assetNode.getDistributionValue(), assetNode.getStates()));
             }
-            new SLTChunk(layer.getToken(), layer.getIndex(), chunkCells, chunkAssetRules, assetMap);
+            layer.addChunk(new SLTChunk(layer.getToken(), layer.getIndex(), chunkCells, chunkAssetRules, assetMap));
         }
     }
 
