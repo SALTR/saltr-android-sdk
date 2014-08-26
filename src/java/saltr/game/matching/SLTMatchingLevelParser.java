@@ -139,8 +139,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
     }
 
     private static SLTMatchBoardLayer parseLayer(SLTResponseBoardLayer layerNode, int layerIndex, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
-        String layerId = layerNode.getLayerId();
-        SLTMatchBoardLayer layer = new SLTMatchBoardLayer(layerId, layerIndex);
+        SLTMatchBoardLayer layer = new SLTMatchBoardLayer(layerNode.getToken(), layerIndex);
         parseFixedAssets(layer, layerNode.getFixedAssets(), cells, assetMap);
         parseLayerChunks(layer, layerNode.getChunks(), cells, assetMap);
         return layer;

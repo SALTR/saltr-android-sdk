@@ -56,7 +56,6 @@ public class ApiCall {
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("cmd", SLTConfig.CMD_ADD_PROPERTIES);
         connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
 
         connection.setUrl(SLTConfig.SALTR_API_URL);
@@ -120,7 +119,6 @@ public class ApiCall {
 
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("cmd", SLTConfig.CMD_DEV_SYNC_FEATURES);
         connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
 
         connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
@@ -158,7 +156,6 @@ public class ApiCall {
 
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("cmd", SLTConfig.CMD_APP_DATA);
         connection.setParameters("action", SLTConfig.CMD_APP_DATA);
 
         connection.setUrl(SLTConfig.SALTR_API_URL);

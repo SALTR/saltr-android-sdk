@@ -6,10 +6,18 @@ package saltr.response.level;
 import java.util.List;
 
 public class SLTResponseBoardLayer {
-    private String layerId;
+    private String token;
     private List<SLTResponseBoardChunk> chunks;
     private List<SLTResponseBoardFixedAsset> fixedAssets;
     private List<SLTResponseBoardChunkAsset> assets;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public List<SLTResponseBoardChunkAsset> getAssets() {
         return assets;
@@ -17,14 +25,6 @@ public class SLTResponseBoardLayer {
 
     public void setAssets(List<SLTResponseBoardChunkAsset> assets) {
         this.assets = assets;
-    }
-
-    public String getLayerId() {
-        return layerId;
-    }
-
-    public void setLayerId(String layerId) {
-        this.layerId = layerId;
     }
 
     public List<SLTResponseBoardChunk> getChunks() {

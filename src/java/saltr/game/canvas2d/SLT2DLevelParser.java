@@ -57,7 +57,7 @@ public class SLT2DLevelParser extends SLTLevelParser {
     }
 
     private SLT2DBoardLayer parseLayer(SLTResponseBoardLayer layerNode, int layerIndex, Map<String, SLTAsset> assetMap) {
-        SLT2DBoardLayer layer = new SLT2DBoardLayer(layerNode.getLayerId(), layerIndex);
+        SLT2DBoardLayer layer = new SLT2DBoardLayer(layerNode.getToken(), layerIndex);
         parseAssetInstances(layer, layerNode.getAssets(), assetMap);
         return layer;
     }
