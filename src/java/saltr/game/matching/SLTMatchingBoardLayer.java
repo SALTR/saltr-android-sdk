@@ -14,7 +14,7 @@ public class SLTMatchingBoardLayer extends SLTBoard {
     private Integer cols;
     private SLTCell[][] cells;
 
-    public SLTMatchingBoardLayer(SLTCell[][] cells, List<SLTBoardLayer> layers, Map<String, String> properties) {
+    public SLTMatchingBoardLayer(SLTCell[][] cells, List<SLTBoardLayer> layers, Map<String, Object> properties) {
         super(layers, properties);
         this.cells = cells;
         cols = cells.length;

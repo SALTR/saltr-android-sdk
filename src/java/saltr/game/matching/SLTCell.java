@@ -11,7 +11,7 @@ import java.util.Map;
 public class SLTCell implements Cloneable {
     private int row;
     private int col;
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
     private Boolean isBlocked;
     private Map<String, SLTAssetInstance> instancesByLayerId;
     private Map<String, SLTAssetInstance> instancesByLayerIndex;
@@ -19,7 +19,7 @@ public class SLTCell implements Cloneable {
     public SLTCell(int row, int col) {
         this.row = row;
         this.col = col;
-        properties = new HashMap<String, String>();
+        properties = new HashMap<String, Object>();
         isBlocked = false;
         instancesByLayerId = new HashMap<String, SLTAssetInstance>();
         instancesByLayerIndex = new HashMap<String, SLTAssetInstance>();
@@ -49,11 +49,11 @@ public class SLTCell implements Cloneable {
         this.isBlocked = isBlocked;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 

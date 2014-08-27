@@ -59,7 +59,7 @@ public class SLTDeserializer {
         List<SLTResponseFeature> featuresNodes = data.getFeatures();
         if (featuresNodes != null) {
             for (SLTResponseFeature featureNode : featuresNodes) {
-                Map<String, String> properties = featureNode.getProperties();
+                Map<String, Object> properties = featureNode.getProperties();
                 SLTFeature feature = new SLTFeature(featureNode.getToken(), properties, featureNode.getRequired());
                 features.put(featureNode.getToken(), feature);
             }

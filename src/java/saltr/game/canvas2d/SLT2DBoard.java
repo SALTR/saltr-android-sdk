@@ -14,7 +14,7 @@ public class SLT2DBoard extends SLTBoard {
     private Integer width;
     private Integer height;
 
-    public SLT2DBoard(Integer width, Integer height, List<SLTBoardLayer> layers, Map<String, String> properties) {
+    public SLT2DBoard(Integer width, Integer height, List<SLTBoardLayer> layers, Map<String, Object> properties) {
         super(layers, properties);
         this.width = width;
         this.height = height;

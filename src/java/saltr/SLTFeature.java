@@ -7,10 +7,10 @@ import java.util.Map;
 
 public class SLTFeature {
     private String token;
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
     private Boolean required;
 
-    public SLTFeature(String token, Map<String, String> properties, Boolean required) {
+    public SLTFeature(String token, Map<String, Object> properties, Boolean required) {
         this.token = token;
         this.properties = properties;
         this.required = required;
@@ -20,7 +20,7 @@ public class SLTFeature {
         return token;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 

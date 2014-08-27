@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class SLTResponseBoardPropertyCell {
     private List<Integer> coords;
-    private Map<String, String> value;
+    private Map<String, Object> value;
 
     public List<Integer> getCoords() {
         return coords;
@@ -18,11 +18,11 @@ public class SLTResponseBoardPropertyCell {
         this.coords = coords;
     }
 
-    public Map<String, String> getValue() {
+    public Map<String, Object> getValue() {
         return value;
     }
 
-    public void setValue(Map<String, String> value) {
+    public void setValue(Map<String, Object> value) {
         this.value = value;
     }
 }

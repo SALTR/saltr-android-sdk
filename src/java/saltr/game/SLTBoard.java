@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 public class SLTBoard {
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
     protected List<SLTBoardLayer> layers;
 
-    public SLTBoard(List<SLTBoardLayer> layers, Map<String, String> properties) {
+    public SLTBoard(List<SLTBoardLayer> layers, Map<String, Object> properties) {
         this.properties = properties;
         this.layers = layers;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 

@@ -8,14 +8,14 @@ import java.util.Map;
 
 public class SLTResponseFeature implements Serializable {
     private String token;
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
     private Boolean required;
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 

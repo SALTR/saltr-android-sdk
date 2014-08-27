@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class SLTResponseLevelContentData {
     private Map<String, SLTResponseBoard> boards;
-    private Map<String, String> assetStates;
+    private Map<String, Object> assetStates;
     private Map<String, SLTResponseAsset> assets;
     private Map<String, Object> properties;
 
@@ -19,11 +19,11 @@ public class SLTResponseLevelContentData {
         this.boards = boards;
     }
 
-    public Map<String, String> getAssetStates() {
+    public Map<String, Object> getAssetStates() {
         return assetStates;
     }
 
-    public void setAssetStates(Map<String, String> assetStates) {
+    public void setAssetStates(Map<String, Object> assetStates) {
         this.assetStates = assetStates;
     }
 

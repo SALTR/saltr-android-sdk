@@ -90,9 +90,9 @@ public class SLTApiCall {
     }
 
     private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
-        List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> featureList = new ArrayList<Map<String, Object>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
-            Map<String, String> tempMap = new HashMap<String, String>();
+            Map<String, Object> tempMap = new HashMap<String, Object>();
             tempMap.put("token", entry.getValue().getToken());
             tempMap.put("value", gson.toJson(entry.getValue().getProperties()));
             featureList.add(tempMap);

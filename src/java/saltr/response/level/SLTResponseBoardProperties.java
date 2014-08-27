@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 public class SLTResponseBoardProperties {
-    private Map<String, String> board;
+    private Map<String, Object> board;
     private List<SLTResponseBoardPropertyCell> cell;
 
-    public Map<String, String> getBoard() {
+    public Map<String, Object> getBoard() {
         return board;
     }
 
-    public void setBoard(Map<String, String> board) {
+    public void setBoard(Map<String, Object> board) {
         this.board = board;
     }
 

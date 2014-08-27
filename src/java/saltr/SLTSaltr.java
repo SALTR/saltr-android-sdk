@@ -189,7 +189,7 @@ public class SLTSaltr {
     /**
      * If you want to have a feature synced with SALTR you should call define before getAppData call.
      */
-    public void defineFeature(String token, Map<String, String> properties, boolean required) {
+    public void defineFeature(String token, Map<String, Object> properties, boolean required) {
         if (!started) {
             developerFeatures.put(token, new SLTFeature(token, properties, required));
         }

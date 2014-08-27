@@ -34,8 +34,8 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
         if (obj == null) {
             return null;
         }
-        Map<String, String> map = (Map<String, String>) obj;
-        return map.get("_VERSION_");
+        Map<String, Object> map = (Map<String, Object>) obj;
+        return map.get("_VERSION_").toString();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SLTMobileRepository extends ContextWrapper implements ISLTRepositor
         String path = cacheDirectory + File.separator + name;
         saveInternal(path, object);
         path = cacheDirectory + File.separator + name.replace("", "") + "_VERSION_";
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("_VERSION_", version);
         saveInternal(path, map);
     }
