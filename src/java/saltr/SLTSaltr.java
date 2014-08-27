@@ -7,10 +7,7 @@ import android.content.ContextWrapper;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import saltr.exception.SLTException;
-import saltr.exception.SLTMissingDeviceIdException;
-import saltr.exception.SLTMissingFeaturesException;
-import saltr.exception.SLTMissingLevelsException;
+import saltr.exception.*;
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
 import saltr.repository.ISLTRepository;
@@ -179,7 +176,7 @@ public class SLTSaltr {
     }
 
     public void importLevels(String path) throws SLTException {
-        if (started) {
+        if (!started) {
             path = SLTConfig.LOCAL_LEVELPACK_PACKAGE_URL;
             Object applicationData = repository.getObjectFromApplication(path);
             levelPacks = SLTDeserializer.decodeLevels((SLTResponseAppData) applicationData);
@@ -214,16 +211,16 @@ public class SLTSaltr {
             throw new SLTMissingLevelsException("Levels should be imported.");
         }
 
-        Object cachedData = repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
+        SLTResponseAppData cachedData = (SLTResponseAppData) repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
         if (cachedData == null) {
             for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
                 activeFeatures.put(entry.getKey(), entry.getValue());
             }
         }
         else {
-            activeFeatures = SLTDeserializer.decodeFeatures((SLTResponseAppData) cachedData);
-            experiments = SLTDeserializer.decodeExperiments((SLTResponseAppData) cachedData);
-            saltrUserId = ((SLTResponseAppData) cachedData).getSaltrUserId().toString();
+            activeFeatures = SLTDeserializer.decodeFeatures(cachedData);
+            experiments = SLTDeserializer.decodeExperiments(cachedData);
+            saltrUserId = cachedData.getSaltrUserId().toString();
         }
 
         started = true;
@@ -238,9 +235,8 @@ public class SLTSaltr {
 
         isLoading = true;
         if (deviceId == null) {
-
+            throw new SLTMissingDeviceIdException("device id is missing");
         }
-        try {
             ApiCall apiCall = new ApiCall();
             apiCall.loadAppData(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties,
                     new SLTIAppDataDelegate() {
@@ -250,7 +246,7 @@ public class SLTSaltr {
                             isLoading = false;
 
                             if (devMode) {
-//                                syncDeveloperFeatures();
+                                syncDeveloperFeatures();
                             }
 
                             Map<String, SLTFeature> saltrFeatures;
@@ -290,11 +286,10 @@ public class SLTSaltr {
                         }
                     }
             );
-        } catch (Exception e) {
-            isLoading = false;
-            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
-
-        }
+//        } catch (Exception e) {
+//            isLoading = false;
+//            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+//        }
     }
 
     public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) {
@@ -320,14 +315,21 @@ public class SLTSaltr {
         }
     }
 
-    //TODO:: @daal why we throw Exception type exception? Let's have some SLTException
-    public void addProperties(Object basicProperties, Object customProperties) throws SLTMissingDeviceIdException {
+    public void addProperties(Object basicProperties, Object customProperties) throws SLTMissingDeviceIdException, SLTNotStartedException {
         if (basicProperties == null && customProperties == null || saltrUserId == null) {
             return;
         }
 
-        if (deviceId == null) {
-            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
+//        if (deviceId == null) {
+//            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
+//        }
+
+        if(!started) {
+            throw new SLTNotStartedException("");
+        }
+
+        if(saltrUserId == null) {
+            throw new SLTRuntimeException("saltrUser id is missing");
         }
 
         ApiCall apiCall = new ApiCall();
@@ -357,7 +359,6 @@ public class SLTSaltr {
         }
     }
 
-    //TODO:: @daal why this method throws exception? Isn't that better to catch it here and call fail calback?
     protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, SLTResponseLevelContentData level) {
         try {
             sltLevel.updateContent(level);
@@ -368,11 +369,7 @@ public class SLTSaltr {
         }
     }
 
-    public void syncDeveloperFeatures() throws SLTMissingDeviceIdException {
-        if (deviceId == null) {
-            throw new SLTMissingDeviceIdException("Field 'deviceId' is a required.");
-        }
-
+    private void syncDeveloperFeatures(){
         ApiCall apiCall = new ApiCall();
         apiCall.syncDeveloperFeatures(clientKey, deviceId, socialId, saltrUserId, developerFeatures);
     }

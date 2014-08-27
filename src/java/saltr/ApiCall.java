@@ -34,14 +34,7 @@ public class ApiCall {
 
         args.put("clientKey", clientKey);
         args.put("deviceId", deviceId);
-
-        if (socialId != null) {
-            args.put("socialId", socialId);
-        }
-
-        if (saltrUserId != null) {
-            args.put("saltrUserId", saltrUserId);
-        }
+        args.put("saltrUserId", saltrUserId);
 
         if (basicProperties != null) {
             args.put("basicProperties", basicProperties);
