@@ -2,6 +2,7 @@ package saltr;/*
  * Copyright (c) 2014 Plexonic Ltd
  */
 
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import saltr.game.SLTLevel;
@@ -23,13 +24,12 @@ public class ApiCall {
         gson = new Gson();
     }
 
-    public void addProperties(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) throws Exception {
+    public void addProperties(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
         SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey,deviceId,socialId,saltrUserId,basicProperties,customProperties);
         connection.execute(this);
     }
 
-    //TODO:: @daal why we throw Exception type exception? What if we will have one more high level class for building SLTHttpsConnections and executing them?
-    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) throws Exception  {
+    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
@@ -58,12 +58,17 @@ public class ApiCall {
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
 
-        connection.setUrl(SLTConfig.SALTR_API_URL);
+        try {
+            connection.setUrl(SLTConfig.SALTR_API_URL);
+        } catch (MalformedURLException e) {
+            onFailure(callbackParams);
+            Log.e("SALTR", e.getMessage());
+        }
 
         return connection;
     }
 
-    public void syncDeveloperFeatures(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) throws Exception {
+    public void syncDeveloperFeatures(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
         SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, deviceId, socialId, saltrUserId, developerFeatures);
         connection.execute(this);
     }
@@ -84,14 +89,13 @@ public class ApiCall {
 
     }
 
-    public void loadAppData(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties, SLTIAppDataDelegate delegate) throws Exception{
+    public void loadAppData(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties, SLTIAppDataDelegate delegate) {
         appDataDelegate = delegate;
         SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties);
-
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) throws MalformedURLException, Exception {
+    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
         List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
             Map<String, String> tempMap = new HashMap<String, String>();
@@ -121,14 +125,17 @@ public class ApiCall {
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
 
-        connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
+        try {
+            connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
+        } catch (MalformedURLException e) {
+            Log.e("SALTR", e.getMessage());
+            onFailure(callbackParams);
+        }
 
         return connection;
     }
 
-
-
-    private SLTHttpsConnection createAppDataConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) throws MalformedURLException, Exception {
+    private SLTHttpsConnection createAppDataConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<String, Object>();
 
         args.put("clientKey", clientKey);
@@ -158,7 +165,12 @@ public class ApiCall {
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("action", SLTConfig.CMD_APP_DATA);
 
-        connection.setUrl(SLTConfig.SALTR_API_URL);
+        try {
+            connection.setUrl(SLTConfig.SALTR_API_URL);
+        } catch (MalformedURLException e) {
+            Log.e("SALTR", e.getMessage());
+            onFailure(callbackParams);
+        }
 
         return connection;
     }

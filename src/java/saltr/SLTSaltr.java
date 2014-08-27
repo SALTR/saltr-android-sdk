@@ -7,6 +7,10 @@ import android.content.ContextWrapper;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import saltr.exception.SLTException;
+import saltr.exception.SLTMissingDeviceIdException;
+import saltr.exception.SLTMissingFeaturesException;
+import saltr.exception.SLTMissingLevelsException;
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
 import saltr.repository.ISLTRepository;
@@ -174,40 +178,40 @@ public class SLTSaltr {
         return null;
     }
 
-    public void importLevels(String path) throws Exception {
+    public void importLevels(String path) throws SLTException {
         if (started) {
             path = SLTConfig.LOCAL_LEVELPACK_PACKAGE_URL;
             Object applicationData = repository.getObjectFromApplication(path);
             levelPacks = SLTDeserializer.decodeLevels((SLTResponseAppData) applicationData);
         }
         else {
-            throw new Exception("Method 'importLevels()' should be called before 'start()' only.");
+            throw new SLTException("Method 'importLevels()' should be called before 'start()' only.");
         }
     }
 
     /**
      * If you want to have a feature synced with SALTR you should call define before getAppData call.
      */
-    public void defineFeature(String token, Map<String, String> properties, boolean required) throws Exception {
+    public void defineFeature(String token, Map<String, String> properties, boolean required) throws SLTException {
         if (!started) {
             developerFeatures.put(token, new SLTFeature(token, properties, required));
         }
         else {
-            throw new Exception("Method 'defineFeature()' should be called before 'start()' only.");
+            throw new SLTException("Method 'defineFeature()' should be called before 'start()' only.");
         }
     }
 
-    public void start() throws Exception {
+    public void start() throws SLTMissingDeviceIdException, SLTMissingFeaturesException, SLTMissingLevelsException {
         if (deviceId == null) {
-            throw new Exception("deviceId field is required and can't be null.");
+            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
         }
 
         if (developerFeatures.isEmpty() && !useNoFeatures) {
-            throw new Exception("Features should be defined.");
+            throw new SLTMissingFeaturesException("Features should be defined.");
         }
 
         if (levelPacks.isEmpty() && !useNoLevels) {
-            throw new Exception("Levels should be imported.");
+            throw new SLTMissingLevelsException("Levels should be imported.");
         }
 
         Object cachedData = repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
@@ -233,13 +237,12 @@ public class SLTSaltr {
         }
 
         isLoading = true;
+        if (deviceId == null) {
 
+        }
         try {
             ApiCall apiCall = new ApiCall();
-            if(deviceId == null) {
-                throw new Exception("deviceId field is required and can't be null.");
-            }
-            apiCall.loadAppData(clientKey,deviceId,socialId,saltrUserId,basicProperties,customProperties,
+            apiCall.loadAppData(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties,
                     new SLTIAppDataDelegate() {
                         @Override
                         public void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> data) {
@@ -247,7 +250,7 @@ public class SLTSaltr {
                             isLoading = false;
 
                             if (devMode) {
-                                syncDeveloperFeatures();
+//                                syncDeveloperFeatures();
                             }
 
                             Map<String, SLTFeature> saltrFeatures;
@@ -286,7 +289,7 @@ public class SLTSaltr {
                             appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
                         }
                     }
-                    );
+            );
         } catch (Exception e) {
             isLoading = false;
             appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
@@ -294,7 +297,7 @@ public class SLTSaltr {
         }
     }
 
-    public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) throws Exception {
+    public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) {
         this.levelDataHandler = levelDataHandler;
         Object content;
         if (!connected) {
@@ -318,41 +321,33 @@ public class SLTSaltr {
     }
 
     //TODO:: @daal why we throw Exception type exception? Let's have some SLTException
-    public void addProperties(Object basicProperties, Object customProperties) throws Exception {
+    public void addProperties(Object basicProperties, Object customProperties) throws SLTMissingDeviceIdException {
         if (basicProperties == null && customProperties == null || saltrUserId == null) {
             return;
         }
 
         if (deviceId == null) {
-            throw new Exception("deviceId field is required and can't be null.");
+            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
         }
 
         ApiCall apiCall = new ApiCall();
-        apiCall.addProperties(clientKey,deviceId,socialId,saltrUserId,basicProperties, customProperties);
+        apiCall.addProperties(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties);
     }
 
-    protected void loadLevelContentFromSaltr(SLTLevel level) throws Exception {
+    protected void loadLevelContentFromSaltr(SLTLevel level) {
         try {
             ApiCall apiCall = new ApiCall();
             apiCall.loadLevelContent(level, new SLTILevelContentDelegate() {
                 @Override
                 public void loadFromSaltrSuccessCallback(SLTResponseLevelContentData data, SLTLevel sltLevel) {
                     cacheLevelContent(sltLevel, data);
-                    try {
-                        levelContentLoadSuccessHandler(sltLevel, data);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    levelContentLoadSuccessHandler(sltLevel, data);
                 }
 
                 @Override
                 public void loadFromSaltrFailCallback(SLTLevel sltLevel) {
                     Object contentData = loadLevelContentInternally(sltLevel);
-                    try {
-                        levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
                 }
             });
         } catch (Exception e) {
@@ -363,21 +358,23 @@ public class SLTSaltr {
     }
 
     //TODO:: @daal why this method throws exception? Isn't that better to catch it here and call fail calback?
-    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, SLTResponseLevelContentData level) throws Exception {
-        sltLevel.updateContent(level);
-        levelDataHandler.onSuccess();
+    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, SLTResponseLevelContentData level) {
+        try {
+            sltLevel.updateContent(level);
+            levelDataHandler.onSuccess();
+        } catch (SLTException e) {
+            Log.e("SALTR", e.getMessage());
+            levelDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
+        }
     }
 
-    public void syncDeveloperFeatures() {
-        try {
-            if (deviceId == null) {
-                throw new Error("Field 'deviceId' is a required.");
-            }
-
-            ApiCall apiCall = new ApiCall();
-            apiCall.syncDeveloperFeatures(clientKey,deviceId,socialId,saltrUserId,developerFeatures);
-        } catch (Exception e) {
+    public void syncDeveloperFeatures() throws SLTMissingDeviceIdException {
+        if (deviceId == null) {
+            throw new SLTMissingDeviceIdException("Field 'deviceId' is a required.");
         }
+
+        ApiCall apiCall = new ApiCall();
+        apiCall.syncDeveloperFeatures(clientKey, deviceId, socialId, saltrUserId, developerFeatures);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

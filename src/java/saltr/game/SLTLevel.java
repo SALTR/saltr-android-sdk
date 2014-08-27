@@ -3,6 +3,7 @@
  */
 package saltr.game;
 
+import saltr.exception.SLTException;
 import saltr.game.canvas2d.SLT2DLevelParser;
 import saltr.game.matching.SLTMatchingLevelParser;
 import saltr.response.level.SLTResponseBoard;
@@ -86,13 +87,13 @@ public class SLTLevel implements Comparable<SLTLevel> {
         return boards.get(id);
     }
 
-    public void updateContent(SLTResponseLevelContentData rootNode) throws Exception {
-        Map<String, SLTResponseBoard> boardsNode = null;
+    public void updateContent(SLTResponseLevelContentData rootNode) throws SLTException {
+        Map<String, SLTResponseBoard> boardsNode;
         if (rootNode.getBoards() != null) {
             boardsNode = rootNode.getBoards();
         }
         else {
-            throw new Exception("[SALTR: ERROR] Level content's 'boards' node can not be found.");
+            throw new SLTException("[SALTR: ERROR] Level content's 'boards' node can not be found.");
         }
 
         properties = rootNode.getProperties();
@@ -102,13 +103,13 @@ public class SLTLevel implements Comparable<SLTLevel> {
             try {
                 assetMap = parser.parseLevelAssets(rootNode);
             } catch (Exception e) {
-                throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+                throw new SLTException("[SALTR: ERROR] Level content boards parsing failed.");
             }
 
             try {
                 boards = parser.parseLevelContent(boardsNode, assetMap);
              } catch (Exception e) {
-                throw new Exception("[SALTR: ERROR] Level content boards parsing failed.");
+                throw new SLTException("[SALTR: ERROR] Level content boards parsing failed.");
             }
 
             if (boards != null) {
