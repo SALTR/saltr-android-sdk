@@ -3,8 +3,8 @@
  */
 package saltr.exception;
 
-public class SLTMissingFeaturesException extends SLTException {
-    public SLTMissingFeaturesException(String message) {
-        super(message);
+public class SLTMissingFeaturesException extends SLTRuntimeException {
+    public SLTMissingFeaturesException() {
+        super("Features should be defined.");
     }
 }

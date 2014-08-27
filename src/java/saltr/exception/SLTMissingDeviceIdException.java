@@ -4,7 +4,7 @@
 package saltr.exception;
 
 public class SLTMissingDeviceIdException extends SLTRuntimeException {
-    public SLTMissingDeviceIdException(String message) {
-        super(message);
+    public SLTMissingDeviceIdException() {
+        super("deviceId field is required and can't be null.");
     }
 }

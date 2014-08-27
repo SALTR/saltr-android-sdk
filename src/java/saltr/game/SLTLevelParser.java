@@ -3,8 +3,10 @@
  */
 package saltr.game;
 
-import saltr.game.matching.SLTMatchingLevelParser;
-import saltr.response.level.*;
+import saltr.response.level.SLTResponseAsset;
+import saltr.response.level.SLTResponseBoard;
+import saltr.response.level.SLTResponseBoardChunkAssetState;
+import saltr.response.level.SLTResponseLevelContentData;
 
 import java.util.HashMap;
 import java.util.Map;

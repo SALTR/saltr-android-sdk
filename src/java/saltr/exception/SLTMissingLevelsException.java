@@ -3,8 +3,8 @@
  */
 package saltr.exception;
 
-public class SLTMissingLevelsException extends SLTException {
-    public SLTMissingLevelsException(String message) {
-        super(message);
+public class SLTMissingLevelsException extends SLTRuntimeException {
+    public SLTMissingLevelsException() {
+        super("Levels should be imported.");
     }
 }

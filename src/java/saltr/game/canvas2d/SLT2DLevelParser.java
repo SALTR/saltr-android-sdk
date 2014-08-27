@@ -18,7 +18,8 @@ public class SLT2DLevelParser extends SLTLevelParser {
 
     private static SLT2DLevelParser instance;
 
-    private SLT2DLevelParser() {}
+    private SLT2DLevelParser() {
+    }
 
     public static SLT2DLevelParser getInstance() {
         if (instance == null) {
@@ -62,7 +63,7 @@ public class SLT2DLevelParser extends SLTLevelParser {
         return layer;
     }
 
-    private void parseAssetInstances(SLT2DBoardLayer layer, List<SLTResponseBoardChunkAsset> assetNodes,  Map<String, SLTAsset> assetMap) {
+    private void parseAssetInstances(SLT2DBoardLayer layer, List<SLTResponseBoardChunkAsset> assetNodes, Map<String, SLTAsset> assetMap) {
         for (SLTResponseBoardChunkAsset assetInstanceNode : assetNodes) {
             SLTAsset asset = assetMap.get(assetInstanceNode.getAssetId());
             List<String> stateIds = assetInstanceNode.getStates();

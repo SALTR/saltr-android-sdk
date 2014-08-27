@@ -13,19 +13,19 @@ import saltr.response.level.SLTResponseLevelContentData;
 import java.net.MalformedURLException;
 import java.util.*;
 
-public class ApiCall {
+public class SLTApiCall {
 
     private SLTIAppDataDelegate appDataDelegate;
     private SLTILevelContentDelegate levelContentDelegate;
     private final Gson gson;
 
 
-    public ApiCall() {
+    public SLTApiCall() {
         gson = new Gson();
     }
 
     public void addProperties(String clientKey, String saltrUserId, Object basicProperties, Object customProperties) {
-        if(basicProperties == null && customProperties == null) {
+        if (basicProperties == null && customProperties == null) {
             return;
         }
         SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey, saltrUserId, basicProperties, customProperties);
@@ -62,8 +62,8 @@ public class ApiCall {
         return connection;
     }
 
-    public void syncDeveloperFeatures(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
-        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, deviceId, socialId, saltrUserId, developerFeatures);
+    public void syncDeveloperFeatures(String clientKey, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
+        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, saltrUserId, developerFeatures);
         connection.execute(this);
     }
 
@@ -89,7 +89,7 @@ public class ApiCall {
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
+    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
         List<Map<String, String>> featureList = new ArrayList<Map<String, String>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
             Map<String, String> tempMap = new HashMap<String, String>();
@@ -101,11 +101,6 @@ public class ApiCall {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("clientKey", clientKey);
         args.put("developerFeatures", featureList);
-        args.put("deviceId", deviceId);
-
-        if (socialId != null) {
-            args.put("socialId", socialId);
-        }
 
         if (saltrUserId != null) {
             args.put("saltrUserId", saltrUserId);
@@ -179,7 +174,8 @@ public class ApiCall {
                 appDataDelegate.appDataLoadFailCallback();
             }
             appDataDelegate.appDataLoadSuccessCallback(data);
-        } else if (dataType.equals(SLTDataType.LEVEL)) {
+        }
+        else if (dataType.equals(SLTDataType.LEVEL)) {
             SLTResponseLevelContentData data = gson.fromJson(response.toString(), SLTResponseLevelContentData.class);
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
 
@@ -195,7 +191,8 @@ public class ApiCall {
         SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
         if (dataType.equals(SLTDataType.APP)) {
             appDataDelegate.appDataLoadFailCallback();
-        } else if (dataType.equals(SLTDataType.LEVEL)) {
+        }
+        else if (dataType.equals(SLTDataType.LEVEL)) {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
         }

@@ -4,11 +4,11 @@
 package saltr.game;
 
 import saltr.exception.SLTException;
+import saltr.exception.SLTLevelParserNullPointerException;
 import saltr.game.canvas2d.SLT2DLevelParser;
 import saltr.game.matching.SLTMatchingLevelParser;
 import saltr.response.level.SLTResponseBoard;
 import saltr.response.level.SLTResponseLevelContentData;
-import saltr.status.SLTStatusLevelsParserMissing;
 
 import java.util.Map;
 
@@ -33,12 +33,12 @@ public class SLTLevel implements Comparable<SLTLevel> {
 
 
     public static SLTLevelParser getParser(String levelType) {
-    	if (levelType.equals(LEVEL_TYPE_MATCHING)) {
-    	    return SLTMatchingLevelParser.getInstance();
-    	}
-    	else if (levelType.equals(LEVEL_TYPE_2DCANVAS)) {
+        if (levelType.equals(LEVEL_TYPE_MATCHING)) {
+            return SLTMatchingLevelParser.getInstance();
+        }
+        else if (levelType.equals(LEVEL_TYPE_2DCANVAS)) {
             return SLT2DLevelParser.getInstance();
-    	}
+        }
         return null;
     }
 
@@ -108,7 +108,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
 
             try {
                 boards = parser.parseLevelContent(boardsNode, assetMap);
-             } catch (Exception e) {
+            } catch (Exception e) {
                 throw new SLTException("[SALTR: ERROR] Level content boards parsing failed.");
             }
 
@@ -118,9 +118,7 @@ public class SLTLevel implements Comparable<SLTLevel> {
             }
         }
         else {
-            //TODO:: @daal. What does this mean?
-            // must be changed
-            new SLTStatusLevelsParserMissing();
+            throw new SLTLevelParserNullPointerException();
         }
     }
 

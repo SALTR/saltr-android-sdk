@@ -24,7 +24,7 @@ public class SLTBoard {
     }
 
     public void regenerate() {
-        for (SLTBoardLayer layer: layers) {
+        for (SLTBoardLayer layer : layers) {
             layer.regenerate();
         }
     }

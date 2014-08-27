@@ -4,7 +4,6 @@
 package saltr.game.matching;
 
 import saltr.game.SLTBoardLayer;
-import saltr.game.matching.SLTChunk;
 
 import java.util.ArrayList;
 import java.util.List;

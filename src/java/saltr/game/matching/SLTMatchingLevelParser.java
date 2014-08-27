@@ -15,7 +15,8 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
 
     private static SLTMatchingLevelParser instance;
 
-    private SLTMatchingLevelParser() {}
+    private SLTMatchingLevelParser() {
+    }
 
     public static SLTMatchingLevelParser getInstance() {
         if (instance == null) {

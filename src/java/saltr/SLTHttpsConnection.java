@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
+class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
 
     private List<NameValuePair> params;
     private URL url;
@@ -32,8 +32,8 @@ class SLTHttpsConnection extends AsyncTask<ApiCall, Void, String> {
     }
 
     @Override
-    protected String doInBackground(ApiCall... arg) {
-        ApiCall api = arg[0];
+    protected String doInBackground(SLTApiCall... arg) {
+        SLTApiCall api = arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
 

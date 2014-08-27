@@ -6,7 +6,6 @@ package saltr;
 import android.content.ContextWrapper;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import saltr.exception.*;
 import saltr.game.SLTLevel;
 import saltr.game.SLTLevelPack;
@@ -18,9 +17,11 @@ import saltr.response.SLTResponseAppData;
 import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.*;
 
-import java.net.MalformedURLException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SLTSaltr {
     public static final String CLIENT = "Android";
@@ -175,10 +176,9 @@ public class SLTSaltr {
         return null;
     }
 
-    public void importLevels(String path) throws SLTException {
+    public void importLevels() throws SLTException {
         if (!started) {
-            path = SLTConfig.LOCAL_LEVELPACK_PACKAGE_URL;
-            Object applicationData = repository.getObjectFromApplication(path);
+            Object applicationData = repository.getObjectFromApplication(SLTConfig.LOCAL_LEVELPACK_PACKAGE_URL);
             levelPacks = SLTDeserializer.decodeLevels((SLTResponseAppData) applicationData);
         }
         else {
@@ -189,26 +189,26 @@ public class SLTSaltr {
     /**
      * If you want to have a feature synced with SALTR you should call define before getAppData call.
      */
-    public void defineFeature(String token, Map<String, String> properties, boolean required) throws SLTException {
+    public void defineFeature(String token, Map<String, String> properties, boolean required) {
         if (!started) {
             developerFeatures.put(token, new SLTFeature(token, properties, required));
         }
         else {
-            throw new SLTException("Method 'defineFeature()' should be called before 'start()' only.");
+            throw new SLTRuntimeException("Method 'defineFeature()' should be called before 'start()' only.");
         }
     }
 
-    public void start() throws SLTMissingDeviceIdException, SLTMissingFeaturesException, SLTMissingLevelsException {
+    public void start() {
         if (deviceId == null) {
-            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
+            throw new SLTMissingDeviceIdException();
         }
 
         if (developerFeatures.isEmpty() && !useNoFeatures) {
-            throw new SLTMissingFeaturesException("Features should be defined.");
+            throw new SLTMissingFeaturesException();
         }
 
         if (levelPacks.isEmpty() && !useNoLevels) {
-            throw new SLTMissingLevelsException("Levels should be imported.");
+            throw new SLTMissingLevelsException();
         }
 
         SLTResponseAppData cachedData = (SLTResponseAppData) repository.getObjectFromCache(SLTConfig.APP_DATA_URL_CACHE);
@@ -235,61 +235,57 @@ public class SLTSaltr {
 
         isLoading = true;
         if (deviceId == null) {
-            throw new SLTMissingDeviceIdException("device id is missing");
+            throw new SLTMissingDeviceIdException();
         }
-            ApiCall apiCall = new ApiCall();
-            apiCall.loadAppData(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties,
-                    new SLTIAppDataDelegate() {
-                        @Override
-                        public void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> data) {
-                            SLTResponseAppData response = data.getResponseData();
-                            isLoading = false;
+        SLTApiCall apiCall = new SLTApiCall();
+        apiCall.loadAppData(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties,
+                new SLTIAppDataDelegate() {
+                    @Override
+                    public void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> data) {
+                        SLTResponseAppData response = data.getResponseData();
+                        isLoading = false;
 
-                            if (devMode) {
-                                syncDeveloperFeatures();
-                            }
-
-                            Map<String, SLTFeature> saltrFeatures;
-                            try {
-                                saltrFeatures = SLTDeserializer.decodeFeatures(response);
-                            } catch (Exception e) {
-                                saltrFeatures = null;
-                                appDataHandler.onFailure(new SLTStatusFeaturesParseError());
-                            }
-
-                            try {
-                                experiments = SLTDeserializer.decodeExperiments(response);
-                            } catch (Exception e) {
-                                appDataHandler.onFailure(new SLTStatusExperimentsParseError());
-                            }
-
-                            try {
-                                levelPacks = SLTDeserializer.decodeLevels(response);
-                            } catch (Exception e) {
-                                appDataHandler.onFailure(new SLTStatusLevelsParseError());
-                            }
-
-                            saltrUserId = response.getSaltrUserId().toString();
-                            connected = true;
-                            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
-
-                            activeFeatures = saltrFeatures;
-                            appDataHandler.onSuccess();
-
-                            Log.i("SALTR", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+                        if (devMode) {
+                            syncDeveloperFeatures();
                         }
 
-                        @Override
-                        public void appDataLoadFailCallback() {
-                            isLoading = false;
-                            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+                        Map<String, SLTFeature> saltrFeatures;
+                        try {
+                            saltrFeatures = SLTDeserializer.decodeFeatures(response);
+                        } catch (Exception e) {
+                            saltrFeatures = null;
+                            appDataHandler.onFailure(new SLTStatusFeaturesParseError());
                         }
+
+                        try {
+                            experiments = SLTDeserializer.decodeExperiments(response);
+                        } catch (Exception e) {
+                            appDataHandler.onFailure(new SLTStatusExperimentsParseError());
+                        }
+
+                        try {
+                            levelPacks = SLTDeserializer.decodeLevels(response);
+                        } catch (Exception e) {
+                            appDataHandler.onFailure(new SLTStatusLevelsParseError());
+                        }
+
+                        saltrUserId = response.getSaltrUserId().toString();
+                        connected = true;
+                        repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
+
+                        activeFeatures = saltrFeatures;
+                        appDataHandler.onSuccess();
+
+                        Log.i("SALTR", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
                     }
-            );
-//        } catch (Exception e) {
-//            isLoading = false;
-//            appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
-//        }
+
+                    @Override
+                    public void appDataLoadFailCallback() {
+                        isLoading = false;
+                        appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+                    }
+                }
+        );
     }
 
     public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) {
@@ -315,26 +311,22 @@ public class SLTSaltr {
         }
     }
 
-    public void addProperties(Object basicProperties, Object customProperties) throws SLTMissingDeviceIdException, SLTNotStartedException {
-//        if (deviceId == null) {
-//            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
-//        }
-
-        if(!started) {
-            throw new SLTNotStartedException("");
+    public void addProperties(Object basicProperties, Object customProperties) {
+        if (!started) {
+            throw new SLTNotStartedException();
         }
 
-        if(saltrUserId == null) {
-            throw new SLTRuntimeException("saltrUser id is missing");
+        if (saltrUserId == null) {
+            throw new SLTMissingSaltrUserIdException();
         }
 
-        ApiCall apiCall = new ApiCall();
+        SLTApiCall apiCall = new SLTApiCall();
         apiCall.addProperties(clientKey, saltrUserId, basicProperties, customProperties);
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {
         try {
-            ApiCall apiCall = new ApiCall();
+            SLTApiCall apiCall = new SLTApiCall();
             apiCall.loadLevelContent(level, new SLTILevelContentDelegate() {
                 @Override
                 public void loadFromSaltrSuccessCallback(SLTResponseLevelContentData data, SLTLevel sltLevel) {
@@ -365,9 +357,9 @@ public class SLTSaltr {
         }
     }
 
-    private void syncDeveloperFeatures(){
-        ApiCall apiCall = new ApiCall();
-        apiCall.syncDeveloperFeatures(clientKey, deviceId, socialId, saltrUserId, developerFeatures);
+    private void syncDeveloperFeatures() {
+        SLTApiCall apiCall = new SLTApiCall();
+        apiCall.syncDeveloperFeatures(clientKey, saltrUserId, developerFeatures);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {
