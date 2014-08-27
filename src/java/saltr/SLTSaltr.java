@@ -316,10 +316,6 @@ public class SLTSaltr {
     }
 
     public void addProperties(Object basicProperties, Object customProperties) throws SLTMissingDeviceIdException, SLTNotStartedException {
-        if (basicProperties == null && customProperties == null || saltrUserId == null) {
-            return;
-        }
-
 //        if (deviceId == null) {
 //            throw new SLTMissingDeviceIdException("deviceId field is required and can't be null.");
 //        }
@@ -333,7 +329,7 @@ public class SLTSaltr {
         }
 
         ApiCall apiCall = new ApiCall();
-        apiCall.addProperties(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties);
+        apiCall.addProperties(clientKey, saltrUserId, basicProperties, customProperties);
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {

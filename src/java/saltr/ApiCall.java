@@ -24,16 +24,18 @@ public class ApiCall {
         gson = new Gson();
     }
 
-    public void addProperties(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
-        SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey,deviceId,socialId,saltrUserId,basicProperties,customProperties);
+    public void addProperties(String clientKey, String saltrUserId, Object basicProperties, Object customProperties) {
+        if(basicProperties == null && customProperties == null) {
+            return;
+        }
+        SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey, saltrUserId, basicProperties, customProperties);
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
+    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String saltrUserId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
-        args.put("deviceId", deviceId);
         args.put("saltrUserId", saltrUserId);
 
         if (basicProperties != null) {
@@ -44,7 +46,7 @@ public class ApiCall {
             args.put("customProperties", customProperties);
         }
 
-        Map<String,Object> callbackParams = new HashMap<String,Object>();
+        Map<String, Object> callbackParams = new HashMap<String, Object>();
         callbackParams.put("dataType", SLTDataType.PLAYER_PROPERTY);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
@@ -54,7 +56,6 @@ public class ApiCall {
         try {
             connection.setUrl(SLTConfig.SALTR_API_URL);
         } catch (MalformedURLException e) {
-            onFailure(callbackParams);
             Log.e("SALTR", e.getMessage());
         }
 
@@ -69,9 +70,9 @@ public class ApiCall {
     public void loadLevelContent(SLTLevel level, SLTILevelContentDelegate delegate) {
         levelContentDelegate = delegate;
         String dataUrl = level.getContentUrl() + "?_time_=" + new Date().getTime();
-        Map<String,Object> callbackParams = new HashMap<String,Object>();
+        Map<String, Object> callbackParams = new HashMap<String, Object>();
         callbackParams.put("dataType", SLTDataType.LEVEL);
-        callbackParams.put("level",level);
+        callbackParams.put("level", level);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
         try {
             connection.setUrl(dataUrl);
@@ -110,7 +111,7 @@ public class ApiCall {
             args.put("saltrUserId", saltrUserId);
         }
 
-        Map<String,Object> callbackParams = new HashMap<String, Object>();
+        Map<String, Object> callbackParams = new HashMap<String, Object>();
         callbackParams.put("dataType", SLTDataType.FEATURE);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
@@ -122,7 +123,6 @@ public class ApiCall {
             connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
         } catch (MalformedURLException e) {
             Log.e("SALTR", e.getMessage());
-            onFailure(callbackParams);
         }
 
         return connection;
@@ -150,8 +150,8 @@ public class ApiCall {
             args.put("customProperties", customProperties);
         }
 
-        Map<String,Object> callbackParams = new HashMap<String,Object>();
-        callbackParams.put("dataType",SLTDataType.APP);
+        Map<String, Object> callbackParams = new HashMap<String, Object>();
+        callbackParams.put("dataType", SLTDataType.APP);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
 
@@ -169,22 +169,21 @@ public class ApiCall {
     }
 
     public void onSuccess(String response, Map<String, Object> callbackParams) {
-        SLTDataType dataType = (SLTDataType)callbackParams.get("dataType");
+        SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
 
-        if(dataType.equals(SLTDataType.APP)) {
+        if (dataType.equals(SLTDataType.APP)) {
             SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
             }.getType());
 
-            if(data == null || data.getStatus().equals(SLTConfig.RESULT_ERROR)) {
+            if (data == null || data.getStatus().equals(SLTConfig.RESULT_ERROR)) {
                 appDataDelegate.appDataLoadFailCallback();
             }
             appDataDelegate.appDataLoadSuccessCallback(data);
-        }
-        else if (dataType.equals(SLTDataType.LEVEL)){
+        } else if (dataType.equals(SLTDataType.LEVEL)) {
             SLTResponseLevelContentData data = gson.fromJson(response.toString(), SLTResponseLevelContentData.class);
-            SLTLevel sltLevel = (SLTLevel)callbackParams.get("level");
+            SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
 
-            if(data == null) {
+            if (data == null) {
                 levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
             }
 
@@ -193,12 +192,11 @@ public class ApiCall {
     }
 
     public void onFailure(Map<String, Object> callbackParams) {
-        SLTDataType dataType = (SLTDataType)callbackParams.get("dataType");
-        if(dataType.equals(SLTDataType.APP)) {
+        SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
+        if (dataType.equals(SLTDataType.APP)) {
             appDataDelegate.appDataLoadFailCallback();
-        }
-        else if(dataType.equals(SLTDataType.LEVEL)) {
-            SLTLevel sltLevel = (SLTLevel)callbackParams.get("level");
+        } else if (dataType.equals(SLTDataType.LEVEL)) {
+            SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
         }
     }
