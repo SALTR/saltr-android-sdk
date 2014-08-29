@@ -220,7 +220,7 @@ public class SLTSaltr {
         else {
             activeFeatures = SLTDeserializer.decodeFeatures(cachedData);
             experiments = SLTDeserializer.decodeExperiments(cachedData);
-            saltrUserId = cachedData.getSaltrUserId().toString();
+            saltrUserId = cachedData.getSaltrUserId();
         }
 
         started = true;
@@ -269,7 +269,7 @@ public class SLTSaltr {
                             appDataHandler.onFailure(new SLTStatusLevelsParseError());
                         }
 
-                        saltrUserId = response.getSaltrUserId().toString();
+                        saltrUserId = response.getSaltrUserId();
                         connected = true;
                         repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
 
