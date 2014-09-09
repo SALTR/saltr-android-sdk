@@ -25,6 +25,7 @@ class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
     private URL url;
 
     private Map<String, Object> callbackParams;
+    private SLTApiCall api;
 
     SLTHttpsConnection(Map<String, Object> callParams) {
         params = new ArrayList<NameValuePair>();
@@ -33,7 +34,7 @@ class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
 
     @Override
     protected String doInBackground(SLTApiCall... arg) {
-        SLTApiCall api = arg[0];
+        api = arg[0];
         StringBuilder builder = new StringBuilder();
         String response = null;
 
@@ -48,13 +49,19 @@ class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
             }
 
             response = builder.toString();
-
-            api.onSuccess(response, callbackParams);
         } catch (IOException e) {
-            api.onFailure(callbackParams);
             e.printStackTrace();
         }
         return response;
+    }
+
+    @Override
+    protected void onPostExecute(String response) {
+        if (response != null) {
+            api.onSuccess(response, callbackParams);
+        } else {
+            api.onFailure(callbackParams);
+        }
     }
 
     void setParameters(String key, Object value) {
