@@ -42,7 +42,7 @@ public class SLTDeserializer {
                 List<SLTLevel> levels = new ArrayList<SLTLevel>();
                 int packIndex = levelPackNode.getIndex();
                 for (SLTResponseLevel levelNode : levelNodes) {
-                    ++index;
+                    index++;
                     levels.add(new SLTLevel(levelNode.getId(), levelType, index, levelNode.getIndex(), packIndex, levelNode.getUrl(),
                             levelNode.getProperties(), levelNode.getVersion().toString()));
                 }

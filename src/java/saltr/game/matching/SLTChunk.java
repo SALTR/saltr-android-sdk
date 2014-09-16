@@ -78,19 +78,18 @@ public class SLTChunk {
     }
 
     private void generateAssetInstancesByRatio(List<SLTChunkAssetRule> ratioChunkAssetRules) {
-        int ratioSum = 0;
+        float ratioSum = 0;
         for (SLTChunkAssetRule assetRule : ratioChunkAssetRules) {
             ratioSum += assetRule.getDistributionValue();
         }
         int availableCellsNum = availableCells.size();
-
         List<Map<String, Object>> fractionAssets = new ArrayList<Map<String, Object>>();
         if (ratioSum != 0) {
             for (SLTChunkAssetRule assetRule : ratioChunkAssetRules) {
-                Integer proportion = assetRule.getDistributionValue() / ratioSum * availableCellsNum;
-                int count = proportion; //assigning number to int to floor the value;
+                float proportion = assetRule.getDistributionValue() / ratioSum * availableCellsNum;
+                int count = (int) Math.floor(proportion);
                 Map<String, Object> fractionAsset = new HashMap<String, Object>();
-                fractionAsset.put("fraction", proportion - count);
+                fractionAsset.put("fraction", (int) (proportion - count));
                 fractionAsset.put("assetRule", assetRule);
                 fractionAssets.add(fractionAsset);
                 generateAssetInstances(count, assetRule.getAssetId(), assetRule.getStateIds());
@@ -105,8 +104,9 @@ public class SLTChunk {
             };
 
             Collections.sort(fractionAssets, comparator);
+            availableCellsNum = availableCells.size();
 
-            for (int k = 0; k < availableCells.size(); ++k) {
+            for (int k = 0; k < availableCellsNum; k++) {
                 SLTChunkAssetRule rule = (SLTChunkAssetRule) fractionAssets.get(k).get("assetRule");
                 generateAssetInstances(1, rule.getAssetId(), rule.getStateIds());
             }
@@ -123,7 +123,7 @@ public class SLTChunk {
             int maxAssetCount = assetConcentration == 1 ? 1 : assetConcentration + 2;
             int lastChunkAssetIndex = len - 1;
 
-            for (int i = 0; i < len && availableCellsNum > 0; ++i) {
+            for (int i = 0; i < len && availableCellsNum > 0; i++) {
                 SLTChunkAssetRule chunkAssetRule = randomChunkAssetRules.get(i);
                 int count = i == lastChunkAssetIndex ? availableCells.size() : randomWithin(minAssetCount, maxAssetCount);
                 generateAssetInstances(count, chunkAssetRule.getAssetId(), chunkAssetRule.getStateIds());
@@ -134,7 +134,7 @@ public class SLTChunk {
     private void generateAssetInstances(int count, String assetId, List<String> stateIds) {
         SLTAsset asset = assetMap.get(assetId);
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; i++) {
             int randCellIndex = (int) (Math.random() * availableCells.size());
             SLTCell randCell = availableCells.get(randCellIndex);
             randCell.setAssetInstance(layerToken, layerIndex, new SLTAssetInstance(asset.getToken(), asset.getInstanceStates(stateIds), asset.getProperties()));
