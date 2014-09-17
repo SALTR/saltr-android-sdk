@@ -38,9 +38,9 @@ public class SLT2DLevelParser extends SLTLevelParser {
     }
 
     private SLT2DBoard parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
-        Map<String, Object> boardProperties = new HashMap<String, Object>();
-        if (boardNode.getProperties() != null && boardNode.getProperties().getBoard() != null) {
-            boardProperties = boardNode.getProperties().getBoard();
+        Map<String, Object> boardProperties = boardNode.getProperties();
+        if (boardProperties == null) {
+            boardProperties = new HashMap<String, Object>();
         }
 
         List<SLTBoardLayer> layers = new ArrayList<SLTBoardLayer>();
