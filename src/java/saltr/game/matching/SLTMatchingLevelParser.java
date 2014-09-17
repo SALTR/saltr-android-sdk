@@ -85,7 +85,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
     }
 
 
-    private static SLTMatchingBoardLayer parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
+    private static SLTMatchingBoard parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
         Map<String, Object> boardProperties = boardNode.getProperties();
         if (boardProperties == null) {
             boardProperties = new HashMap<String, Object>();
@@ -97,15 +97,15 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
         List<SLTBoardLayer> layers = new ArrayList<SLTBoardLayer>();
         int i = 0;
         for (SLTResponseBoardLayer layerNode : boardNode.getLayers()) {
-            SLTMatchBoardLayer layer = parseLayer(layerNode, i, cells, assetMap);
+            SLTMatchingBoardLayer layer = parseLayer(layerNode, i, cells, assetMap);
             layers.add(layer);
             i++;
         }
 
-        return new SLTMatchingBoardLayer(cells, layers, boardProperties);
+        return new SLTMatchingBoard(cells, layers, boardProperties);
     }
 
-    private static void parseLayerChunks(SLTMatchBoardLayer layer, List<SLTResponseBoardChunk> chunkNodes, SLTCell[][] cellMatrix, Map<String, SLTAsset> assetMap) {
+    private static void parseLayerChunks(SLTMatchingBoardLayer layer, List<SLTResponseBoardChunk> chunkNodes, SLTCell[][] cellMatrix, Map<String, SLTAsset> assetMap) {
         for (SLTResponseBoardChunk chunkNode : chunkNodes) {
             List<List<Integer>> cellNodes = chunkNode.getCells();
             List<SLTCell> chunkCells = new ArrayList<SLTCell>();
@@ -123,7 +123,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
         }
     }
 
-    private static void parseFixedAssets(SLTMatchBoardLayer layer, List<SLTResponseBoardFixedAsset> assetNodes, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
+    private static void parseFixedAssets(SLTMatchingBoardLayer layer, List<SLTResponseBoardFixedAsset> assetNodes, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
         for (SLTResponseBoardFixedAsset assetInstanceNode : assetNodes) {
             SLTAsset asset = assetMap.get(assetInstanceNode.getAssetId().toString());
             List<String> stateIds = assetInstanceNode.getStates();
@@ -136,8 +136,8 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
         }
     }
 
-    private static SLTMatchBoardLayer parseLayer(SLTResponseBoardLayer layerNode, int layerIndex, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
-        SLTMatchBoardLayer layer = new SLTMatchBoardLayer(layerNode.getToken(), layerIndex);
+    private static SLTMatchingBoardLayer parseLayer(SLTResponseBoardLayer layerNode, int layerIndex, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
+        SLTMatchingBoardLayer layer = new SLTMatchingBoardLayer(layerNode.getToken(), layerIndex);
         parseFixedAssets(layer, layerNode.getFixedAssets(), cells, assetMap);
         parseLayerChunks(layer, layerNode.getChunks(), cells, assetMap);
         return layer;
