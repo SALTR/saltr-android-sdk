@@ -31,11 +31,8 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
             blockedCells = new ArrayList<List<Integer>>();
         }
 
-        List<SLTResponseBoardPropertyCell> cellProperties;
-        if (boardNode.getProperties() != null && boardNode.getProperties().getCell() != null) {
-            cellProperties = boardNode.getProperties().getCell();
-        }
-        else {
+        List<SLTResponseBoardPropertyCell> cellProperties = boardNode.getCellProperties();
+        if (cellProperties == null) {
             cellProperties = new ArrayList<SLTResponseBoardPropertyCell>();
         }
 
@@ -89,9 +86,9 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
 
 
     private static SLTMatchingBoardLayer parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
-        Map<String, Object> boardProperties = new HashMap<String, Object>();
-        if (boardNode.getProperties() != null && boardNode.getProperties().getBoard() != null) {
-            boardProperties = boardNode.getProperties().getBoard();
+        Map<String, Object> boardProperties = boardNode.getProperties();
+        if (boardProperties == null) {
+            boardProperties = new HashMap<String, Object>();
         }
 
         SLTCell[][] cells = new SLTCell[boardNode.getCols()][boardNode.getRows()];
@@ -128,7 +125,7 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
 
     private static void parseFixedAssets(SLTMatchBoardLayer layer, List<SLTResponseBoardFixedAsset> assetNodes, SLTCell[][] cells, Map<String, SLTAsset> assetMap) {
         for (SLTResponseBoardFixedAsset assetInstanceNode : assetNodes) {
-            SLTAsset asset = assetMap.get(assetInstanceNode.getAssetId());
+            SLTAsset asset = assetMap.get(assetInstanceNode.getAssetId().toString());
             List<String> stateIds = assetInstanceNode.getStates();
             int[][] cellPositions = assetInstanceNode.getCells();
 

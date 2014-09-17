@@ -4,6 +4,7 @@
 package saltr.response.level;
 
 import java.util.List;
+import java.util.Map;
 
 public class SLTResponseBoard {
     private List<SLTResponseBoardLayer> layers;
@@ -11,14 +12,27 @@ public class SLTResponseBoard {
     private Integer cols;
     private List<List<Integer>> blockedCells;
     private Integer isFirstRowShifted;
-
-    private Object cellSize;
-    private Object orientation;
-    private Object position;
-    private SLTResponseBoardProperties properties;
-
+    private String orientation;
     private Integer width;
     private Integer height;
+    private Map<String, Object> properties;
+    private List<SLTResponseBoardPropertyCell> cellProperties;
+
+    public List<SLTResponseBoardPropertyCell> getCellProperties() {
+        return cellProperties;
+    }
+
+    public void setCellProperties(List<SLTResponseBoardPropertyCell> cellProperties) {
+        this.cellProperties = cellProperties;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
 
     public Integer getWidth() {
         return width;
@@ -76,35 +90,11 @@ public class SLTResponseBoard {
         this.blockedCells = blockedCells;
     }
 
-    public Object getCellSize() {
-        return cellSize;
-    }
-
-    public void setCellSize(Object cellSize) {
-        this.cellSize = cellSize;
-    }
-
-    public Object getOrientation() {
+    public String getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(Object orientation) {
+    public void setOrientation(String orientation) {
         this.orientation = orientation;
-    }
-
-    public Object getPosition() {
-        return position;
-    }
-
-    public void setPosition(Object position) {
-        this.position = position;
-    }
-
-    public SLTResponseBoardProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(SLTResponseBoardProperties properties) {
-        this.properties = properties;
     }
 }
