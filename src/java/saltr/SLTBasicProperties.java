@@ -4,7 +4,7 @@
 package saltr;
 
 public class SLTBasicProperties {
-    private int age;
+    private String age;
     private String gender;         //Gender "F", "M", "female", "male"
 
     private String appVersion;     // Version of the client app, e.g. 4.1.1
@@ -33,11 +33,11 @@ public class SLTBasicProperties {
     //Set to (locate) to detect the location based on the IP address of the caller.
 
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
