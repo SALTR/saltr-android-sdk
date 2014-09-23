@@ -48,12 +48,14 @@ public class SLTDummyRepository extends ContextWrapper implements ISLTRepository
 
     }
 
+    // TODO why is this method implemented if it is Dummy Repo?
     @Override
     public Object getObjectFromApplication(String fileName) {
         String path = applicationDirectory + File.separator + fileName;
         return getInternal(path);
     }
 
+    // TODO why is this method implemented if it is Dummy Repo?
     private Object getInternal(String path) {
         FileInputStream fin;
         Object object = null;

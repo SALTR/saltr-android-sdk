@@ -6,6 +6,9 @@ package saltr;
 
 import saltr.status.SLTStatus;
 
+/**
+ * This interface enables user to handle callbacks from SDK.
+ */
 public interface SLTIDataHandler {
     public void onSuccess();
 

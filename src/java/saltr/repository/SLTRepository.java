@@ -11,12 +11,12 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SLTMobileRepository extends ContextWrapper implements ISLTRepository {
+public class SLTRepository extends ContextWrapper implements ISLTRepository {
 
     private String applicationDirectory;
     private String cacheDirectory;
 
-    public SLTMobileRepository(Context base) {
+    public SLTRepository(Context base) {
         super(base);
         applicationDirectory = getApplicationInfo().dataDir;
         cacheDirectory = getCacheDir().getPath();
