@@ -36,6 +36,7 @@ public class SLTApiCall {
         Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
+        args.put("client", SLTSaltr.CLIENT);
 
         if (socialId != null) {
             args.put("socialId", socialId);
@@ -103,6 +104,7 @@ public class SLTApiCall {
 
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("clientKey", clientKey);
+        args.put("client", SLTSaltr.CLIENT);
         args.put("developerFeatures", featureList);
 
         if (socialId != null) {
@@ -130,6 +132,7 @@ public class SLTApiCall {
         Map<String, Object> args = new HashMap<String, Object>();
 
         args.put("clientKey", clientKey);
+        args.put("client", SLTSaltr.CLIENT);
         args.put("deviceId", deviceId);
 
         if (socialId != null) {

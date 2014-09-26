@@ -27,7 +27,7 @@ import java.util.Map;
  * Main class for working with SALTR Android SDK.
  */
 public class SLTSaltr {
-    private static final String CLIENT = "Android";
+    public static final String CLIENT = "Android";
     public static final String API_VERSION = "1.0.1";
 
     private String socialId;
