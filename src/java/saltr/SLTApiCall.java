@@ -24,19 +24,22 @@ public class SLTApiCall {
         gson = new Gson();
     }
 
-    public void addProperties(String clientKey, String saltrUserId, Object basicProperties, Object customProperties) {
+    public void addProperties(String clientKey, String socialId, Object basicProperties, Object customProperties) {
         if (basicProperties == null && customProperties == null) {
             return;
         }
-        SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey, saltrUserId, basicProperties, customProperties);
+        SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey, socialId, basicProperties, customProperties);
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String saltrUserId, Object basicProperties, Object customProperties) {
+    private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String socialId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<>();
 
         args.put("clientKey", clientKey);
-        args.put("saltrUserId", saltrUserId);
+
+        if (socialId != null) {
+            args.put("socialId", socialId);
+        }
 
         if (basicProperties != null) {
             args.put("basicProperties", basicProperties);
@@ -62,8 +65,8 @@ public class SLTApiCall {
         return connection;
     }
 
-    public void syncDeveloperFeatures(String clientKey, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
-        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, saltrUserId, developerFeatures);
+    public void syncDeveloperFeatures(String clientKey, String socialId, Map<String, SLTFeature> developerFeatures) {
+        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, socialId, developerFeatures);
         connection.execute(this);
     }
 
@@ -83,13 +86,13 @@ public class SLTApiCall {
 
     }
 
-    public void loadAppData(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties, SLTIAppDataDelegate delegate) {
+    public void loadAppData(String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties, SLTIAppDataDelegate delegate) {
         appDataDelegate = delegate;
-        SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties);
+        SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, basicProperties, customProperties);
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String saltrUserId, Map<String, SLTFeature> developerFeatures) {
+    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String socialId, Map<String, SLTFeature> developerFeatures) {
         List<Map<String, Object>> featureList = new ArrayList<Map<String, Object>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
             Map<String, Object> tempMap = new HashMap<String, Object>();
@@ -102,8 +105,8 @@ public class SLTApiCall {
         args.put("clientKey", clientKey);
         args.put("developerFeatures", featureList);
 
-        if (saltrUserId != null) {
-            args.put("saltrUserId", saltrUserId);
+        if (socialId != null) {
+            args.put("socialId", socialId);
         }
 
         Map<String, Object> callbackParams = new HashMap<String, Object>();
@@ -123,7 +126,7 @@ public class SLTApiCall {
         return connection;
     }
 
-    private SLTHttpsConnection createAppDataConnection(String clientKey, String deviceId, String socialId, String saltrUserId, Object basicProperties, Object customProperties) {
+    private SLTHttpsConnection createAppDataConnection(String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<String, Object>();
 
         args.put("clientKey", clientKey);
@@ -131,10 +134,6 @@ public class SLTApiCall {
 
         if (socialId != null) {
             args.put("socialId", socialId);
-        }
-
-        if (saltrUserId != null) {
-            args.put("saltrUserId", saltrUserId);
         }
 
         if (basicProperties != null) {

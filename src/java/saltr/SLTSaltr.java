@@ -34,7 +34,6 @@ public class SLTSaltr {
     private String deviceId;
     private boolean connected;
     private String clientKey;
-    private String saltrUserId;
     private boolean isLoading;
 
     private ISLTRepository repository;
@@ -69,7 +68,6 @@ public class SLTSaltr {
         this.deviceId = deviceId;
         isLoading = false;
         connected = false;
-        saltrUserId = null;
         useNoLevels = false;
         useNoFeatures = false;
 
@@ -294,7 +292,6 @@ public class SLTSaltr {
         else {
             activeFeatures = SLTDeserializer.decodeFeatures(cachedData);
             experiments = SLTDeserializer.decodeExperiments(cachedData);
-            saltrUserId = cachedData.getSaltrUserId();
         }
 
         started = true;
@@ -322,7 +319,7 @@ public class SLTSaltr {
             throw new SLTMissingDeviceIdException();
         }
         SLTApiCall apiCall = new SLTApiCall();
-        apiCall.loadAppData(clientKey, deviceId, socialId, saltrUserId, basicProperties, customProperties,
+        apiCall.loadAppData(clientKey, deviceId, socialId, basicProperties, customProperties,
                 new SLTIAppDataDelegate() {
                     @Override
                     public void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> data) {
@@ -353,7 +350,6 @@ public class SLTSaltr {
                             appDataHandler.onFailure(new SLTStatusLevelsParseError());
                         }
 
-                        saltrUserId = response.getSaltrUserId();
                         connected = true;
                         repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
 
@@ -413,12 +409,8 @@ public class SLTSaltr {
             throw new SLTNotStartedException();
         }
 
-        if (saltrUserId == null) {
-            throw new SLTMissingSaltrUserIdException();
-        }
-
         SLTApiCall apiCall = new SLTApiCall();
-        apiCall.addProperties(clientKey, saltrUserId, basicProperties, customProperties);
+        apiCall.addProperties(clientKey, socialId, basicProperties, customProperties);
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {
@@ -456,7 +448,7 @@ public class SLTSaltr {
 
     private void syncDeveloperFeatures() {
         SLTApiCall apiCall = new SLTApiCall();
-        apiCall.syncDeveloperFeatures(clientKey, saltrUserId, developerFeatures);
+        apiCall.syncDeveloperFeatures(clientKey, socialId, developerFeatures);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

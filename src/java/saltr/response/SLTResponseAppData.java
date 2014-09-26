@@ -11,7 +11,6 @@ public class SLTResponseAppData implements Serializable {
     private List<SLTResponsePack> levelPacks;
     private List<SLTResponseFeature> features;
     private List<SLTResponseExperiment> experiments;
-    private String saltrUserId;
     private String levelType;
 
     public String getLevelType() {
@@ -44,13 +43,5 @@ public class SLTResponseAppData implements Serializable {
 
     public void setLevelPacks(List<SLTResponsePack> levelPacks) {
         this.levelPacks = levelPacks;
-    }
-
-    public String getSaltrUserId() {
-        return saltrUserId;
-    }
-
-    public void setSaltrUserId(String saltrUserId) {
-        this.saltrUserId = saltrUserId;
     }
 }
