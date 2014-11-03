@@ -131,7 +131,7 @@ public class SLTChunk {
         }
     }
 
-    private void generateAssetInstances(int count, String assetId, List<String> stateIds) {
+    private void generateAssetInstances(float count, String assetId, List<String> stateIds) {
         SLTAsset asset = assetMap.get(assetId);
 
         for (int i = 0; i < count; i++) {

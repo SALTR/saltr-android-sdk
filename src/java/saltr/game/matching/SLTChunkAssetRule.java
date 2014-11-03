@@ -9,9 +9,9 @@ public class SLTChunkAssetRule {
     private String assetId;
     private List<String> stateIds;
     private String distributionType;
-    private Integer distributionValue;
+    private Float distributionValue;
 
-    public SLTChunkAssetRule(String assetId, String distributionType, Integer distributionValue, List<String> stateIds) {
+    public SLTChunkAssetRule(String assetId, String distributionType, Float distributionValue, List<String> stateIds) {
         this.assetId = assetId;
         this.stateIds = stateIds;
         this.distributionType = distributionType;
@@ -30,7 +30,7 @@ public class SLTChunkAssetRule {
         return distributionType;
     }
 
-    public Integer getDistributionValue() {
+    public Float getDistributionValue() {
         return distributionValue;
     }
 }

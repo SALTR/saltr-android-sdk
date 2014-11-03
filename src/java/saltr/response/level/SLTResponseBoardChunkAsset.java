@@ -8,7 +8,7 @@ import java.util.List;
 public class SLTResponseBoardChunkAsset {
     private String assetId;
     private String distributionType;
-    private Integer distributionValue;
+    private Float distributionValue;
     private String stateId;
     private List<String> states;
     private Integer x;
@@ -63,11 +63,11 @@ public class SLTResponseBoardChunkAsset {
         this.distributionType = distributionType;
     }
 
-    public Integer getDistributionValue() {
+    public Float getDistributionValue() {
         return distributionValue;
     }
 
-    public void setDistributionValue(Integer distributionValue) {
+    public void setDistributionValue(Float distributionValue) {
         this.distributionValue = distributionValue;
     }
 
