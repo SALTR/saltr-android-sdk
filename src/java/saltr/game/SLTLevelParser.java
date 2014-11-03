@@ -53,5 +53,18 @@ public abstract class SLTLevelParser {
         return statesMap;
     }
 
-    protected abstract SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode);
+    protected SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode) {
+        String token = null;
+        Object properties = null;
+
+        if (stateNode.getToken() != null) {
+            token = stateNode.getToken();
+        }
+
+        if (stateNode.getProperties() != null) {
+            properties = stateNode.getProperties();
+        }
+
+        return new SLTAssetState(token, properties);
+    }
 }
