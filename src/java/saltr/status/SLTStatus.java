@@ -9,6 +9,7 @@ public class SLTStatus {
     public static final int AUTHORIZATION_ERROR = 1001;
     public static final int VALIDATION_ERROR = 1002;
     public static final int API_ERROR = 1003;
+    public static final int PARSE_ERROR = 1004;
 
 
     public static final int GENERAL_ERROR_CODE = 2001;
