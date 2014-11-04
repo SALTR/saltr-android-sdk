@@ -4,12 +4,12 @@
 package saltr;
 
 public class SLTConfig {
-    public static final String CMD_APP_DATA = "getAppData";
-    public static final String CMD_ADD_PROPERTIES = "addProperties";
-    public static final String CMD_DEV_SYNC_FEATURES = "syncFeatures";
-
-    public static final String SALTR_API_URL = "https://api.saltr.com/call";
-    public static final String SALTR_DEVAPI_URL = "https://devapi.saltr.com/call";
+    public static final String ACTION_GET_APP_DATA = "getAppData";
+    public static final String ACTION_ADD_PROPERTIES = "addProperties";
+    public static final String ACTION_DEV_SYNC_FEATURES = "syncFeatures";
+    public static final String ACTION_DEV_REGISTER_IDENTITY = "registerIdentity";
+    public static final String SALTR_API_URL = "http://saltapi.includiv.com/call";
+    public static final String SALTR_DEVAPI_URL = "http://saltapp.includiv.com/call";
 
     public static final String APP_DATA_URL_CACHE = "app_data_cache.json";
     public static final String LOCAL_LEVELPACK_PACKAGE_URL = "saltr/level_packs.json";
@@ -18,4 +18,11 @@ public class SLTConfig {
 
     protected static final String RESULT_SUCCEED = "SUCCEED";
     protected static final String RESULT_ERROR = "FAILED";
+
+    public static final String DEVICE_TYPE_IPAD = "ipad";
+    public static final String DEVICE_TYPE_IPHONE = "iphone";
+    public static final String DEVICE_TYPE_IPOD = "ipod";
+    public static final String DEVICE_TYPE_ANDROID = "android";
+    public static final String DEVICE_PLATFORM_ANDROID = "android";
+    public static final String DEVICE_PLATFORM_IOS = "ios";
 }

@@ -55,7 +55,7 @@ public class SLTApiCall {
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("action", SLTConfig.CMD_ADD_PROPERTIES);
+        connection.setParameters("action", SLTConfig.ACTION_ADD_PROPERTIES);
 
         try {
             connection.setUrl(SLTConfig.SALTR_API_URL);
@@ -117,7 +117,7 @@ public class SLTApiCall {
 
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("action", SLTConfig.CMD_DEV_SYNC_FEATURES);
+        connection.setParameters("action", SLTConfig.ACTION_DEV_SYNC_FEATURES);
 
         try {
             connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
@@ -153,7 +153,7 @@ public class SLTApiCall {
 
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("action", SLTConfig.CMD_APP_DATA);
+        connection.setParameters("action", SLTConfig.ACTION_GET_APP_DATA);
 
         try {
             connection.setUrl(SLTConfig.SALTR_API_URL);
