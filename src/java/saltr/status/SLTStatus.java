@@ -18,6 +18,7 @@ public class SLTStatus {
 
     public static final int CLIENT_APP_DATA_LOAD_FAIL = 2040;
     public static final int CLIENT_LEVEL_CONTENT_LOAD_FAIL = 2041;
+    public static final int CLIENT_APP_DATA_CONCURRENT_LOAD_REFUSED = 2042;
 
     public static final int CLIENT_FEATURES_PARSE_ERROR = 2050;
     public static final int CLIENT_EXPERIMENTS_PARSE_ERROR = 2051;
