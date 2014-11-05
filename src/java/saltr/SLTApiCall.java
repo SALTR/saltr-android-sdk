@@ -5,9 +5,9 @@ package saltr;/*
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import saltr.exception.SLTRuntimeException;
 import saltr.game.SLTLevel;
-import saltr.response.SLTResponse;
-import saltr.response.SLTResponseAppData;
+import saltr.response.*;
 import saltr.response.level.SLTResponseLevelContentData;
 
 import java.net.MalformedURLException;
@@ -18,10 +18,12 @@ public class SLTApiCall {
     private SLTIAppDataDelegate appDataDelegate;
     private SLTILevelContentDelegate levelContentDelegate;
     private final Gson gson;
+    private boolean devMode;
 
 
-    public SLTApiCall() {
+    public SLTApiCall(boolean devMode) {
         gson = new Gson();
+        this.devMode = devMode;
     }
 
     public void addProperties(String clientKey, String socialId, Object basicProperties, Object customProperties) {
@@ -131,9 +133,18 @@ public class SLTApiCall {
     private SLTHttpsConnection createAppDataConnection(String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
         Map<String, Object> args = new HashMap<String, Object>();
 
+        args.put("apiVersion", SLTSaltr.API_VERSION);
         args.put("clientKey", clientKey);
         args.put("client", SLTSaltr.CLIENT);
-        args.put("deviceId", deviceId);
+
+        if (deviceId != null) {
+            args.put("deviceId", deviceId);
+        }
+        else {
+            throw new SLTRuntimeException("Field 'deviceId' is a required.");
+        }
+
+        args.put("devMode", devMode);
 
         if (socialId != null) {
             args.put("socialId", socialId);
@@ -169,23 +180,36 @@ public class SLTApiCall {
         SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
 
         if (dataType.equals(SLTDataType.APP)) {
-            SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
-            }.getType());
+            try {
+                SLTResponse data = gson.fromJson(response, SLTResponse.class);
 
-            if (data == null || data.getStatus().equals(SLTConfig.RESULT_ERROR)) {
+                if (data != null) {
+                    SLTResponseAppData parsedData = parseAppData(data);
+                    appDataDelegate.appDataLoadSuccessCallback(parsedData);
+                }
+                else {
+                    appDataDelegate.appDataLoadFailCallback();
+                }
+            } catch (Exception e) {
+                Log.e("SALTR", "Couldn't parse application data sent from server");
                 appDataDelegate.appDataLoadFailCallback();
             }
-            appDataDelegate.appDataLoadSuccessCallback(data);
+
         }
         else if (dataType.equals(SLTDataType.LEVEL)) {
-            SLTResponseLevelContentData data = gson.fromJson(response.toString(), SLTResponseLevelContentData.class);
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
+            try {
+                SLTResponseLevelContentData data = gson.fromJson(response, SLTResponseLevelContentData.class);
 
-            if (data == null) {
+                if (data == null) {
+                    levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
+                }
+
+                levelContentDelegate.loadFromSaltrSuccessCallback(data, sltLevel);
+            } catch (Exception e) {
+                Log.e("SALTR", "Couldn't parse level data sent from server");
                 levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
             }
-
-            levelContentDelegate.loadFromSaltrSuccessCallback(data, sltLevel);
         }
     }
 
@@ -198,5 +222,42 @@ public class SLTApiCall {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
         }
+    }
+
+    private SLTResponseAppData parseAppData(SLTResponse data) {
+        SLTResponseAppData appData = new SLTResponseAppData();
+
+        for (Map<String, String> map : data.getResponse()) {
+            String key = map.entrySet().iterator().next().getKey();
+            String value = map.entrySet().iterator().next().getValue();
+            switch (key) {
+                case "success":
+                    appData.setSuccess(Boolean.valueOf(value));
+                    break;
+                case "levelType":
+                    appData.setLevelType(value);
+                    break;
+                case "levelPacks":
+                    List<SLTResponsePack> packs = gson.fromJson(value, new TypeToken<List<SLTResponsePack>>() {
+                    }.getType());
+                    appData.setLevelPacks(packs);
+                    break;
+                case "features":
+                    List<SLTResponseFeature> features = gson.fromJson(value, new TypeToken<List<SLTResponseFeature>>() {
+                    }.getType());
+                    appData.setFeatures(features);
+                    break;
+                case "experiments":
+                    List<SLTResponseExperiment> experiments = gson.fromJson(value, new TypeToken<List<SLTResponseExperiment>>() {
+                    }.getType());
+                    appData.setExperiments(experiments);
+                    break;
+                case "error":
+                    SLTResponseError error = gson.fromJson(value, SLTResponseError.class);
+                    appData.setError(error);
+                    break;
+            }
+        }
+        return appData;
     }
 }

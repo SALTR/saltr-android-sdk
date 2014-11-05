@@ -3,30 +3,17 @@
  */
 package saltr.response;
 
-public class SLTResponse<T> {
-    protected String status;
-    protected T responseData;
-    protected String responseMessage;
-    protected int errorCode;
+import java.util.List;
+import java.util.Map;
 
-    public SLTResponse(String status, T responseData) {
-        this.status = status;
-        this.responseData = responseData;
+public class SLTResponse {
+    protected List<Map<String, String>> response;
+
+    public List<Map<String, String>> getResponse() {
+        return response;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public T getResponseData() {
-        return responseData;
-    }
-
-    public String getResponseMessage() {
-        return responseMessage;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
+    public void setResponse(List<Map<String, String>> response) {
+        this.response = response;
     }
 }

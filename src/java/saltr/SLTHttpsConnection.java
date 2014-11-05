@@ -59,7 +59,8 @@ class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
     protected void onPostExecute(String response) {
         if (response != null) {
             api.onSuccess(response, callbackParams);
-        } else {
+        }
+        else {
             api.onFailure(callbackParams);
         }
     }

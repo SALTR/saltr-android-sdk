@@ -16,9 +16,6 @@ public class SLTConfig {
     public static final String LOCAL_LEVEL_CONTENT_PACKAGE_URL_TEMPLATE = "saltr/pack_{0}/level_{1}.json";
     public static final String LOCAL_LEVEL_CONTENT_CACHE_URL_TEMPLATE = "pack_{0}_level_{1}.json";
 
-    protected static final String RESULT_SUCCEED = "SUCCEED";
-    protected static final String RESULT_ERROR = "FAILED";
-
     public static final String DEVICE_TYPE_IPAD = "ipad";
     public static final String DEVICE_TYPE_IPHONE = "iphone";
     public static final String DEVICE_TYPE_IPOD = "ipod";
