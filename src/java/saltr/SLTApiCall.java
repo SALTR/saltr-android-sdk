@@ -68,8 +68,8 @@ public class SLTApiCall {
         return connection;
     }
 
-    public void syncDeveloperFeatures(String clientKey, String socialId, Map<String, SLTFeature> developerFeatures) {
-        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, socialId, developerFeatures);
+    public void syncDeveloperFeatures(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, socialId, deviceId, developerFeatures);
         connection.execute(this);
     }
 
@@ -95,7 +95,7 @@ public class SLTApiCall {
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String socialId, Map<String, SLTFeature> developerFeatures) {
+    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
         List<Map<String, Object>> featureList = new ArrayList<Map<String, Object>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
             Map<String, Object> tempMap = new HashMap<String, Object>();
@@ -105,9 +105,18 @@ public class SLTApiCall {
         }
 
         Map<String, Object> args = new HashMap<String, Object>();
+        args.put("apiVersion", SLTSaltr.API_VERSION);
         args.put("clientKey", clientKey);
         args.put("client", SLTSaltr.CLIENT);
+        args.put("devMode", devMode);
         args.put("developerFeatures", featureList);
+
+        if (deviceId != null) {
+            args.put("deviceId", deviceId);
+        }
+        else {
+            throw new SLTRuntimeException("Field 'deviceId' is a required.");
+        }
 
         if (socialId != null) {
             args.put("socialId", socialId);
@@ -116,7 +125,6 @@ public class SLTApiCall {
         Map<String, Object> callbackParams = new HashMap<String, Object>();
         callbackParams.put("dataType", SLTDataType.FEATURE);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
-
 
         connection.setParameters("args", gson.toJson(args));
         connection.setParameters("action", SLTConfig.ACTION_DEV_SYNC_FEATURES);
@@ -210,6 +218,14 @@ public class SLTApiCall {
                 Log.e("SALTR", "Couldn't parse level data sent from server");
                 levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
             }
+        }
+        else if (dataType.equals(SLTDataType.FEATURE)) {
+            SLTResponse data = gson.fromJson(response, SLTResponse.class);
+
+            if (data == null) {
+                Log.e("SALTR", "Dev feature Sync's response.jsonData is null.");
+            }
+
         }
     }
 

@@ -357,7 +357,7 @@ public class SLTSaltr {
                                 appDataHandler.onFailure(new SLTStatusExperimentsParseError());
                             }
 
-                            if (!useNoLevels && levelType != SLTLevel.LEVEL_TYPE_NONE) {
+                            if (!useNoLevels && !levelType.equals(SLTLevel.LEVEL_TYPE_NONE)) {
                                 try {
                                     levelPacks = SLTDeserializer.decodeLevels(response);
                                 } catch (Exception e) {
@@ -469,7 +469,7 @@ public class SLTSaltr {
 
     private void syncDeveloperFeatures() {
         SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.syncDeveloperFeatures(clientKey, socialId, developerFeatures);
+        apiCall.syncDeveloperFeatures(clientKey, socialId, deviceId, developerFeatures);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {
