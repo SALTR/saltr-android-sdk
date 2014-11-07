@@ -3,8 +3,12 @@
  */
 package saltr;
 
+import android.app.AlertDialog;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
+import android.text.Editable;
 import android.util.Log;
+import android.widget.EditText;
 import com.google.gson.Gson;
 import saltr.exception.*;
 import saltr.game.SLTLevel;
@@ -12,22 +16,20 @@ import saltr.game.SLTLevelPack;
 import saltr.repository.ISLTRepository;
 import saltr.repository.SLTDummyRepository;
 import saltr.repository.SLTRepository;
+import saltr.response.SLTResponse;
 import saltr.response.SLTResponseAppData;
 import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.*;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main class for working with SALTR Android SDK.
  */
 public class SLTSaltr {
     public static final String CLIENT = "Android";
-    public static final String API_VERSION = "1.0.1";
+    public static final String API_VERSION = "2.1.1";
 
     private String socialId;
     private String deviceId;
@@ -52,6 +54,7 @@ public class SLTSaltr {
     private boolean useNoFeatures;
     private String levelType;
 
+    private ContextWrapper contextWrapper;
     private Gson gson;
 
     /**
@@ -75,6 +78,7 @@ public class SLTSaltr {
 
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
+        this.contextWrapper = contextWrapper;
     }
 
     public void setRepository(ISLTRepository repository) {
@@ -337,7 +341,7 @@ public class SLTSaltr {
                     public void appDataLoadSuccessCallback(SLTResponseAppData response) {
                         isLoading = false;
 
-                        if (response.isSuccess()) {
+                        if (response.getSuccess()) {
                             if (devMode) {
                                 syncDeveloperFeatures();
                             }
@@ -469,7 +473,34 @@ public class SLTSaltr {
 
     private void syncDeveloperFeatures() {
         SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.syncDeveloperFeatures(clientKey, socialId, deviceId, developerFeatures);
+        apiCall.syncDeveloperFeatures(new SLTSyncFeaturesDelegate() {
+            @Override
+            public void syncFeaturesSuccessCallback(SLTResponse data) {
+//                for (Map<String, Object> map : data.getResponse()) {
+//                    String key = map.entrySet().iterator().next().getKey();
+//                    Object value = map.entrySet().iterator().next().getValue();
+//                    if (key.equals("registrationRequired") && Boolean.TRUE.equals(Boolean.valueOf(value.toString())) && devMode) {
+//                        final EditText input = new EditText(contextWrapper);
+//
+//                        new AlertDialog.Builder(contextWrapper)
+//                                .setTitle("Update Status")
+//                                .setMessage("MY MESSAGE")
+//                                .setView(input)
+//                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int whichButton) {
+//                                        Editable editable = input.getText();
+//                                        // deal with the editable
+//                                    }
+//                                })
+//                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int whichButton) {
+//                                        // Do nothing.
+//                                    }
+//                                }).show();
+//                    }
+//                }
+            }
+        }, clientKey, socialId, deviceId, developerFeatures);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

@@ -11,7 +11,7 @@ public class SLTResponseAppData implements Serializable {
     private List<SLTResponseFeature> features;
     private List<SLTResponseExperiment> experiments;
     private String levelType;
-    private boolean success;
+    private Boolean success;
     private SLTResponseError error;
 
     public SLTResponseError getError() {
@@ -22,11 +22,11 @@ public class SLTResponseAppData implements Serializable {
         this.error = error;
     }
 
-    public boolean isSuccess() {
+    public Boolean getSuccess() {
         return success;
     }
 
-    public void setSuccess(boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 

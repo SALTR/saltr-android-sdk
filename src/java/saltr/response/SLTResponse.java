@@ -6,14 +6,14 @@ package saltr.response;
 import java.util.List;
 import java.util.Map;
 
-public class SLTResponse {
-    protected List<Map<String, String>> response;
+public class SLTResponse<T> {
+    private List<T> response;
 
-    public List<Map<String, String>> getResponse() {
+    public List<T> getResponse() {
         return response;
     }
 
-    public void setResponse(List<Map<String, String>> response) {
+    public void setResponse(List<T> response) {
         this.response = response;
     }
 }

@@ -17,6 +17,7 @@ public class SLTApiCall {
 
     private SLTIAppDataDelegate appDataDelegate;
     private SLTILevelContentDelegate levelContentDelegate;
+    private SLTSyncFeaturesDelegate syncFeaturesDelegate;
     private final Gson gson;
     private boolean devMode;
 
@@ -68,7 +69,8 @@ public class SLTApiCall {
         return connection;
     }
 
-    public void syncDeveloperFeatures(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+    public void syncDeveloperFeatures(SLTSyncFeaturesDelegate delegate, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+        syncFeaturesDelegate = delegate;
         SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, socialId, deviceId, developerFeatures);
         connection.execute(this);
     }
@@ -189,11 +191,9 @@ public class SLTApiCall {
 
         if (dataType.equals(SLTDataType.APP)) {
             try {
-                SLTResponse data = gson.fromJson(response, SLTResponse.class);
-
-                if (data != null) {
-                    SLTResponseAppData parsedData = parseAppData(data);
-                    appDataDelegate.appDataLoadSuccessCallback(parsedData);
+                SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {}.getType());
+                if (data != null && data.getResponse() != null && !data.getResponse().isEmpty()) {
+                     appDataDelegate.appDataLoadSuccessCallback(data.getResponse().get(0));
                 }
                 else {
                     appDataDelegate.appDataLoadFailCallback();
@@ -208,12 +208,12 @@ public class SLTApiCall {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             try {
                 SLTResponseLevelContentData data = gson.fromJson(response, SLTResponseLevelContentData.class);
-
                 if (data == null) {
                     levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
                 }
-
-                levelContentDelegate.loadFromSaltrSuccessCallback(data, sltLevel);
+                else {
+                    levelContentDelegate.loadFromSaltrSuccessCallback(data, sltLevel);
+                }
             } catch (Exception e) {
                 Log.e("SALTR", "Couldn't parse level data sent from server");
                 levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
@@ -221,11 +221,12 @@ public class SLTApiCall {
         }
         else if (dataType.equals(SLTDataType.FEATURE)) {
             SLTResponse data = gson.fromJson(response, SLTResponse.class);
-
             if (data == null) {
-                Log.e("SALTR", "Dev feature Sync's response.jsonData is null.");
+                Log.e("SALTR", "Incorrect data sent from server.");
             }
-
+            else {
+                syncFeaturesDelegate.syncFeaturesSuccessCallback(data);
+            }
         }
     }
 
@@ -238,42 +239,5 @@ public class SLTApiCall {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
         }
-    }
-
-    private SLTResponseAppData parseAppData(SLTResponse data) {
-        SLTResponseAppData appData = new SLTResponseAppData();
-
-        for (Map<String, String> map : data.getResponse()) {
-            String key = map.entrySet().iterator().next().getKey();
-            String value = map.entrySet().iterator().next().getValue();
-            switch (key) {
-                case "success":
-                    appData.setSuccess(Boolean.valueOf(value));
-                    break;
-                case "levelType":
-                    appData.setLevelType(value);
-                    break;
-                case "levelPacks":
-                    List<SLTResponsePack> packs = gson.fromJson(value, new TypeToken<List<SLTResponsePack>>() {
-                    }.getType());
-                    appData.setLevelPacks(packs);
-                    break;
-                case "features":
-                    List<SLTResponseFeature> features = gson.fromJson(value, new TypeToken<List<SLTResponseFeature>>() {
-                    }.getType());
-                    appData.setFeatures(features);
-                    break;
-                case "experiments":
-                    List<SLTResponseExperiment> experiments = gson.fromJson(value, new TypeToken<List<SLTResponseExperiment>>() {
-                    }.getType());
-                    appData.setExperiments(experiments);
-                    break;
-                case "error":
-                    SLTResponseError error = gson.fromJson(value, SLTResponseError.class);
-                    appData.setError(error);
-                    break;
-            }
-        }
-        return appData;
     }
 }
