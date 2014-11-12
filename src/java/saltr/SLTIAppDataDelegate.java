@@ -8,7 +8,7 @@ import saltr.response.SLTResponseAppData;
 
 interface SLTIAppDataDelegate {
 
-    void appDataLoadSuccessCallback(SLTResponseAppData response);
+    void onSuccess(SLTResponseAppData response);
 
-    void appDataLoadFailCallback();
+    void onFailure();
 }

@@ -4,7 +4,6 @@
 package saltr.response;
 
 import java.util.List;
-import java.util.Map;
 
 public class SLTResponse<T> {
     private List<T> response;

@@ -8,7 +8,8 @@ enum SLTDataType {
     LEVEL("level"),
     APP("app"),
     PLAYER_PROPERTY("playerProperty"),
-    FEATURE("feature");
+    ADD_DEVICE("addDevice"),
+    CLIENT_DATA("clientData");
 
     private String type;
 

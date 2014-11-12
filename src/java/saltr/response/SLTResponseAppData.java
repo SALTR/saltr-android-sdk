@@ -6,29 +6,11 @@ package saltr.response;
 import java.io.Serializable;
 import java.util.List;
 
-public class SLTResponseAppData implements Serializable {
+public class SLTResponseAppData extends SLTResponseTemplate implements Serializable {
     private List<SLTResponsePack> levelPacks;
     private List<SLTResponseFeature> features;
     private List<SLTResponseExperiment> experiments;
     private String levelType;
-    private Boolean success;
-    private SLTResponseError error;
-
-    public SLTResponseError getError() {
-        return error;
-    }
-
-    public void setError(SLTResponseError error) {
-        this.error = error;
-    }
-
-    public Boolean getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
 
     public String getLevelType() {
         return levelType;

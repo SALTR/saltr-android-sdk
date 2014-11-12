@@ -7,7 +7,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import saltr.exception.SLTRuntimeException;
 import saltr.game.SLTLevel;
-import saltr.response.*;
+import saltr.response.SLTResponse;
+import saltr.response.SLTResponseAppData;
+import saltr.response.SLTResponseClientData;
+import saltr.response.SLTResponseTemplate;
 import saltr.response.level.SLTResponseLevelContentData;
 
 import java.net.MalformedURLException;
@@ -17,7 +20,8 @@ public class SLTApiCall {
 
     private SLTIAppDataDelegate appDataDelegate;
     private SLTILevelContentDelegate levelContentDelegate;
-    private SLTSyncFeaturesDelegate syncFeaturesDelegate;
+    private SLTSyncClientDataDelegate syncClientDataDelegate;
+    private SLTAddDeviceDelegate addDeviceDelegate;
     private final Gson gson;
     private boolean devMode;
 
@@ -69,9 +73,9 @@ public class SLTApiCall {
         return connection;
     }
 
-    public void syncDeveloperFeatures(SLTSyncFeaturesDelegate delegate, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
-        syncFeaturesDelegate = delegate;
-        SLTHttpsConnection connection = createSyncFeaturesConnection(clientKey, socialId, deviceId, developerFeatures);
+    public void syncClientData(SLTSyncClientDataDelegate delegate, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+        syncClientDataDelegate = delegate;
+        SLTHttpsConnection connection = createSyncClientConnection(clientKey, socialId, deviceId, developerFeatures);
         connection.execute(this);
     }
 
@@ -97,7 +101,13 @@ public class SLTApiCall {
         connection.execute(this);
     }
 
-    private SLTHttpsConnection createSyncFeaturesConnection(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+    public void addDeviceToSaltr(String deviceName, String email, String clientKey, String deviceId, SLTAddDeviceDelegate delegate) {
+        addDeviceDelegate = delegate;
+        SLTHttpsConnection connection = createDeviceToSaltr(deviceName, email, clientKey, deviceId);
+        connection.execute(this);
+    }
+
+    private SLTHttpsConnection createSyncClientConnection(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
         List<Map<String, Object>> featureList = new ArrayList<Map<String, Object>>();
         for (Map.Entry<String, SLTFeature> entry : developerFeatures.entrySet()) {
             Map<String, Object> tempMap = new HashMap<String, Object>();
@@ -125,11 +135,11 @@ public class SLTApiCall {
         }
 
         Map<String, Object> callbackParams = new HashMap<String, Object>();
-        callbackParams.put("dataType", SLTDataType.FEATURE);
+        callbackParams.put("dataType", SLTDataType.CLIENT_DATA);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
         connection.setParameters("args", gson.toJson(args));
-        connection.setParameters("action", SLTConfig.ACTION_DEV_SYNC_FEATURES);
+        connection.setParameters("action", SLTConfig.ACTION_DEV_SYNC_CLIENT_DATA);
 
         try {
             connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
@@ -186,21 +196,67 @@ public class SLTApiCall {
         return connection;
     }
 
+    private SLTHttpsConnection createDeviceToSaltr(String deviceName, String email, String clientKey, String deviceId) {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("apiVersion", SLTSaltr.API_VERSION);
+        args.put("devMode", devMode);
+        args.put("type", SLTConfig.DEVICE_TYPE_ANDROID);
+        args.put("platform", SLTConfig.DEVICE_PLATFORM_ANDROID);
+
+        if (deviceId != null) {
+            args.put("id", deviceId);
+        }
+        else {
+            throw new SLTRuntimeException("Field 'deviceId' is a required.");
+        }
+
+        if (deviceName != null) {
+            args.put("name", deviceName);
+        }
+        else {
+            throw new SLTRuntimeException("Field 'name' is a required.");
+        }
+
+        if (email != null) {
+            args.put("email", email);
+        }
+        else {
+            throw new SLTRuntimeException("Field 'email' is a required.");
+        }
+
+        Map<String, Object> callbackParams = new HashMap<String, Object>();
+        callbackParams.put("dataType", SLTDataType.ADD_DEVICE);
+        SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
+
+        connection.setParameters("args", gson.toJson(args));
+        connection.setParameters("action", SLTConfig.ACTION_DEV_REGISTER_IDENTITY);
+        connection.setParameters("clientKey", clientKey);
+
+        try {
+            connection.setUrl(SLTConfig.SALTR_DEVAPI_URL);
+        } catch (MalformedURLException e) {
+            Log.e("SALTR", e.getMessage());
+        }
+
+        return connection;
+    }
+
     public void onSuccess(String response, Map<String, Object> callbackParams) {
         SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
 
         if (dataType.equals(SLTDataType.APP)) {
             try {
-                SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {}.getType());
+                SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
+                }.getType());
                 if (data != null && data.getResponse() != null && !data.getResponse().isEmpty()) {
-                     appDataDelegate.appDataLoadSuccessCallback(data.getResponse().get(0));
+                    appDataDelegate.onSuccess(data.getResponse().get(0));
                 }
                 else {
-                    appDataDelegate.appDataLoadFailCallback();
+                    appDataDelegate.onFailure();
                 }
             } catch (Exception e) {
                 Log.e("SALTR", "Couldn't parse application data sent from server");
-                appDataDelegate.appDataLoadFailCallback();
+                appDataDelegate.onFailure();
             }
 
         }
@@ -209,23 +265,34 @@ public class SLTApiCall {
             try {
                 SLTResponseLevelContentData data = gson.fromJson(response, SLTResponseLevelContentData.class);
                 if (data == null) {
-                    levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
+                    levelContentDelegate.onFailure(sltLevel);
                 }
                 else {
-                    levelContentDelegate.loadFromSaltrSuccessCallback(data, sltLevel);
+                    levelContentDelegate.onSuccess(data, sltLevel);
                 }
             } catch (Exception e) {
                 Log.e("SALTR", "Couldn't parse level data sent from server");
-                levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
+                levelContentDelegate.onFailure(sltLevel);
             }
         }
-        else if (dataType.equals(SLTDataType.FEATURE)) {
-            SLTResponse data = gson.fromJson(response, SLTResponse.class);
+        else if (dataType.equals(SLTDataType.CLIENT_DATA)) {
+            SLTResponse<SLTResponseClientData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseClientData>>() {
+            }.getType());
             if (data == null) {
                 Log.e("SALTR", "Incorrect data sent from server.");
             }
             else {
-                syncFeaturesDelegate.syncFeaturesSuccessCallback(data);
+                syncClientDataDelegate.onSuccess(data.getResponse().get(0));
+            }
+        }
+        else if (dataType.equals(SLTDataType.ADD_DEVICE)) {
+            SLTResponse<SLTResponseTemplate> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseTemplate>>() {
+            }.getType());
+            if (data == null) {
+                Log.e("SALTR", "Incorrect data sent from server.");
+            }
+            else {
+                addDeviceDelegate.onSuccess(data.getResponse().get(0));
             }
         }
     }
@@ -233,11 +300,11 @@ public class SLTApiCall {
     public void onFailure(Map<String, Object> callbackParams) {
         SLTDataType dataType = (SLTDataType) callbackParams.get("dataType");
         if (dataType.equals(SLTDataType.APP)) {
-            appDataDelegate.appDataLoadFailCallback();
+            appDataDelegate.onFailure();
         }
         else if (dataType.equals(SLTDataType.LEVEL)) {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
-            levelContentDelegate.loadFromSaltrFailCallback(sltLevel);
+            levelContentDelegate.onFailure(sltLevel);
         }
     }
 }

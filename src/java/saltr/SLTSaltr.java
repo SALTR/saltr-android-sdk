@@ -8,7 +8,12 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.text.Editable;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.google.gson.Gson;
 import saltr.exception.*;
 import saltr.game.SLTLevel;
@@ -16,13 +21,17 @@ import saltr.game.SLTLevelPack;
 import saltr.repository.ISLTRepository;
 import saltr.repository.SLTDummyRepository;
 import saltr.repository.SLTRepository;
-import saltr.response.SLTResponse;
 import saltr.response.SLTResponseAppData;
+import saltr.response.SLTResponseClientData;
+import saltr.response.SLTResponseTemplate;
 import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.*;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main class for working with SALTR Android SDK.
@@ -338,12 +347,12 @@ public class SLTSaltr {
         apiCall.loadAppData(clientKey, deviceId, socialId, basicProperties, customProperties,
                 new SLTIAppDataDelegate() {
                     @Override
-                    public void appDataLoadSuccessCallback(SLTResponseAppData response) {
+                    public void onSuccess(SLTResponseAppData response) {
                         isLoading = false;
 
                         if (response.getSuccess()) {
                             if (devMode) {
-                                syncDeveloperFeatures();
+                                syncClientData();
                             }
 
                             levelType = response.getLevelType();
@@ -383,7 +392,7 @@ public class SLTSaltr {
                     }
 
                     @Override
-                    public void appDataLoadFailCallback() {
+                    public void onFailure() {
                         isLoading = false;
                         appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
                     }
@@ -443,13 +452,13 @@ public class SLTSaltr {
             SLTApiCall apiCall = new SLTApiCall(devMode);
             apiCall.loadLevelContent(level, new SLTILevelContentDelegate() {
                 @Override
-                public void loadFromSaltrSuccessCallback(SLTResponseLevelContentData data, SLTLevel sltLevel) {
+                public void onSuccess(SLTResponseLevelContentData data, SLTLevel sltLevel) {
                     cacheLevelContent(sltLevel, data);
                     levelContentLoadSuccessHandler(sltLevel, data);
                 }
 
                 @Override
-                public void loadFromSaltrFailCallback(SLTLevel sltLevel) {
+                public void onFailure(SLTLevel sltLevel) {
                     Object contentData = loadLevelContentInternally(sltLevel);
                     levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
                 }
@@ -471,34 +480,72 @@ public class SLTSaltr {
         }
     }
 
-    private void syncDeveloperFeatures() {
-        SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.syncDeveloperFeatures(new SLTSyncFeaturesDelegate() {
+    private void syncClientData() {
+        final SLTApiCall apiCall = new SLTApiCall(devMode);
+        apiCall.syncClientData(new SLTSyncClientDataDelegate() {
             @Override
-            public void syncFeaturesSuccessCallback(SLTResponse data) {
-//                for (Map<String, Object> map : data.getResponse()) {
-//                    String key = map.entrySet().iterator().next().getKey();
-//                    Object value = map.entrySet().iterator().next().getValue();
-//                    if (key.equals("registrationRequired") && Boolean.TRUE.equals(Boolean.valueOf(value.toString())) && devMode) {
-//                        final EditText input = new EditText(contextWrapper);
-//
-//                        new AlertDialog.Builder(contextWrapper)
-//                                .setTitle("Update Status")
-//                                .setMessage("MY MESSAGE")
-//                                .setView(input)
-//                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int whichButton) {
-//                                        Editable editable = input.getText();
-//                                        // deal with the editable
-//                                    }
-//                                })
-//                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int whichButton) {
-//                                        // Do nothing.
-//                                    }
-//                                }).show();
-//                    }
-//                }
+            public void onSuccess(SLTResponseClientData data) {
+                if (data.getSuccess() && data.getRegistrationRequired()) {
+                    final EditText name = new EditText(contextWrapper);
+                    final EditText email = new EditText(contextWrapper);
+                    name.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    email.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    name.setLines(1);
+                    email.setLines(1);
+                    name.setHint("device name");
+                    email.setHint("myemail@example.com");
+                    LinearLayout layout = new LinearLayout(contextWrapper);
+                    layout.addView(email);
+                    layout.addView(name);
+                    layout.setOrientation(1);
+
+                    final AlertDialog dialog = new AlertDialog.Builder(contextWrapper)
+                            .setTitle("Register device")
+                            .setView(layout)
+                            .setPositiveButton("Ok", null)
+                            .setNegativeButton("Cancel", null).create();
+
+                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialogInterface) {
+                            Button ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                            ok.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View view) {
+                                    Editable editableName = name.getText();
+                                    Editable editableEmail = email.getText();
+                                    apiCall.addDeviceToSaltr(editableName.toString(), editableEmail.toString(), clientKey, deviceId, new SLTAddDeviceDelegate() {
+                                        @Override
+                                        public void onSuccess(SLTResponseTemplate response) {
+                                            if (response.getSuccess()) {
+                                                dialog.dismiss();
+                                            }
+                                            else {
+                                                Toast toast = Toast.makeText(contextWrapper, response.getError().getMessage(), Toast.LENGTH_LONG);
+                                                toast.show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(SLTStatus status) {
+                                            System.out.print("");
+                                        }
+                                    });
+                                }
+                            });
+                            Button cancel = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                            cancel.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View view) {
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    });
+                    dialog.show();
+                }
             }
         }, clientKey, socialId, deviceId, developerFeatures);
     }
