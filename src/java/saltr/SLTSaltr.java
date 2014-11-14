@@ -352,7 +352,7 @@ public class SLTSaltr {
 
                         if (response.getSuccess()) {
                             if (devMode) {
-                                syncClientData();
+                                sync();
                             }
 
                             levelType = response.getLevelType();
@@ -480,9 +480,9 @@ public class SLTSaltr {
         }
     }
 
-    private void syncClientData() {
+    private void sync() {
         final SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.syncClientData(new SLTSyncClientDataDelegate() {
+        apiCall.sync(new SLTSyncDelegate() {
             @Override
             public void onSuccess(SLTResponseClientData data) {
                 if (data.getSuccess() && data.getRegistrationRequired()) {

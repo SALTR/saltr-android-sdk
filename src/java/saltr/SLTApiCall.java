@@ -20,7 +20,7 @@ public class SLTApiCall {
 
     private SLTIAppDataDelegate appDataDelegate;
     private SLTILevelContentDelegate levelContentDelegate;
-    private SLTSyncClientDataDelegate syncClientDataDelegate;
+    private SLTSyncDelegate syncDelegate;
     private SLTAddDeviceDelegate addDeviceDelegate;
     private final Gson gson;
     private boolean devMode;
@@ -73,8 +73,8 @@ public class SLTApiCall {
         return connection;
     }
 
-    public void syncClientData(SLTSyncClientDataDelegate delegate, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
-        syncClientDataDelegate = delegate;
+    public void sync(SLTSyncDelegate delegate, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+        syncDelegate = delegate;
         SLTHttpsConnection connection = createSyncClientConnection(clientKey, socialId, deviceId, developerFeatures);
         connection.execute(this);
     }
@@ -282,7 +282,7 @@ public class SLTApiCall {
                 Log.e("SALTR", "Incorrect data sent from server.");
             }
             else {
-                syncClientDataDelegate.onSuccess(data.getResponse().get(0));
+                syncDelegate.onSuccess(data.getResponse().get(0));
             }
         }
         else if (dataType.equals(SLTDataType.ADD_DEVICE)) {

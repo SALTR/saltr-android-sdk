@@ -6,7 +6,7 @@ package saltr;
 
 import saltr.response.SLTResponseClientData;
 
-public interface SLTSyncClientDataDelegate {
+public interface SLTSyncDelegate {
 
     void onSuccess(SLTResponseClientData data);
 }
