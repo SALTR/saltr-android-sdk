@@ -3,7 +3,7 @@
  */
 package saltr.response;
 
-public class SLTResponseError {
+public class SLTResponseError_ {
     private Integer code;
     private String message;
 
