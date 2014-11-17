@@ -6,7 +6,7 @@ package saltr.response;
 
 public class SLTResponseTemplate {
     protected Boolean success;
-    protected SLTResponseError_ error;
+    protected SLTResponseError error;
 
     public Boolean getSuccess() {
         return success;
@@ -16,11 +16,11 @@ public class SLTResponseTemplate {
         this.success = success;
     }
 
-    public SLTResponseError_ getError() {
+    public SLTResponseError getError() {
         return error;
     }
 
-    public void setError(SLTResponseError_ error) {
+    public void setError(SLTResponseError error) {
         this.error = error;
     }
 }
