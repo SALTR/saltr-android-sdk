@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class SLTSaltr {
     public static final String CLIENT = "Android";
-    public static final String API_VERSION = "2.1.1";
+    public static final String API_VERSION = "1.0.0";
 
     private String socialId;
     private String deviceId;
@@ -528,8 +528,9 @@ public class SLTSaltr {
                                         }
 
                                         @Override
-                                        public void onFailure(SLTStatus status) {
-                                            System.out.print("");
+                                        public void onFailure() {
+                                            Toast toast = Toast.makeText(contextWrapper, "Incorrect data sent from server", Toast.LENGTH_LONG);
+                                            toast.show();
                                         }
                                     });
                                 }
@@ -546,6 +547,12 @@ public class SLTSaltr {
                     });
                     dialog.show();
                 }
+            }
+
+            @Override
+            public void onFailure() {
+                Toast toast = Toast.makeText(contextWrapper, "Error occurred during data synchronization", Toast.LENGTH_LONG);
+                toast.show();
             }
         }, clientKey, socialId, deviceId, developerFeatures);
     }

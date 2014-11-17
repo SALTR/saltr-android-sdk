@@ -9,5 +9,5 @@ import saltr.status.SLTStatus;
 public interface SLTAddDeviceDelegate {
     public void onSuccess(SLTResponseTemplate response);
 
-    public void onFailure(SLTStatus status);
+    public void onFailure();
 }

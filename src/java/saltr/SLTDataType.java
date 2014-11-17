@@ -5,19 +5,5 @@
 package saltr;
 
 enum SLTDataType {
-    LEVEL("level"),
-    APP("app"),
-    PLAYER_PROPERTY("playerProperty"),
-    ADD_DEVICE("addDevice"),
-    CLIENT_DATA("clientData");
-
-    private String type;
-
-    SLTDataType(String type) {
-        this.type = type;
-    }
-
-    public String getValue() {
-        return this.type;
-    }
+    LEVEL, APP, PLAYER_PROPERTY, ADD_DEVICE, SYNC;
 }

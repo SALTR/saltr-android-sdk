@@ -135,7 +135,7 @@ public class SLTApiCall {
         }
 
         Map<String, Object> callbackParams = new HashMap<String, Object>();
-        callbackParams.put("dataType", SLTDataType.CLIENT_DATA);
+        callbackParams.put("dataType", SLTDataType.SYNC);
         SLTHttpsConnection connection = new SLTHttpsConnection(callbackParams);
 
         connection.setParameters("args", gson.toJson(args));
@@ -275,7 +275,7 @@ public class SLTApiCall {
                 levelContentDelegate.onFailure(sltLevel);
             }
         }
-        else if (dataType.equals(SLTDataType.CLIENT_DATA)) {
+        else if (dataType.equals(SLTDataType.SYNC)) {
             SLTResponse<SLTResponseClientData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseClientData>>() {
             }.getType());
             if (data == null) {
@@ -290,6 +290,7 @@ public class SLTApiCall {
             }.getType());
             if (data == null) {
                 Log.e("SALTR", "Incorrect data sent from server.");
+                addDeviceDelegate.onFailure();
             }
             else {
                 addDeviceDelegate.onSuccess(data.getResponse().get(0));
@@ -305,6 +306,12 @@ public class SLTApiCall {
         else if (dataType.equals(SLTDataType.LEVEL)) {
             SLTLevel sltLevel = (SLTLevel) callbackParams.get("level");
             levelContentDelegate.onFailure(sltLevel);
+        }
+        else if (dataType.equals(SLTDataType.SYNC)) {
+            syncDelegate.onFailure();
+        }
+        else if (dataType.equals(SLTDataType.ADD_DEVICE)) {
+            addDeviceDelegate.onFailure();
         }
     }
 }
