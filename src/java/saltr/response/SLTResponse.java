@@ -15,4 +15,8 @@ public class SLTResponse<T> {
     public void setResponse(List<T> response) {
         this.response = response;
     }
+
+    public T getFirst() {
+        return getResponse().get(0);
+    }
 }

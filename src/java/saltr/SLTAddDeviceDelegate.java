@@ -4,7 +4,6 @@
 package saltr;
 
 import saltr.response.SLTResponseTemplate;
-import saltr.status.SLTStatus;
 
 public interface SLTAddDeviceDelegate {
     public void onSuccess(SLTResponseTemplate response);

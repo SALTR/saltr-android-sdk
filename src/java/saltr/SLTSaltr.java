@@ -25,7 +25,9 @@ import saltr.response.SLTResponseAppData;
 import saltr.response.SLTResponseClientData;
 import saltr.response.SLTResponseTemplate;
 import saltr.response.level.SLTResponseLevelContentData;
-import saltr.status.*;
+import saltr.status.SLTStatus;
+import saltr.status.SLTStatusAppDataConcurrentLoadRefused;
+import saltr.status.SLTStatusLevelContentLoadFail;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class SLTSaltr {
     private boolean started;
     private boolean useNoLevels;
     private boolean useNoFeatures;
-    private String levelType;
+//    private String levelType;
 
     private ContextWrapper contextWrapper;
     private Gson gson;
@@ -343,61 +345,34 @@ public class SLTSaltr {
         }
 
         isLoading = true;
-        SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.loadAppData(clientKey, deviceId, socialId, basicProperties, customProperties,
+
+        SLTAppDataApiCall appDataApiCall = new SLTAppDataApiCall(devMode, useNoLevels, clientKey, deviceId, socialId, basicProperties, customProperties);
+        appDataApiCall.call(
                 new SLTIAppDataDelegate() {
                     @Override
-                    public void onSuccess(SLTResponseAppData response) {
+                    public void onSuccess(SLTResponseAppData response, Map<String, SLTFeature> responseFeatures, List<SLTExperiment> responseExperiments, List<SLTLevelPack> responseLevels) {
                         isLoading = false;
+                        connected = true;
+                        activeFeatures = responseFeatures;
+                        experiments = responseExperiments;
+                        levelPacks = responseLevels;
 
-                        if (response.getSuccess()) {
-                            if (devMode) {
-                                sync();
-                            }
-
-                            levelType = response.getLevelType();
-                            Map<String, SLTFeature> saltrFeatures;
-                            try {
-                                saltrFeatures = SLTDeserializer.decodeFeatures(response);
-                            } catch (Exception e) {
-                                saltrFeatures = null;
-                                appDataHandler.onFailure(new SLTStatusFeaturesParseError());
-                            }
-
-                            try {
-                                experiments = SLTDeserializer.decodeExperiments(response);
-                            } catch (Exception e) {
-                                appDataHandler.onFailure(new SLTStatusExperimentsParseError());
-                            }
-
-                            if (!useNoLevels && !levelType.equals(SLTLevel.LEVEL_TYPE_NONE)) {
-                                try {
-                                    levelPacks = SLTDeserializer.decodeLevels(response);
-                                } catch (Exception e) {
-                                    appDataHandler.onFailure(new SLTStatusLevelsParseError());
-                                }
-                            }
-
-                            connected = true;
-                            repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
-
-                            activeFeatures = saltrFeatures;
-                            appDataHandler.onSuccess();
-
-                            Log.i("SALTR", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
+                        if (devMode) {
+                            sync();
                         }
-                        else {
-                            appDataHandler.onFailure(new SLTStatus(response.getError().getCode(), response.getError().getMessage()));
-                        }
+
+                        repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
+                        appDataHandler.onSuccess();
+                        Log.i("SALTR", "[SALTR] AppData load success. LevelPacks loaded: " + levelPacks.size());
                     }
+
 
                     @Override
-                    public void onFailure() {
+                    public void onFailure(SLTStatus status) {
                         isLoading = false;
-                        appDataHandler.onFailure(new SLTStatusAppDataLoadFail());
+                        appDataHandler.onFailure(status);
                     }
-                }
-        );
+                });
     }
 
     /**
@@ -443,14 +418,14 @@ public class SLTSaltr {
             throw new SLTNotStartedException();
         }
 
-        SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.addProperties(clientKey, socialId, basicProperties, customProperties);
+        SLTAddPropertyApiCall apiCall = new SLTAddPropertyApiCall(clientKey, socialId, basicProperties, customProperties);
+        apiCall.call();
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {
         try {
-            SLTApiCall apiCall = new SLTApiCall(devMode);
-            apiCall.loadLevelContent(level, new SLTILevelContentDelegate() {
+            SLTLevelApiCall apiCall = new SLTLevelApiCall(level);
+            apiCall.call(new SLTILevelContentDelegate() {
                 @Override
                 public void onSuccess(SLTResponseLevelContentData data, SLTLevel sltLevel) {
                     cacheLevelContent(sltLevel, data);
@@ -481,11 +456,12 @@ public class SLTSaltr {
     }
 
     private void sync() {
-        final SLTApiCall apiCall = new SLTApiCall(devMode);
-        apiCall.sync(new SLTSyncDelegate() {
+        SLTSyncApiCall apiCall = new SLTSyncApiCall(devMode, clientKey, socialId, deviceId, developerFeatures);
+        apiCall.call(new SLTSyncDelegate() {
             @Override
             public void onSuccess(SLTResponseClientData data) {
-                if (data.getSuccess() && data.getRegistrationRequired()) {
+                if (data.getRegistrationRequired()) {
+
                     final EditText name = new EditText(contextWrapper);
                     final EditText email = new EditText(contextWrapper);
                     name.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -510,12 +486,13 @@ public class SLTSaltr {
                         public void onShow(DialogInterface dialogInterface) {
                             Button ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                             ok.setOnClickListener(new View.OnClickListener() {
-
                                 @Override
                                 public void onClick(View view) {
                                     Editable editableName = name.getText();
                                     Editable editableEmail = email.getText();
-                                    apiCall.addDeviceToSaltr(editableName.toString(), editableEmail.toString(), clientKey, deviceId, new SLTAddDeviceDelegate() {
+
+                                    SLTAddDeviceToSaltrApiCall apiCall = new SLTAddDeviceToSaltrApiCall(devMode, editableName.toString(), editableEmail.toString(), clientKey, deviceId);
+                                    apiCall.call(new SLTAddDeviceDelegate() {
                                         @Override
                                         public void onSuccess(SLTResponseTemplate response) {
                                             if (response.getSuccess()) {
@@ -554,7 +531,7 @@ public class SLTSaltr {
                 Toast toast = Toast.makeText(contextWrapper, "Error occurred during data synchronization", Toast.LENGTH_LONG);
                 toast.show();
             }
-        }, clientKey, socialId, deviceId, developerFeatures);
+        });
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {
