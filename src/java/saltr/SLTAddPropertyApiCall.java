@@ -15,7 +15,8 @@ public class SLTAddPropertyApiCall extends SLTApiCall {
     private Object basicProperties;
     private Object customProperties;
 
-    public SLTAddPropertyApiCall(String clientKey, String socialId, Object basicProperties, Object customProperties) {
+    public SLTAddPropertyApiCall(int timeout, String clientKey, String socialId, Object basicProperties, Object customProperties) {
+        super(timeout);
         this.clientKey = clientKey;
         this.socialId = socialId;
         this.basicProperties = basicProperties;
@@ -37,7 +38,7 @@ public class SLTAddPropertyApiCall extends SLTApiCall {
             return;
         }
         SLTHttpsConnection connection = createPlayerPropertiesConnection(clientKey, socialId, basicProperties, customProperties);
-        connection.execute(this);
+        call(connection);
     }
 
     private SLTHttpsConnection createPlayerPropertiesConnection(String clientKey, String socialId, Object basicProperties, Object customProperties) {

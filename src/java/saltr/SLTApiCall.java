@@ -3,14 +3,48 @@
  */
 package saltr;
 
+import android.util.Log;
 import com.google.gson.Gson;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class SLTApiCall {
 
     protected Gson gson;
+    protected int timeout;
 
-    public SLTApiCall() {
-        gson = new Gson();
+    protected SLTApiCall(int timeout) {
+        this.gson = new Gson();
+        this.timeout = timeout;
+    }
+
+    protected void call(SLTHttpsConnection connection) {
+        if (timeout == 0) {
+            try {
+                connection.execute(this);
+            } catch (Exception e) {
+                Log.e("SALTR", "Request has thrown exception");
+            }
+        }
+        else {
+            try {
+                connection.execute(this).get(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Log.e("SALTR", "Request has interrupted");
+                connection.cancel(true);
+                onConnectionFailure();
+            } catch (ExecutionException e) {
+                Log.e("SALTR", "Request has thrown exception");
+                connection.cancel(true);
+                onConnectionFailure();
+            } catch (TimeoutException e) {
+                Log.w("SALTR", "Request timed out");
+                connection.cancel(true);
+                onConnectionFailure();
+            }
+        }
     }
 
     public abstract void onConnectionSuccess(String response);

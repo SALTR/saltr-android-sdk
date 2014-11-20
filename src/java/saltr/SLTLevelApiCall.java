@@ -13,7 +13,8 @@ public class SLTLevelApiCall extends SLTApiCall {
     private SLTILevelContentDelegate delegate;
     private SLTLevel level;
 
-    public SLTLevelApiCall(SLTLevel level) {
+    public SLTLevelApiCall(int timeout, SLTLevel level) {
+        super(timeout);
         this.level = level;
     }
 
@@ -22,7 +23,7 @@ public class SLTLevelApiCall extends SLTApiCall {
         SLTHttpsConnection connection = new SLTHttpsConnection();
         try {
             connection.setUrl(level.getContentUrl());
-            connection.execute(this);
+            call(connection);
         } catch (MalformedURLException e) {
             this.delegate.onFailure(level);
         }

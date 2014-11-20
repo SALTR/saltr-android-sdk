@@ -30,7 +30,8 @@ public class SLTAppDataApiCall extends SLTApiCall {
     private String socialId;
     private Object basicProperties;
 
-    public SLTAppDataApiCall(boolean devMode, boolean useNoLevels, String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
+    public SLTAppDataApiCall(int timeout, boolean devMode, boolean useNoLevels, String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
+        super(timeout);
         this.devMode = devMode;
         this.useNoLevels = useNoLevels;
         this.clientKey = clientKey;
@@ -43,7 +44,7 @@ public class SLTAppDataApiCall extends SLTApiCall {
     public void call(SLTIAppDataDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, basicProperties, customProperties);
-        connection.execute(this);
+        call(connection);
     }
 
 

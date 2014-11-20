@@ -21,7 +21,8 @@ public class SLTAddDeviceToSaltrApiCall extends SLTApiCall {
     private String deviceId;
     private boolean devMode;
 
-    public SLTAddDeviceToSaltrApiCall(boolean devMode, String deviceName, String email, String clientKey, String deviceId) {
+    public SLTAddDeviceToSaltrApiCall(int timeout, boolean devMode, String deviceName, String email, String clientKey, String deviceId) {
+        super(timeout);
         this.deviceName = deviceName;
         this.email = email;
         this.clientKey = clientKey;
@@ -50,7 +51,7 @@ public class SLTAddDeviceToSaltrApiCall extends SLTApiCall {
     public void call(SLTAddDeviceDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createDeviceToSaltr(deviceName, email, clientKey, deviceId);
-        connection.execute(this);
+        call(connection);
     }
 
     private SLTHttpsConnection createDeviceToSaltr(String deviceName, String email, String clientKey, String deviceId) {

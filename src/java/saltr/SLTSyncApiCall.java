@@ -23,7 +23,8 @@ public class SLTSyncApiCall extends SLTApiCall {
     private Map<String, SLTFeature> developerFeatures;
     private SLTSyncDelegate delegate;
 
-    public SLTSyncApiCall(boolean devMode, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+    public SLTSyncApiCall(int timeout, boolean devMode, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+        super(timeout);
         this.devMode = devMode;
         this.clientKey = clientKey;
         this.socialId = socialId;
@@ -52,7 +53,7 @@ public class SLTSyncApiCall extends SLTApiCall {
     public void call(SLTSyncDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createSyncClientConnection(clientKey, socialId, deviceId, developerFeatures);
-        connection.execute(this);
+        call(connection);
     }
 
     private SLTHttpsConnection createSyncClientConnection(String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {

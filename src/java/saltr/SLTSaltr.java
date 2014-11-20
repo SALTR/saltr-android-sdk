@@ -68,6 +68,12 @@ public class SLTSaltr {
     private ContextWrapper contextWrapper;
     private Gson gson;
 
+    private int timeout;
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
     /**
      * The only constructor for SLTSaltr class.
      *
@@ -90,6 +96,7 @@ public class SLTSaltr {
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
         this.contextWrapper = contextWrapper;
+        timeout = 0;
     }
 
     public void setRepository(ISLTRepository repository) {
@@ -346,7 +353,7 @@ public class SLTSaltr {
 
         isLoading = true;
 
-        SLTAppDataApiCall appDataApiCall = new SLTAppDataApiCall(devMode, useNoLevels, clientKey, deviceId, socialId, basicProperties, customProperties);
+        SLTAppDataApiCall appDataApiCall = new SLTAppDataApiCall(timeout, devMode, useNoLevels, clientKey, deviceId, socialId, basicProperties, customProperties);
         appDataApiCall.call(
                 new SLTIAppDataDelegate() {
                     @Override
@@ -418,13 +425,13 @@ public class SLTSaltr {
             throw new SLTNotStartedException();
         }
 
-        SLTAddPropertyApiCall apiCall = new SLTAddPropertyApiCall(clientKey, socialId, basicProperties, customProperties);
+        SLTAddPropertyApiCall apiCall = new SLTAddPropertyApiCall(timeout, clientKey, socialId, basicProperties, customProperties);
         apiCall.call();
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {
         try {
-            SLTLevelApiCall apiCall = new SLTLevelApiCall(level);
+            SLTLevelApiCall apiCall = new SLTLevelApiCall(timeout, level);
             apiCall.call(new SLTILevelContentDelegate() {
                 @Override
                 public void onSuccess(SLTResponseLevelContentData data, SLTLevel sltLevel) {
@@ -456,7 +463,7 @@ public class SLTSaltr {
     }
 
     private void sync() {
-        SLTSyncApiCall apiCall = new SLTSyncApiCall(devMode, clientKey, socialId, deviceId, developerFeatures);
+        SLTSyncApiCall apiCall = new SLTSyncApiCall(timeout, devMode, clientKey, socialId, deviceId, developerFeatures);
         apiCall.call(new SLTSyncDelegate() {
             @Override
             public void onSuccess(SLTResponseClientData data) {
@@ -491,7 +498,7 @@ public class SLTSaltr {
                                     Editable editableName = name.getText();
                                     Editable editableEmail = email.getText();
 
-                                    SLTAddDeviceToSaltrApiCall apiCall = new SLTAddDeviceToSaltrApiCall(devMode, editableName.toString(), editableEmail.toString(), clientKey, deviceId);
+                                    SLTAddDeviceToSaltrApiCall apiCall = new SLTAddDeviceToSaltrApiCall(timeout, devMode, editableName.toString(), editableEmail.toString(), clientKey, deviceId);
                                     apiCall.call(new SLTAddDeviceDelegate() {
                                         @Override
                                         public void onSuccess(SLTResponseTemplate response) {
@@ -506,7 +513,7 @@ public class SLTSaltr {
 
                                         @Override
                                         public void onFailure() {
-                                            Toast toast = Toast.makeText(contextWrapper, "Incorrect data sent from server", Toast.LENGTH_LONG);
+                                            Toast toast = Toast.makeText(contextWrapper, "Error", Toast.LENGTH_LONG);
                                             toast.show();
                                         }
                                     });
