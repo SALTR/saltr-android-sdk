@@ -68,23 +68,6 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
         return boards;
     }
 
-    @Override
-    protected SLTAssetState parseAssetState(SLTResponseBoardChunkAssetState stateNode) {
-        String token = null;
-        Object properties = null;
-
-        if (stateNode.getToken() != null) {
-            token = stateNode.getToken();
-        }
-
-        if (stateNode.getProperties() != null) {
-            properties = stateNode.getProperties();
-        }
-
-        return new SLTAssetState(token, properties);
-    }
-
-
     private static SLTMatchingBoard parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
         Map<String, Object> boardProperties = boardNode.getProperties();
         if (boardProperties == null) {

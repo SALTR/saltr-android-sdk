@@ -49,8 +49,8 @@ public class SLTDeserializer {
                 Collections.sort(levels);
                 levelPacks.add(new SLTLevelPack(levelPackNode.getToken(), packIndex, levels));
             }
+            Collections.sort(levelPacks);
         }
-        Collections.sort(levelPacks);
         return levelPacks;
     }
 

@@ -9,7 +9,7 @@ import saltr.response.level.SLTResponseLevelContentData;
 
 public interface SLTILevelContentDelegate {
 
-    void loadFromSaltrSuccessCallback(SLTResponseLevelContentData data, SLTLevel sltLevel);
+    void onSuccess(SLTResponseLevelContentData data, SLTLevel sltLevel);
 
-    void loadFromSaltrFailCallback(SLTLevel sltLevel);
+    void onFailure(SLTLevel sltLevel);
 }

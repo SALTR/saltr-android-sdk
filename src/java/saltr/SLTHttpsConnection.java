@@ -17,19 +17,16 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
 
     private List<NameValuePair> params;
     private URL url;
 
-    private Map<String, Object> callbackParams;
     private SLTApiCall api;
 
-    SLTHttpsConnection(Map<String, Object> callParams) {
+    SLTHttpsConnection() {
         params = new ArrayList<NameValuePair>();
-        this.callbackParams = callParams;
     }
 
     @Override
@@ -58,9 +55,10 @@ class SLTHttpsConnection extends AsyncTask<SLTApiCall, Void, String> {
     @Override
     protected void onPostExecute(String response) {
         if (response != null) {
-            api.onSuccess(response, callbackParams);
-        } else {
-            api.onFailure(callbackParams);
+            api.onConnectionSuccess(response);
+        }
+        else {
+            api.onConnectionFailure();
         }
     }
 

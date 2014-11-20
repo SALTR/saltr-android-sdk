@@ -5,9 +5,8 @@ package saltr.response;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
-public class SLTResponseAppData implements Serializable {
+public class SLTResponseAppData extends SLTResponseTemplate implements Serializable {
     private List<SLTResponsePack> levelPacks;
     private List<SLTResponseFeature> features;
     private List<SLTResponseExperiment> experiments;

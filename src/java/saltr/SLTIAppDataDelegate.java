@@ -4,12 +4,16 @@
 
 package saltr;
 
-import saltr.response.SLTResponse;
+import saltr.game.SLTLevelPack;
 import saltr.response.SLTResponseAppData;
+import saltr.status.SLTStatus;
+
+import java.util.List;
+import java.util.Map;
 
 interface SLTIAppDataDelegate {
 
-    void appDataLoadSuccessCallback(SLTResponse<SLTResponseAppData> response);
+    void onSuccess(SLTResponseAppData response, Map<String, SLTFeature> features, List<SLTExperiment> experiments, List<SLTLevelPack> levels);
 
-    void appDataLoadFailCallback();
+    void onFailure(SLTStatus status);
 }
