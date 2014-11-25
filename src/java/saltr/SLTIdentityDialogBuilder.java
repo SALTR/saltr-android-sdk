@@ -31,13 +31,13 @@ public class SLTIdentityDialogBuilder extends AlertDialog.Builder {
         email.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         name.setLines(1);
         email.setLines(1);
-        name.setHint("device name");
+        name.setHint("Device Name");
         email.setHint("myemail@example.com");
         layout.addView(email);
         layout.addView(name);
         layout.setOrientation(1);
 
-        setTitle("Register device");
+        setTitle("Register Device with SALTR");
         setView(layout);
         setPositiveButton("Ok", null);
         setNegativeButton("Cancel", null);
