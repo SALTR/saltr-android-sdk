@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SLTResponseBoardChunkAsset {
+public class SLTResponseBoardChunkAsset implements Serializable {
     private String assetId;
     private String distributionType;
     private Float distributionValue;

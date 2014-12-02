@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class SLTResponseAsset {
+public class SLTResponseAsset implements Serializable {
     private Map<String, Integer> keys;
     private String type;
     private String token;

@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SLTResponseBoardFixedAsset {
+public class SLTResponseBoardFixedAsset implements Serializable {
     private Long assetId;
     private Long stateId;
     private List<String> states;

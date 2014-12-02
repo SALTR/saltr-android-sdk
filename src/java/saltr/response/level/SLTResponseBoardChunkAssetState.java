@@ -3,7 +3,9 @@
  */
 package saltr.response.level;
 
-public class SLTResponseBoardChunkAssetState {
+import java.io.Serializable;
+
+public class SLTResponseBoardChunkAssetState implements Serializable {
     private String token;
     private Object properties;
     private Integer pivotX;

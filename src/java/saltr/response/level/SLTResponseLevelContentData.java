@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class SLTResponseLevelContentData {
+public class SLTResponseLevelContentData implements Serializable {
     private Map<String, SLTResponseBoard> boards;
     private Map<String, Object> assetStates;
     private Map<String, SLTResponseAsset> assets;

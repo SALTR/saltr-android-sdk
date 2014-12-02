@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SLTResponseBoardChunk {
+public class SLTResponseBoardChunk implements Serializable {
     private Long chunkId;
     private List<SLTResponseBoardChunkAsset> assets;
     private List<List<Integer>> cells;

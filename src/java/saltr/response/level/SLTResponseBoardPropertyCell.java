@@ -3,10 +3,11 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class SLTResponseBoardPropertyCell {
+public class SLTResponseBoardPropertyCell implements Serializable {
     private List<Integer> coords;
     private Map<String, Object> value;
 

@@ -3,10 +3,11 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class SLTResponseBoard {
+public class SLTResponseBoard implements Serializable {
     private List<SLTResponseBoardLayer> layers;
     private Integer rows;
     private Integer cols;

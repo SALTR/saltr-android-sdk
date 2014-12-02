@@ -3,9 +3,10 @@
  */
 package saltr.response.level;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SLTResponseBoardLayer {
+public class SLTResponseBoardLayer implements Serializable {
     private String token;
     private List<SLTResponseBoardChunk> chunks;
     private List<SLTResponseBoardFixedAsset> fixedAssets;
