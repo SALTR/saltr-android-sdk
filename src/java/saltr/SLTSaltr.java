@@ -87,7 +87,7 @@ public class SLTSaltr {
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
         this.contextWrapper = contextWrapper;
-        timeout = 0;
+        timeout = 3000;
     }
 
     public void setRepository(ISLTRepository repository) {
@@ -390,7 +390,7 @@ public class SLTSaltr {
             else {
                 content = loadLevelContentFromDisk(sltLevel);
             }
-            levelContentLoadSuccessHandler(sltLevel, gson.fromJson(content.toString(), SLTResponseLevelContentData.class));
+            levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
         }
         else {
             if (!useCache || !sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
@@ -398,7 +398,7 @@ public class SLTSaltr {
             }
             else {
                 content = loadLevelContentFromCache(sltLevel);
-                levelContentLoadSuccessHandler(sltLevel, gson.fromJson(content.toString(), SLTResponseLevelContentData.class));
+                levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
             }
         }
     }
@@ -432,13 +432,13 @@ public class SLTSaltr {
 
                 @Override
                 public void onFailure(SLTLevel sltLevel) {
-                    Object contentData = loadLevelContentInternally(sltLevel);
-                    levelContentLoadSuccessHandler(sltLevel, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
+                    Object content = loadLevelContentInternally(sltLevel);
+                    levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
                 }
             });
         } catch (Exception e) {
-            Object contentData = loadLevelContentInternally(level);
-            levelContentLoadSuccessHandler(level, gson.fromJson(contentData.toString(), SLTResponseLevelContentData.class));
+            Object content = loadLevelContentInternally(level);
+            levelContentLoadSuccessHandler(level, (SLTResponseLevelContentData) content);
 
         }
     }
@@ -477,7 +477,7 @@ public class SLTSaltr {
         return repository.getObjectVersion(cachedFileName);
     }
 
-    private void cacheLevelContent(SLTLevel sltLevel, Object contentData) {
+    private void cacheLevelContent(SLTLevel sltLevel, SLTResponseLevelContentData contentData) {
         String cachedFileName = MessageFormat.format(SLTConfig.LOCAL_LEVEL_CONTENT_CACHE_URL_TEMPLATE, sltLevel.getPackIndex(), sltLevel.getLocalIndex());
         repository.cacheObject(cachedFileName, sltLevel.getVersion(), contentData);
     }
