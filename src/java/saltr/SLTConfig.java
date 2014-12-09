@@ -7,7 +7,7 @@ public class SLTConfig {
     public static final String ACTION_GET_APP_DATA = "getAppData";
     public static final String ACTION_ADD_PROPERTIES = "addProperties";
     public static final String ACTION_DEV_SYNC_CLIENT_DATA = "sync";
-    public static final String ACTION_DEV_REGISTER_IDENTITY = "registerIdentity";
+    public static final String ACTION_DEV_REGISTER_DEVICE = "registerDevice";
     public static final String SALTR_API_URL = "http://saltapi.includiv.com/call";
     public static final String SALTR_DEVAPI_URL = "http://saltapp.includiv.com/call";
 

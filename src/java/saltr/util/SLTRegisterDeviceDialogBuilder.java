@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr;
+package saltr.util;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,34 +13,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import saltr.SLTRegisterDeviceApiCall;
+import saltr.SLTRegisterDeviceDelegate;
 import saltr.response.SLTResponseTemplate;
 
-public class SLTIdentityDialogBuilder extends AlertDialog.Builder {
-    private EditText name;
+public class SLTRegisterDeviceDialogBuilder extends AlertDialog.Builder {
     private EditText email;
     private LinearLayout layout;
 
-    public SLTIdentityDialogBuilder(Context context) {
+    public SLTRegisterDeviceDialogBuilder(Context context) {
         super(context);
-
-        name = new EditText(getContext());
         email = new EditText(getContext());
         layout = new LinearLayout(getContext());
 
-        name.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         email.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        name.setLines(1);
         email.setLines(1);
-        name.setHint("Device Name");
         email.setHint("myemail@example.com");
         layout.addView(email);
-        layout.addView(name);
         layout.setOrientation(1);
 
         setTitle("Register Device with SALTR");
         setView(layout);
-        setPositiveButton("Ok", null);
         setNegativeButton("Cancel", null);
+        setPositiveButton("Submit", null);
     }
 
     public void showDialog(final boolean devMode, final int timeout, final String clientKey, final String deviceId) {
@@ -53,11 +48,15 @@ public class SLTIdentityDialogBuilder extends AlertDialog.Builder {
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Editable editableName = name.getText();
                         Editable editableEmail = email.getText();
 
-                        SLTAddDeviceToSaltrApiCall apiCall = new SLTAddDeviceToSaltrApiCall(timeout, devMode, editableName.toString(), editableEmail.toString(), clientKey, deviceId);
-                        apiCall.call(new SLTAddDeviceDelegate() {
+                        SLTDeviceDetails deviceDetails = new SLTDeviceDetails();
+                        String model = deviceDetails.getDeviceName();
+                        String os = deviceDetails.getOsVersion();
+
+                        SLTRegisterDeviceApiCall apiCall = new SLTRegisterDeviceApiCall(timeout, devMode,
+                                editableEmail.toString(), clientKey, deviceId, model, os);
+                        apiCall.call(new SLTRegisterDeviceDelegate() {
                             @Override
                             public void onSuccess(SLTResponseTemplate response) {
                                 if (response.getSuccess()) {

@@ -13,21 +13,23 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SLTAddDeviceToSaltrApiCall extends SLTApiCall {
-    private SLTAddDeviceDelegate delegate;
-    private String deviceName;
+public class SLTRegisterDeviceApiCall extends SLTApiCall {
+    private SLTRegisterDeviceDelegate delegate;
     private String email;
     private String clientKey;
     private String deviceId;
     private boolean devMode;
+    private String model;
+    private String os;
 
-    public SLTAddDeviceToSaltrApiCall(int timeout, boolean devMode, String deviceName, String email, String clientKey, String deviceId) {
+    public SLTRegisterDeviceApiCall(int timeout, boolean devMode, String email, String clientKey, String deviceId, String model, String os) {
         super(timeout);
-        this.deviceName = deviceName;
         this.email = email;
         this.clientKey = clientKey;
         this.deviceId = deviceId;
         this.devMode = devMode;
+        this.model = model;
+        this.os = os;
     }
 
     @Override
@@ -48,33 +50,28 @@ public class SLTAddDeviceToSaltrApiCall extends SLTApiCall {
         delegate.onFailure();
     }
 
-    public void call(SLTAddDeviceDelegate delegate) {
+    public void call(SLTRegisterDeviceDelegate delegate) {
         this.delegate = delegate;
-        SLTHttpsConnection connection = createDeviceToSaltr(deviceName, email, clientKey, deviceId);
+        SLTHttpsConnection connection = createRegisterDevice();
         call(connection);
     }
 
-    private SLTHttpsConnection createDeviceToSaltr(String deviceName, String email, String clientKey, String deviceId) {
+    private SLTHttpsConnection createRegisterDevice() {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("apiVersion", SLTSaltr.API_VERSION);
         args.put("devMode", devMode);
         args.put("type", SLTConfig.DEVICE_TYPE_ANDROID);
         args.put("platform", SLTConfig.DEVICE_PLATFORM_ANDROID);
-        args.put("action", SLTConfig.ACTION_DEV_REGISTER_IDENTITY);
+        args.put("action", SLTConfig.ACTION_DEV_REGISTER_DEVICE);
         args.put("clientKey", clientKey);
+        args.put("source", model);
+        args.put("os", os);
 
         if (deviceId != null) {
             args.put("id", deviceId);
         }
         else {
             throw new SLTRuntimeException("Field 'deviceId' is a required.");
-        }
-
-        if (deviceName != null) {
-            args.put("name", deviceName);
-        }
-        else {
-            throw new SLTRuntimeException("Field 'name' is a required.");
         }
 
         if (email != null) {

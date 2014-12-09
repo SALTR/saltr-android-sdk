@@ -19,6 +19,7 @@ import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.SLTStatus;
 import saltr.status.SLTStatusAppDataConcurrentLoadRefused;
 import saltr.status.SLTStatusLevelContentLoadFail;
+import saltr.util.SLTRegisterDeviceDialogBuilder;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -459,7 +460,7 @@ public class SLTSaltr {
             @Override
             public void onSuccess(SLTResponseClientData data) {
                 if (data.getRegistrationRequired()) {
-                    SLTIdentityDialogBuilder dialogBuilder = new SLTIdentityDialogBuilder(contextWrapper);
+                    SLTRegisterDeviceDialogBuilder dialogBuilder = new SLTRegisterDeviceDialogBuilder(contextWrapper);
                     dialogBuilder.showDialog(devMode, timeout, clientKey, deviceId);
                 }
             }
