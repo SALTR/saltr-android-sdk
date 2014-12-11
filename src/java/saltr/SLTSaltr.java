@@ -55,6 +55,8 @@ public class SLTSaltr {
     private boolean started;
     private boolean useNoLevels;
     private boolean useNoFeatures;
+    private boolean autoSyncEnabled;
+    private boolean isDataSynced;
 //    private String levelType;
 
     private ContextWrapper contextWrapper;
@@ -84,6 +86,7 @@ public class SLTSaltr {
         developerFeatures = new HashMap<String, SLTFeature>();
         experiments = new ArrayList<SLTExperiment>();
         levelPacks = new ArrayList<SLTLevelPack>();
+        autoSyncEnabled = true;
 
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
@@ -111,6 +114,10 @@ public class SLTSaltr {
      */
     public void setDevMode(Boolean devMode) {
         this.devMode = devMode;
+    }
+
+    public void setAutoSyncEnabled(boolean autoSyncEnabled) {
+        this.autoSyncEnabled = autoSyncEnabled;
     }
 
     public void setLevelPacks(List<SLTLevelPack> levelPacks) {
@@ -356,8 +363,9 @@ public class SLTSaltr {
                         experiments = responseExperiments;
                         levelPacks = responseLevels;
 
-                        if (devMode) {
+                        if (autoSyncEnabled && !isDataSynced) {
                             sync();
+                            isDataSynced = true;
                         }
 
                         repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
@@ -391,7 +399,10 @@ public class SLTSaltr {
             else {
                 content = loadLevelContentFromDisk(sltLevel);
             }
-            levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
+            if (content != null) {
+                levelContentLoadSuccessHandler(sltLevel, content);
+            }
+
         }
         else {
             if (!useCache || !sltLevel.getVersion().equals(getCachedLevelVersion(sltLevel))) {
@@ -399,7 +410,7 @@ public class SLTSaltr {
             }
             else {
                 content = loadLevelContentFromCache(sltLevel);
-                levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
+                levelContentLoadSuccessHandler(sltLevel, content);
             }
         }
     }
@@ -434,27 +445,31 @@ public class SLTSaltr {
                 @Override
                 public void onFailure(SLTLevel sltLevel) {
                     Object content = loadLevelContentInternally(sltLevel);
-                    levelContentLoadSuccessHandler(sltLevel, (SLTResponseLevelContentData) content);
+                    levelContentLoadSuccessHandler(sltLevel, content);
                 }
             });
         } catch (Exception e) {
             Object content = loadLevelContentInternally(level);
-            levelContentLoadSuccessHandler(level, (SLTResponseLevelContentData) content);
+            levelContentLoadSuccessHandler(level, content);
 
         }
     }
 
-    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, SLTResponseLevelContentData level) {
+    protected void levelContentLoadSuccessHandler(SLTLevel sltLevel, Object content) {
         try {
+            SLTResponseLevelContentData level = (SLTResponseLevelContentData) content;
             sltLevel.updateContent(level);
             levelDataHandler.onSuccess();
-        } catch (SLTException e) {
-            Log.e("SALTR", e.getMessage());
+        } catch (Exception e) {
+            Log.e("SALTR", "Couldn't load level");
             levelDataHandler.onFailure(new SLTStatusLevelContentLoadFail());
         }
     }
 
-    private void sync() {
+    public void sync() {
+        if (!devMode) {
+            return;
+        }
         SLTSyncApiCall apiCall = new SLTSyncApiCall(timeout, devMode, clientKey, socialId, deviceId, developerFeatures);
         apiCall.call(new SLTSyncDelegate() {
             @Override
