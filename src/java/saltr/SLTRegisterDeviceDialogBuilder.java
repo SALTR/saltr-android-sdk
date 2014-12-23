@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Plexonic Ltd
  */
-package saltr.util;
+package saltr;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,9 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import saltr.SLTRegisterDeviceApiCall;
-import saltr.SLTRegisterDeviceDelegate;
 import saltr.response.SLTResponseTemplate;
+import saltr.util.SLTDeviceDetails;
 
 public class SLTRegisterDeviceDialogBuilder extends AlertDialog.Builder {
     private EditText email;
@@ -38,7 +37,7 @@ public class SLTRegisterDeviceDialogBuilder extends AlertDialog.Builder {
         setPositiveButton("Submit", null);
     }
 
-    public void showDialog(final boolean devMode, final int timeout, final String clientKey, final String deviceId) {
+    public void showDialog(final boolean devMode, final int timeout, final String clientKey, final String deviceId, final SLTSaltr saltr) {
         final AlertDialog dialog = create();
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -61,6 +60,7 @@ public class SLTRegisterDeviceDialogBuilder extends AlertDialog.Builder {
                             public void onSuccess(SLTResponseTemplate response) {
                                 if (response.getSuccess()) {
                                     dialog.dismiss();
+                                    saltr.sync();
                                 }
                                 else {
                                     Toast toast = Toast.makeText(getContext(), response.getError().getMessage(), Toast.LENGTH_LONG);

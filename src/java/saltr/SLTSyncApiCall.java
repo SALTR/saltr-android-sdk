@@ -36,7 +36,7 @@ public class SLTSyncApiCall extends SLTApiCall {
     public void onConnectionSuccess(String response) {
         SLTResponse<SLTResponseClientData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseClientData>>() {
         }.getType());
-        if (data == null && data.getFirst() == null && !data.getFirst().getSuccess()) {
+        if (data == null || data.getFirst() == null || data.getFirst().getSuccess() == null) {
             Log.e("SALTR", "Incorrect data sent from server.");
             delegate.onFailure();
         }

@@ -19,7 +19,6 @@ import saltr.response.level.SLTResponseLevelContentData;
 import saltr.status.SLTStatus;
 import saltr.status.SLTStatusAppDataConcurrentLoadRefused;
 import saltr.status.SLTStatusLevelContentLoadFail;
-import saltr.util.SLTRegisterDeviceDialogBuilder;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -55,8 +54,8 @@ public class SLTSaltr {
     private boolean started;
     private boolean useNoLevels;
     private boolean useNoFeatures;
-    private boolean autoSyncEnabled;
-    private boolean isDataSynced;
+    private boolean autoRegisterDevice;
+    private boolean isSynced;
 //    private String levelType;
 
     private ContextWrapper contextWrapper;
@@ -86,7 +85,7 @@ public class SLTSaltr {
         developerFeatures = new HashMap<String, SLTFeature>();
         experiments = new ArrayList<SLTExperiment>();
         levelPacks = new ArrayList<SLTLevelPack>();
-        autoSyncEnabled = true;
+        autoRegisterDevice = true;
 
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
@@ -116,8 +115,8 @@ public class SLTSaltr {
         this.devMode = devMode;
     }
 
-    public void setAutoSyncEnabled(boolean autoSyncEnabled) {
-        this.autoSyncEnabled = autoSyncEnabled;
+    public void setAutoRegisterDevice(boolean autoRegisterDevice) {
+        this.autoRegisterDevice = autoRegisterDevice;
     }
 
     public void setLevelPacks(List<SLTLevelPack> levelPacks) {
@@ -363,9 +362,9 @@ public class SLTSaltr {
                         experiments = responseExperiments;
                         levelPacks = responseLevels;
 
-                        if (autoSyncEnabled && !isDataSynced) {
+                        if (devMode && !isSynced) {
                             sync();
-                            isDataSynced = true;
+//                            isSynced = true;
                         }
 
                         repository.cacheObject(SLTConfig.APP_DATA_URL_CACHE, "0", response);
@@ -466,17 +465,16 @@ public class SLTSaltr {
         }
     }
 
-    public void sync() {
-        if (!devMode) {
-            return;
-        }
+    void sync() {
         SLTSyncApiCall apiCall = new SLTSyncApiCall(timeout, devMode, clientKey, socialId, deviceId, developerFeatures);
         apiCall.call(new SLTSyncDelegate() {
             @Override
             public void onSuccess(SLTResponseClientData data) {
-                if (data.getRegistrationRequired()) {
-                    SLTRegisterDeviceDialogBuilder dialogBuilder = new SLTRegisterDeviceDialogBuilder(contextWrapper);
-                    dialogBuilder.showDialog(devMode, timeout, clientKey, deviceId);
+                if (data.getSuccess()) {
+                    isSynced = true;
+                }
+                else if (data.getError().getCode().equals(SLTStatus.REGISTRATION_REQUIRED_ERROR_CODE) && autoRegisterDevice) {
+                    registerDevice();
                 }
             }
 
@@ -486,6 +484,14 @@ public class SLTSaltr {
                 toast.show();
             }
         });
+    }
+
+    public void registerDevice() {
+        if (!started) {
+            throw new SLTRuntimeException("Method 'registerDevice()' should be called after 'start()' only.");
+        }
+        SLTRegisterDeviceDialogBuilder dialogBuilder = new SLTRegisterDeviceDialogBuilder(contextWrapper);
+        dialogBuilder.showDialog(devMode, timeout, clientKey, deviceId, this);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

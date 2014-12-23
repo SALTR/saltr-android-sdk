@@ -12,7 +12,7 @@ public class SLTStatus {
     public static final int PARSE_ERROR = 1004;
 
 
-    public static final int GENERAL_ERROR_CODE = 2001;
+    public static final int REGISTRATION_REQUIRED_ERROR_CODE = 2001;
     public static final int CLIENT_ERROR_CODE = 2002;
 
 

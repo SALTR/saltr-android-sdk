@@ -11,7 +11,8 @@ public class SLTDeviceDetails {
         String model = Build.MODEL;
         if (model.startsWith(manufacturer)) {
             return capitalize(model);
-        } else {
+        }
+        else {
             return capitalize(manufacturer) + " " + model;
         }
     }
@@ -23,7 +24,8 @@ public class SLTDeviceDetails {
         char first = s.charAt(0);
         if (Character.isUpperCase(first)) {
             return s;
-        } else {
+        }
+        else {
             return Character.toUpperCase(first) + s.substring(1);
         }
     }
