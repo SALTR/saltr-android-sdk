@@ -8,6 +8,9 @@ import saltr.game.SLTAssetState;
 
 import java.util.List;
 
+/**
+ * Represents an instance of a 2D asset on board
+ */
 public class SLT2DAssetInstance extends SLTAssetInstance {
     private Integer x;
     private Integer y;
@@ -21,14 +24,23 @@ public class SLT2DAssetInstance extends SLTAssetInstance {
         this.rotation = rotation;
     }
 
+    /**
+     * @return the X coordinate.
+     */
     public Integer getX() {
         return x;
     }
 
+    /**
+     * @return the Y coordinate.
+     */
     public Integer getY() {
         return y;
     }
 
+    /**
+     * @return the rotation
+     */
     public Integer getRotation() {
         return rotation;
     }

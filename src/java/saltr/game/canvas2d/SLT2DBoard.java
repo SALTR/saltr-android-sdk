@@ -9,6 +9,9 @@ import saltr.game.SLTBoardLayer;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a 2D board.
+ */
 public class SLT2DBoard extends SLTBoard {
 
     private Integer width;
@@ -20,10 +23,17 @@ public class SLT2DBoard extends SLTBoard {
         this.height = height;
     }
 
+    /**
+     * @return the width of the board in pixels as is in Saltr level editor.
+     */
     public Integer getWidth() {
         return width;
     }
 
+    /**
+     *
+     * @return the height of the board in pixels as is in Saltr level editor.
+     */
     public Integer getHeight() {
         return height;
     }
