@@ -29,7 +29,6 @@ public class SLT2DAssetState extends SLTAssetState {
 
 
     /**
-     *
      * @return the Y coordinate of the pivot relative to the top left corner, in pixels.
      */
     public Integer getPivotY() {

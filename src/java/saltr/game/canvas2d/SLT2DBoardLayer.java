@@ -29,7 +29,7 @@ public class SLT2DBoardLayer extends SLTBoardLayer {
     /**
      * Adds the asset instance to the board.
      *
-     * @param instance to be added
+     * @param instance to be added into "assetInstances" List.
      */
     public void addAssetInstance(SLT2DAssetInstance instance) {
         assetInstances.add(instance);
@@ -40,6 +40,6 @@ public class SLT2DBoardLayer extends SLTBoardLayer {
      */
     @Override
     public void regenerate() {
-        // nothing to do here yet
+        // nothing to do here yet.
     }
 }

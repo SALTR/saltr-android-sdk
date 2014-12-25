@@ -31,7 +31,6 @@ public class SLT2DBoard extends SLTBoard {
     }
 
     /**
-     *
      * @return the height of the board in pixels as is in Saltr level editor.
      */
     public Integer getHeight() {

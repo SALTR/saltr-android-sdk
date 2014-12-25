@@ -5,6 +5,9 @@ package saltr;
 
 import java.util.List;
 
+/**
+ * Represents an experiment.
+ */
 public class SLTExperiment {
     public static final String SPLIT_TEST_TYPE_FEATURE = "FEATURE";
     public static final String SPLIT_TEST_TYPE_LEVEL_PACK = "LEVEL_PACK";
@@ -21,6 +24,9 @@ public class SLTExperiment {
         this.customEvents = customEvents;
     }
 
+    /**
+     * @return the partition letter the client is assign to (<code>"A"</code>, <code>"B"</code>, <code>"C"</code>, etc.).
+     */
     public String getPartition() {
         return partition;
     }
@@ -29,6 +35,9 @@ public class SLTExperiment {
         this.partition = partition;
     }
 
+    /**
+     * @return the token -  a unique identifier for the experiment.
+     */
     public String getToken() {
         return token;
     }
@@ -37,6 +46,9 @@ public class SLTExperiment {
         this.token = token;
     }
 
+    /**
+     * @return the type of the experiment.
+     */
     public String getType() {
         return type;
     }

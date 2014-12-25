@@ -9,6 +9,9 @@ import saltr.game.SLTBoardLayer;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a matching board.
+ */
 public class SLTMatchingBoard extends SLTBoard {
     private Integer rows;
     private Integer cols;
@@ -21,14 +24,23 @@ public class SLTMatchingBoard extends SLTBoard {
         rows = cells[0].length;
     }
 
+    /**
+     * @return the number of rows.
+     */
     public Integer getRows() {
         return rows;
     }
 
+    /**
+     * @return the number of columns.
+     */
     public Integer getCols() {
         return cols;
     }
 
+    /**
+     * @return the cells.
+     */
     public SLTCell[][] getCells() {
         return cells;
     }

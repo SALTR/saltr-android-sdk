@@ -12,9 +12,23 @@ import saltr.response.level.SLTResponseLevelContentData;
 
 import java.util.Map;
 
+/**
+ * Represents a level - a uniquely identifiable collection of boards and user defined properties.
+ */
 public class SLTLevel implements Comparable<SLTLevel> {
+    /**
+     * Used for parsing data retrieved from saltr.
+     */
+    public static final String LEVEL_TYPE_NONE = "noLevels";
+    /**
+     * A level with "matching" boards and assets.
+     */
+    public static final String LEVEL_TYPE_MATCHING = "matching";
+    /**
+     * A level with 2D boards and assets.
+     */
+    public static final String LEVEL_TYPE_2DCANVAS = "canvas2D";
     protected Map<String, SLTBoard> boards;
-
     private String id;
     private String levelType;
     private int index;
@@ -23,24 +37,8 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private String contentUrl;
     private Map<String, Object> properties;
     private String version;
-
     private Boolean contentReady;
     private Map<String, SLTAsset> assetMap;
-
-    public static final String LEVEL_TYPE_NONE = "noLevels";
-    public static final String LEVEL_TYPE_MATCHING = "matching";
-    public static final String LEVEL_TYPE_2DCANVAS = "canvas2D";
-
-
-    public static SLTLevelParser getParser(String levelType) {
-        if (levelType.equals(LEVEL_TYPE_MATCHING)) {
-            return SLTMatchingLevelParser.getInstance();
-        }
-        else if (levelType.equals(LEVEL_TYPE_2DCANVAS)) {
-            return SLT2DLevelParser.getInstance();
-        }
-        return null;
-    }
 
 
     public SLTLevel(String id, String levelType, int index, int localIndex, int packIndex, String contentUrl, Map<String, Object> properties, String version) {
@@ -55,34 +53,72 @@ public class SLTLevel implements Comparable<SLTLevel> {
         this.contentReady = false;
     }
 
+    public static SLTLevelParser getParser(String levelType) {
+        if (levelType.equals(LEVEL_TYPE_MATCHING)) {
+            return SLTMatchingLevelParser.getInstance();
+        }
+        else if (levelType.equals(LEVEL_TYPE_2DCANVAS)) {
+            return SLT2DLevelParser.getInstance();
+        }
+        return null;
+    }
+
+    /**
+     * @return the index of the level in all levels.
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * @return the properties of the level.
+     */
     public Object getProperties() {
         return properties;
     }
 
+    /**
+     * @return the URL, used to retrieve contents of the level from Saltr.
+     */
     public String getContentUrl() {
         return contentUrl;
     }
 
+    /**
+     * Gets a value indicating whether this {@link saltr.game.SLTLevel} content is ready to be read.
+     *
+     * @return <code>true</code> if content is ready; otherwise, <code>false</code>.
+     */
     public Boolean getContentReady() {
         return contentReady;
     }
 
+    /**
+     * @return the version.
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * @return the index of the level within its pack.
+     */
     public int getLocalIndex() {
         return localIndex;
     }
 
+    /**
+     * @return the index of the pack the level is in.
+     */
     public int getPackIndex() {
         return packIndex;
     }
 
+    /**
+     * Gets a board by id.
+     * @param id Board identifier.
+     * @return the board specified by the id.
+     */
     public SLTBoard getBoard(String id) {
         return boards.get(id);
     }
@@ -122,12 +158,19 @@ public class SLTLevel implements Comparable<SLTLevel> {
         }
     }
 
+    /**
+     * Regenerates contents of all boards.
+     */
     public void regenerateAllBoards() {
         for (Map.Entry<String, SLTBoard> entry : boards.entrySet()) {
             entry.getValue().regenerate();
         }
     }
 
+    /**
+     * Regenerates contents of the board specified by boardId.
+     * @param boardId Board identifier.
+     */
     public void regenerateBoard(String boardId) {
         if (boards != null && boards.get(boardId) != null) {
             SLTBoard board = boards.get(boardId);

@@ -5,6 +5,9 @@ package saltr;
 
 import java.util.Map;
 
+/**
+ * Represents an application feature - a uniquely identifiable set of properties.
+ */
 public class SLTFeature {
     private String token;
     private Map<String, Object> properties;
@@ -16,14 +19,25 @@ public class SLTFeature {
         this.required = required;
     }
 
+    /**
+     * @return the token, a unique identifier for a feature.
+     */
     public String getToken() {
         return token;
     }
 
+    /**
+     * @return the user defined properties.
+     */
     public Map<String, Object> getProperties() {
         return properties;
     }
 
+    /**
+     * Gets a value indicating whether this {@link saltr.SLTFeature} is required.
+     *
+     * @return <code>true</code> if required; otherwise, <code>false</code>.
+     */
     public Boolean getRequired() {
         return required;
     }

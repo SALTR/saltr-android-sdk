@@ -9,7 +9,7 @@ import saltr.game.SLTAssetState;
 import java.util.List;
 
 /**
- * Represents an instance of a 2D asset on board
+ * Represents an instance of a 2D asset on board.
  */
 public class SLT2DAssetInstance extends SLTAssetInstance {
     private Integer x;
@@ -39,7 +39,7 @@ public class SLT2DAssetInstance extends SLTAssetInstance {
     }
 
     /**
-     * @return the rotation
+     * @return the rotation.
      */
     public Integer getRotation() {
         return rotation;
