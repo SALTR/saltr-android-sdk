@@ -10,13 +10,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a 2D board.
+ * The SLT2DBoard class represents the 2D game board.
  */
 public class SLT2DBoard extends SLTBoard {
 
     private Integer width;
     private Integer height;
 
+    /**
+     * @param width      The width of the board in pixels as is in Saltr level editor.
+     * @param height     The height of the board in pixels as is in Saltr level editor.
+     * @param layers     The layers of the board.
+     * @param properties The board associated properties.
+     */
     public SLT2DBoard(Integer width, Integer height, List<SLTBoardLayer> layers, Map<String, Object> properties) {
         super(layers, properties);
         this.width = width;
@@ -24,14 +30,14 @@ public class SLT2DBoard extends SLTBoard {
     }
 
     /**
-     * @return the width of the board in pixels as is in Saltr level editor.
+     * @return The width of the board in pixels as is in Saltr level editor.
      */
     public Integer getWidth() {
         return width;
     }
 
     /**
-     * @return the height of the board in pixels as is in Saltr level editor.
+     * @return The height of the board in pixels as is in Saltr level editor.
      */
     public Integer getHeight() {
         return height;

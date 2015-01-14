@@ -9,18 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a layer of a matching board.
+ * The SLTMatchingBoardLayer class represents the matching board.
  */
 public class SLTMatchingBoardLayer extends SLTBoardLayer {
     private List<SLTChunk> chunks;
 
+    /**
+     * @param layerId    The layer's identifier.
+     * @param layerIndex The layer's index.
+     */
     public SLTMatchingBoardLayer(String layerId, int layerIndex) {
         super(layerId, layerIndex);
         this.chunks = new ArrayList<SLTChunk>();
     }
 
     /**
-     * Regenerates contents of all the chunks within the layer.
+     * Regenerates the content of the layer.
      */
     public void regenerate() {
         for (SLTChunk chunk : chunks) {
@@ -29,9 +33,8 @@ public class SLTMatchingBoardLayer extends SLTBoardLayer {
     }
 
     /**
-     * Adds a chunk to the layer.
-     *
-     * @param chunk to add.
+     * Adds a chunk.
+     * @param chunk The chunk to add.
      */
     public void addChunk(SLTChunk chunk) {
         chunks.add(chunk);

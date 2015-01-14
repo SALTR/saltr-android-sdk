@@ -9,27 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a layer of a 2D board.
+ * The SLT2DBoardLayer class represents the game 2D board's layer.
  */
 public class SLT2DBoardLayer extends SLTBoardLayer {
     private List<SLT2DAssetInstance> assetInstances;
 
+    /**
+     * @param layerId    The layer's identifier.
+     * @param layerIndex The layer's ordering index.
+     */
     public SLT2DBoardLayer(String layerId, int layerIndex) {
         super(layerId, layerIndex);
         this.assetInstances = new ArrayList<SLT2DAssetInstance>();
     }
 
     /**
-     * @return all the asset instances present on the board.
+     * @return The asset instances of the layer.
      */
     public List<SLT2DAssetInstance> getAssetInstances() {
         return assetInstances;
     }
 
     /**
-     * Adds the asset instance to the board.
+     * Adds an asset instance.
      *
-     * @param instance to be added into "assetInstances" List.
+     * @param instance An asset instance to add.
      */
     public void addAssetInstance(SLT2DAssetInstance instance) {
         assetInstances.add(instance);

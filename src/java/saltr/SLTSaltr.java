@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main class for working with SALTR Android SDK.
+ * The entry point to SDK, and the main class, used to send and receive data from Saltr.
  */
 public class SLTSaltr {
     public static final String CLIENT = "Android";
@@ -61,21 +61,15 @@ public class SLTSaltr {
     private ContextWrapper contextWrapper;
     private Gson gson;
 
-    private int timeout;
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
+    private int requestIdleTimeout;
 
     /**
-     * The only constructor for SLTSaltr class.
+     * Initializes a new instance of the {@link saltr.SLTSaltr} class.
      *
-     * @param clientKey      (String) This key is specific for SALTR's every application.
-     *                       You can find it by logging in to https://saltr.com with your account.
-     * @param deviceId       (String) this field represents user's device unique ID.
-     * @param useCache       (boolean) SDK has it's own caching mechanism,
-     *                       set it to 'false' if you don't want to use SDK's caching mechanism.
-     * @param contextWrapper // TODO do we need this, or client should just send app and cache dir by himself
+     * @param clientKey      Client key.
+     * @param deviceId       Device identifier.
+     * @param useCache       If set to <code>true</code> use cache. If not specified defaults to <code>true</code>
+     * @param contextWrapper This can be the reference of activity where SDK is initialized.
      */
     public SLTSaltr(String clientKey, String deviceId, boolean useCache, ContextWrapper contextWrapper) {
         this.clientKey = clientKey;
@@ -90,43 +84,71 @@ public class SLTSaltr {
         repository = useCache ? new SLTRepository(contextWrapper) : new SLTDummyRepository(contextWrapper);
         gson = new Gson();
         this.contextWrapper = contextWrapper;
-        timeout = 3000;
+        requestIdleTimeout = 3000;
     }
 
+    /**
+     * Sets the request idle timeout. If a URL request takes more than timeout to complete, it would be canceled.
+     *
+     * @param requestIdleTimeout the request idle timeout in milliseconds.
+     */
+    public void setRequestIdleTimeout(int requestIdleTimeout) {
+        this.requestIdleTimeout = requestIdleTimeout;
+    }
+
+    /**
+     * Sets the repository used by this instance. An appropriate repository is already set by a constructor,
+     * so you will need this only if you want to implement and use your own custom repository ({@link saltr.repository.ISLTRepository}).
+     *
+     * @param repository to set.
+     */
     public void setRepository(ISLTRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Sets a value indicating whether the application does not use levels.
+     * @param useNoLevels <code>true</code> if levels are not used; otherwise, <code>false</code>.
+     */
     public void setUseNoLevels(Boolean useNoLevels) {
         this.useNoLevels = useNoLevels;
     }
 
+    /**
+     * Sets a value indicating whether the application does not use features.
+     * @param useNoFeatures <code>true</code> if features are not used, otherwise, <code>false</code>.
+     */
     public void setUseNoFeatures(Boolean useNoFeatures) {
         this.useNoFeatures = useNoFeatures;
     }
 
     /**
-     * Development mode is used only for development proposes, it enables features like "SALTR feature synchronization".
-     * In Live application this mode MUST be disabled.
-     *
-     * @param devMode (boolean) For turning "development mode" on or off.
+     * Sets a value indicating weather this {@link saltr.SLTSaltr} should operate in dev(developer) mode.
+     * <p>In this mode client data(e.g. developer defined features) will be synced with Saltr, once, after successful {@link #connect(SLTIDataHandler, Object, Object)} call.</p>
+     * @param devMode <code>true</code> to enable; <code>false</code> to disable.
      */
     public void setDevMode(Boolean devMode) {
         this.devMode = devMode;
     }
 
+    /**
+     * Sets a value indicating whether device registratioon dialog should be automaticaly shown in dev mode {@link #devMode},
+     * after successful <see cref="saltr.SLTUnity.connect"/> call, if the device was not registered already.
+     * @param autoRegisterDevice
+     */
     public void setAutoRegisterDevice(boolean autoRegisterDevice) {
         this.autoRegisterDevice = autoRegisterDevice;
     }
 
-    public void setLevelPacks(List<SLTLevelPack> levelPacks) {
-        this.levelPacks = levelPacks;
+    /**
+     * @return the level packs.
+     */
+    public List<SLTLevelPack> getLevelPacks() {
+        return levelPacks;
     }
 
     /**
-     * Getting all levels from SDK.
-     *
-     * @return List of SLTLevel objects.
+     * @return a list all levels.
      */
     public List<SLTLevel> getAllLevels() {
         List<SLTLevel> allLevels = new ArrayList<>();
@@ -141,9 +163,7 @@ public class SLTSaltr {
     }
 
     /**
-     * The count of all levels in SDK.
-     *
-     * @return (int) number of available levels.
+     * @return the count of all levels.
      */
     public int getAllLevelsCount() {
         int count = 0;
@@ -154,32 +174,23 @@ public class SLTSaltr {
     }
 
     /**
-     * This method is for getting available experiments in which user participate.
-     *
-     * @return List of SLTExperiment objects.
+     * @return a list of all experiments.
      */
     public List<SLTExperiment> getExperiments() {
         return experiments;
     }
 
     /**
-     * Client may send to SALTR user ID from third party social networks like Facebook or Google+
-     * for better personalization.
-     *
-     * @param socialId (String) user's ID from social network.
+     * Sets the social identifier of the user.
+     * @param socialId to set.
      */
     public void setSocialId(String socialId) {
         this.socialId = socialId;
     }
 
     /**
-     * Level's in SALTR have two ways of representation:
-     * 1. All in one list, where every level has unique index which is designated to call "globalIndex",
-     * 2. Levels are grouped in Packs and level's index ("localIndex") is unique only inside that Pack.
-     * This method is for getting level if you know his "globalIndex".
-     *
-     * @param index (int) global index of level in cumulative list of levels.
-     * @return object type of SLTLevel type.
+     * @param index index in all levels.
+     * @return a level by its global index in all levels.
      */
     public SLTLevel getLevelByGlobalIndex(int index) {
         int levelsSum = 0;
@@ -197,13 +208,8 @@ public class SLTSaltr {
     }
 
     /**
-     * Level's in SALTR have two ways of representation:
-     * 1. All in one list, where every level has unique index which is designated to call "globalIndex",
-     * 2. Levels are grouped in Packs and level's index ("localIndex") is unique only inside that Pack.
-     * This method is for getting "Pack" if you know level's "globalIndex".
-     *
-     * @param index (int) global index of level in cumulative list of levels.
-     * @return object of SLTPack type.
+     * @param index Index of the level in all levels.
+     * @return the level pack that contains the level with given global index in all levels.
      */
     public SLTLevelPack getPackByLevelGlobalIndex(int index) {
         int levelsSum = 0;
@@ -219,6 +225,9 @@ public class SLTSaltr {
         return null;
     }
 
+    /**
+     * @return a list of tokens(unique identifiers) of all features, active in Saltr.
+     */
     public List<String> getActiveFeatureTokens() {
         List<String> tokens = new ArrayList<String>();
         for (Map.Entry<String, SLTFeature> entry : activeFeatures.entrySet()) {
@@ -229,10 +238,11 @@ public class SLTSaltr {
     }
 
     /**
-     * It's for getting the properties of "Feature" object.
-     *
-     * @param token (String) Special token for "Feature" object which is unique for you SALTR application.
-     * @return Map of Objects with String keys.
+     * Gets the properties of the feature specified by the token.
+     * If a feature is set to be required and is not active in, or cannot be retrieved from, Saltr,
+     * the properties will be retrieved from default developer defined features.
+     * @param token The feature token.
+     * @return the properties of the feature.
      */
     public Map<String, Object> getFeatureProperties(String token) {
         SLTFeature activeFeature = activeFeatures.get(token);
@@ -250,9 +260,10 @@ public class SLTSaltr {
     }
 
     /**
-     * SDK saves all data taken from SALTR into mobile application's storage and whenever you need you can load
-     * previously saved levels into SDK.
-     * This method should be called before calling SDK's start() method.
+     * Imports the level data from local files, that can be downloaded from Saltr.
+     * If your application is using levels, this must be called before calling start(), otherwise has no effect.
+     * @param path The path to level packs in Resources folder.
+     *             If not specified the {@link saltr.SLTConfig#LOCAL_LEVELPACK_PACKAGE_URL} will be used.
      */
     public void importLevels(String path) {
         if (useNoLevels) {
@@ -272,15 +283,12 @@ public class SLTSaltr {
     }
 
     /**
-     * In development mode SDK allows developers to define "SALTR Features" in theirs application on https://saltr.com.
-     * This method is for defining that Features that in feature can be synced with SALTR application and
-     * should be called before calling SDK's start() method.
-     *
-     * @param token      (String) token for Feature which should be unique for application in SALTR web app.
-     * @param properties Map of properties of Feature.
-     * @param required   Some Features can be required, which means it will always be available for mobile application
-     *                   and cannot be disabled or changed from SALTR web interface.
-     *                   Only developers has control over required features.
+     * Defines a feature {@link saltr.SLTFeature}
+     * @param token Token - a unique identifier for the feature.
+     * @param properties A Map of properties, that should be of "JSON friendly" data types
+     *                   (String, Integer, Double, Map, List, etc.).
+     *                   To represent color use standard HTML format: <code>"#RRGGBB"</code>
+     * @param required If set to <code>true</code> feature is required(see {@link #getFeatureProperties}). <code>false</code> by default.
      */
     public void defineFeature(String token, Map<String, Object> properties, boolean required) {
         if (useNoFeatures) {
@@ -296,8 +304,8 @@ public class SLTSaltr {
     }
 
     /**
-     * This method is checking if all data is ready for connecting to SALTR web app and if it is,
-     * it enables SDK to call connect() method
+     * Checks if everything is initialized properly and starts the instance.
+     * <p>After this call you can access application data (levels, features), and establish connection with the server.</p>
      */
     public void start() {
         if (deviceId == null) {
@@ -327,17 +335,12 @@ public class SLTSaltr {
     }
 
     /**
-     * Connect method tries to connect to SALTR web app and to load application and user specific data.
-     * This method should be called after calling start() method.
-     *
-     * @param appDataHandler   Object that has onSuccess() and onFailure() methods that are being called when
-     *                         call succeed or failed, respectively.
-     * @param basicProperties  Basic information about user.
-     *                         More information about properties you can find on https://saltr.com/docs#/mobile
-     * @param customProperties Custom information about user.
-     *                         More information about properties you can find on https://saltr.com/docs#/mobile
+     * Establishes connection to the server and updates application data(levels, features and experiments).
+     * <p>After connecting successfully you can load level content from server with {@link #loadLevelContent(saltr.game.SLTLevel, boolean, SLTIDataHandler)} .</p>
+     * @param appDataHandler Instance of class that implements {@link saltr.SLTIDataHandler} interface.
+     * @param basicProperties (Optional)Basic properties. Same as in {@link #addProperties(Object, Object)}.
+     * @param customProperties (Optional)Basic properties. Same as in {@link #addProperties(Object, Object)}.
      */
-    //TODO::@daal why we don't call SLTIDataHandler.onFailure in case if "if (isLoading || !started)". Is this code correct? if we override this.appDataHandler with new one the old handler will be lost
     public void connect(final SLTIDataHandler appDataHandler, Object basicProperties, Object customProperties) {
         if (!started) {
             throw new SLTNotStartedException();
@@ -351,7 +354,7 @@ public class SLTSaltr {
 
         isLoading = true;
 
-        SLTAppDataApiCall appDataApiCall = new SLTAppDataApiCall(timeout, devMode, useNoLevels, clientKey, deviceId, socialId, basicProperties, customProperties);
+        SLTAppDataApiCall appDataApiCall = new SLTAppDataApiCall(requestIdleTimeout, devMode, useNoLevels, clientKey, deviceId, socialId, basicProperties, customProperties);
         appDataApiCall.call(
                 new SLTIAppDataDelegate() {
                     @Override
@@ -382,11 +385,11 @@ public class SLTSaltr {
     }
 
     /**
-     * Loads level's content into provided SLTLevel object.
-     *
-     * @param sltLevel         Object that contains information about level that should be loaded and container for loaded data.
-     * @param useCache         Specifies whether load cached data or load from SALTR web app.
-     * @param levelDataHandler Callback handler object.
+     * Loads the content(boards and properties) of the level.
+     * <p>Contents may be loaded from server, cache, or local level data({@link #importLevels(String)}).</p>
+     * @param sltLevel The level, contents of which will be updated.
+     * @param useCache If set to <code>false</code> cached level data will be ignored, forcing content to be loaded from server or local data if connection is not established. <code>true</code> by default.
+     * @param levelDataHandler Instance of class that implements {@link saltr.SLTIDataHandler} interface.
      */
     public void loadLevelContent(SLTLevel sltLevel, boolean useCache, SLTIDataHandler levelDataHandler) {
         this.levelDataHandler = levelDataHandler;
@@ -427,13 +430,13 @@ public class SLTSaltr {
             throw new SLTNotStartedException();
         }
 
-        SLTAddPropertyApiCall apiCall = new SLTAddPropertyApiCall(timeout, clientKey, socialId, basicProperties, customProperties);
+        SLTAddPropertyApiCall apiCall = new SLTAddPropertyApiCall(requestIdleTimeout, clientKey, socialId, basicProperties, customProperties);
         apiCall.call();
     }
 
     protected void loadLevelContentFromSaltr(SLTLevel level) {
         try {
-            SLTLevelApiCall apiCall = new SLTLevelApiCall(timeout, level);
+            SLTLevelApiCall apiCall = new SLTLevelApiCall(requestIdleTimeout, level);
             apiCall.call(new SLTILevelContentDelegate() {
                 @Override
                 public void onSuccess(SLTResponseLevelContentData data, SLTLevel sltLevel) {
@@ -466,7 +469,7 @@ public class SLTSaltr {
     }
 
     void sync() {
-        SLTSyncApiCall apiCall = new SLTSyncApiCall(timeout, devMode, clientKey, socialId, deviceId, developerFeatures);
+        SLTSyncApiCall apiCall = new SLTSyncApiCall(requestIdleTimeout, devMode, clientKey, socialId, deviceId, developerFeatures);
         apiCall.call(new SLTSyncDelegate() {
             @Override
             public void onSuccess(SLTResponseClientData data) {
@@ -486,12 +489,15 @@ public class SLTSaltr {
         });
     }
 
+    /**
+     * Opens the device registration dialog. Can be called after {@link #start()} only.
+     */
     public void registerDevice() {
         if (!started) {
             throw new SLTRuntimeException("Method 'registerDevice()' should be called after 'start()' only.");
         }
         SLTRegisterDeviceDialogBuilder dialogBuilder = new SLTRegisterDeviceDialogBuilder(contextWrapper);
-        dialogBuilder.showDialog(devMode, timeout, clientKey, deviceId, this);
+        dialogBuilder.showDialog(devMode, requestIdleTimeout, clientKey, deviceId, this);
     }
 
     private String getCachedLevelVersion(SLTLevel sltLevel) {

@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The SLTMatchingLevelParser class represents the matching level parser.
+ */
 public class SLTMatchingLevelParser extends SLTLevelParser {
 
     private static SLTMatchingLevelParser instance;
@@ -18,6 +21,9 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
     private SLTMatchingLevelParser() {
     }
 
+    /**
+     * @return The  instance of SLTMatchingLevelParser class.
+     */
     public static SLTMatchingLevelParser getInstance() {
         if (instance == null) {
             instance = new SLTMatchingLevelParser();
@@ -57,15 +63,6 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
                 cell3.setIsBlocked(true);
             }
         }
-    }
-
-    @Override
-    public Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap) {
-        Map<String, SLTBoard> boards = new HashMap<String, SLTBoard>();
-        for (Map.Entry<String, SLTResponseBoard> entry : boardNodes.entrySet()) {
-            boards.put(entry.getKey(), parseLevelBoard(entry.getValue(), assetMap));
-        }
-        return boards;
     }
 
     private static SLTMatchingBoard parseLevelBoard(SLTResponseBoard boardNode, Map<String, SLTAsset> assetMap) {
@@ -124,5 +121,21 @@ public class SLTMatchingLevelParser extends SLTLevelParser {
         parseFixedAssets(layer, layerNode.getFixedAssets(), cells, assetMap);
         parseLayerChunks(layer, layerNode.getChunks(), cells, assetMap);
         return layer;
+    }
+
+    /**
+     * Parses the level content.
+     *
+     * @param boardNodes The board nodes.
+     * @param assetMap   The asset map.
+     * @return The parsed boards.
+     */
+    @Override
+    public Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap) {
+        Map<String, SLTBoard> boards = new HashMap<String, SLTBoard>();
+        for (Map.Entry<String, SLTResponseBoard> entry : boardNodes.entrySet()) {
+            boards.put(entry.getKey(), parseLevelBoard(entry.getValue(), assetMap));
+        }
+        return boards;
     }
 }

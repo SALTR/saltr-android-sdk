@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The SLT2DLevelParser class represents the 2D level parser.
+ */
 public class SLT2DLevelParser extends SLTLevelParser {
 
     private static SLT2DLevelParser instance;
@@ -21,6 +24,9 @@ public class SLT2DLevelParser extends SLTLevelParser {
     private SLT2DLevelParser() {
     }
 
+    /**
+     * @return An instance of SLT2DLevelParser class.
+     */
     public static SLT2DLevelParser getInstance() {
         if (instance == null) {
             instance = new SLT2DLevelParser();
@@ -28,6 +34,12 @@ public class SLT2DLevelParser extends SLTLevelParser {
         return instance;
     }
 
+    /**
+     * Parses the level content.
+     * @param boardNodes The board nodes.
+     * @param assetMap The asset map.
+     * @return The parsed boards.
+     */
     @Override
     public Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap) {
         Map<String, SLTBoard> boards = new HashMap<String, SLTBoard>();

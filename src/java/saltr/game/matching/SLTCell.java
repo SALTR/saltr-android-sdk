@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a matching board cell.
+ * The SLTCell class represents the matching board cell.
  */
 public class SLTCell implements Cloneable {
     private int row;
@@ -19,6 +19,12 @@ public class SLTCell implements Cloneable {
     private Map<String, SLTAssetInstance> instancesByLayerId;
     private Map<String, SLTAssetInstance> instancesByLayerIndex;
 
+    /**
+     * Class constructor.
+     *
+     * @param col The column of the cell.
+     * @param row The row of the cell.
+     */
     public SLTCell(int row, int col) {
         this.row = row;
         this.col = col;
@@ -29,7 +35,7 @@ public class SLTCell implements Cloneable {
     }
 
     /**
-     * @return the row of the cell.
+     * @return The row of the cell.
      */
     public int getRow() {
         return row;
@@ -43,7 +49,7 @@ public class SLTCell implements Cloneable {
     }
 
     /**
-     * @return the column of the cell.
+     * @return The column of the cell.
      */
     public int getCol() {
         return col;
@@ -57,7 +63,7 @@ public class SLTCell implements Cloneable {
     }
 
     /**
-     * @return a value indicating whether this {@link saltr.game.matching.SLTCell} is blocked.
+     * @return The blocked state of the cell.
      */
     public Boolean getIsBlocked() {
         return isBlocked;
@@ -73,7 +79,7 @@ public class SLTCell implements Cloneable {
     }
 
     /**
-     * @return the properties of the cell.
+     * @return The properties of the cell.
      */
     public Map<String, Object> getProperties() {
         return properties;
@@ -87,9 +93,9 @@ public class SLTCell implements Cloneable {
     }
 
     /**
-     * Gets the asset instance by layer identifier(token).
-     * @param layerId Layer identifier(token).
-     * @return The asset instance that is positioned in the cell in the layer specified by layerId.
+     * Gets the asset instance by layer identifier.
+     * @param layerId The layer identifier.
+     * @return SLTAssetInstance The asset instance that is positioned in the cell in the layer specified by layerId.
      */
     public SLTAssetInstance getAssetInstanceByLayerId(String layerId) {
         return instancesByLayerId.get(layerId);
@@ -97,8 +103,8 @@ public class SLTCell implements Cloneable {
 
     /**
      * Gets the asset instance by layer index.
-     * @param layerIndex Layer index.
-     * @return the asset instance that is positioned in the cell in the layer specified by layerIndex.
+     * @param layerIndex The layer index.
+     * @return SLTAssetInstance The asset instance that is positioned in the cell in the layer specified by layerIndex.
      */
     public SLTAssetInstance getAssetInstanceByLayerIndex(int layerIndex) {
         return instancesByLayerIndex.get(layerIndex);
@@ -112,6 +118,12 @@ public class SLTCell implements Cloneable {
         this.instancesByLayerIndex = instancesByLayerIndex;
     }
 
+    /**
+     * Sets the asset instance with provided layer identifier and layer index.
+     * @param layerId The layer identifier.
+     * @param layerIndex The layer index.
+     * @param assetInstance The asset instance.
+     */
     public void setAssetInstance(String layerId, int layerIndex, SLTAssetInstance assetInstance) {
         if (!isBlocked) {
             instancesByLayerId.put(layerId, assetInstance);
@@ -119,6 +131,11 @@ public class SLTCell implements Cloneable {
         }
     }
 
+    /**
+     * Removes the asset instance with provided layer identifier and layer index.
+     * @param layerId The layer identifier.
+     * @param layerIndex The layer index.
+     */
     public void removeAssetInstance(String layerId, int layerIndex) {
         instancesByLayerId.remove(layerId);
         instancesByLayerIndex.remove(String.valueOf(layerIndex));

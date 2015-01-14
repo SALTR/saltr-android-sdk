@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SLTSyncApiCall extends SLTApiCall {
+class SLTSyncApiCall extends SLTApiCall {
     private boolean devMode;
     private String clientKey;
     private String socialId;
@@ -23,7 +23,7 @@ public class SLTSyncApiCall extends SLTApiCall {
     private Map<String, SLTFeature> developerFeatures;
     private SLTSyncDelegate delegate;
 
-    public SLTSyncApiCall(int timeout, boolean devMode, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
+    SLTSyncApiCall(int timeout, boolean devMode, String clientKey, String socialId, String deviceId, Map<String, SLTFeature> developerFeatures) {
         super(timeout);
         this.devMode = devMode;
         this.clientKey = clientKey;
@@ -33,7 +33,7 @@ public class SLTSyncApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionSuccess(String response) {
+    void onConnectionSuccess(String response) {
         SLTResponse<SLTResponseClientData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseClientData>>() {
         }.getType());
         if (data == null || data.getFirst() == null || data.getFirst().getSuccess() == null) {
@@ -46,11 +46,11 @@ public class SLTSyncApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionFailure() {
+    void onConnectionFailure() {
         delegate.onFailure();
     }
 
-    public void call(SLTSyncDelegate delegate) {
+    void call(SLTSyncDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createSyncClientConnection(clientKey, socialId, deviceId, developerFeatures);
         call(connection);

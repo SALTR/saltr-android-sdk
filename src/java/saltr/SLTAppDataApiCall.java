@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SLTAppDataApiCall extends SLTApiCall {
+class SLTAppDataApiCall extends SLTApiCall {
     private SLTIAppDataDelegate delegate;
     private boolean devMode;
     private boolean useNoLevels;
@@ -30,7 +30,7 @@ public class SLTAppDataApiCall extends SLTApiCall {
     private String socialId;
     private Object basicProperties;
 
-    public SLTAppDataApiCall(int timeout, boolean devMode, boolean useNoLevels, String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
+    SLTAppDataApiCall(int timeout, boolean devMode, boolean useNoLevels, String clientKey, String deviceId, String socialId, Object basicProperties, Object customProperties) {
         super(timeout);
         this.devMode = devMode;
         this.useNoLevels = useNoLevels;
@@ -41,7 +41,7 @@ public class SLTAppDataApiCall extends SLTApiCall {
         this.customProperties = customProperties;
     }
 
-    public void call(SLTIAppDataDelegate delegate) {
+    void call(SLTIAppDataDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createAppDataConnection(clientKey, deviceId, socialId, basicProperties, customProperties);
         call(connection);
@@ -94,7 +94,7 @@ public class SLTAppDataApiCall extends SLTApiCall {
         return data != null && data.getResponse() != null && !data.getResponse().isEmpty();
     }
 
-    public void onConnectionSuccess(String response) {
+    void onConnectionSuccess(String response) {
         SLTResponse<SLTResponseAppData> data = gson.fromJson(response, new TypeToken<SLTResponse<SLTResponseAppData>>() {
         }.getType());
 
@@ -140,7 +140,7 @@ public class SLTAppDataApiCall extends SLTApiCall {
         }
     }
 
-    public void onConnectionFailure() {
+    void onConnectionFailure() {
         delegate.onFailure(null);
     }
 }

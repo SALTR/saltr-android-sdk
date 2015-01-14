@@ -10,7 +10,7 @@ import saltr.game.SLTAssetInstance;
 import java.util.*;
 
 /**
- * Represents a chunk, a collection of cells on matching board that is populated with assets according to certain rules.
+ * The SLTChunk class represents a collection of cells on matching board that is populated with assets according to certain rules.
  */
 public class SLTChunk {
     private String layerToken;
@@ -20,6 +20,13 @@ public class SLTChunk {
     private List<SLTCell> availableCells;
     private Map<String, SLTAsset> assetMap;
 
+    /**
+     * @param layerToken      The layer identifier.
+     * @param layerIndex      The layer index.
+     * @param chunkCells      The cells of chunk.
+     * @param chunkAssetRules The asset rules.
+     * @param assetMap        The assets.
+     */
     public SLTChunk(String layerToken, int layerIndex, List<SLTCell> chunkCells, List<SLTChunkAssetRule> chunkAssetRules, Map<String, SLTAsset> assetMap) {
         this.layerToken = layerToken;
         this.layerIndex = layerIndex;
@@ -32,10 +39,17 @@ public class SLTChunk {
         return (new Double((Math.random() * (1 + max - min)) + min)).intValue();
     }
 
+    /**
+     *
+     * @return the available cells count plus chunk asset rules count as string.
+     */
     public String toString() {
         return "[Chunk] cells:" + availableCells.size() + ", " + " chunkAssets: " + chunkAssetRules.size();
     }
 
+    /**
+     * Generates the content.
+     */
     public void generateContent() {
         resetChunkCells();
 

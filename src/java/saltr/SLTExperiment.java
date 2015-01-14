@@ -5,11 +5,19 @@ package saltr;
 
 import java.util.List;
 
+
 /**
- * Represents an experiment.
+ * The SLTExperiment class provides the currently running experiment data.
+ * It is possible to A/B test any feature included in the game AND/OR different levels, level packs.
  */
 public class SLTExperiment {
+    /**
+     * Specifies the Feature type for the experiment.
+     */
     public static final String SPLIT_TEST_TYPE_FEATURE = "FEATURE";
+    /**
+     * Specifies the LevelPack type for the experiment.
+     */
     public static final String SPLIT_TEST_TYPE_LEVEL_PACK = "LEVEL_PACK";
 
     private String partition;
@@ -17,6 +25,14 @@ public class SLTExperiment {
     private String type;
     private List<String> customEvents;
 
+    /**
+     * Class constructor.
+     *
+     * @param token        The unique identifier of the experiment.
+     * @param partition    The letter of the partition in which the user included in (A, B, C, etc.).
+     * @param type         The type of the experiment (Feature or LevelPack).
+     * @param customEvents The array of comma separated event names for which A/B test data should be send.
+     */
     public SLTExperiment(String partition, String token, String type, List<String> customEvents) {
         this.partition = partition;
         this.token = token;
@@ -25,43 +41,31 @@ public class SLTExperiment {
     }
 
     /**
-     * @return the partition letter the client is assign to (<code>"A"</code>, <code>"B"</code>, <code>"C"</code>, etc.).
+     * @return The letter of the partition in which the user included in (A, B, C, etc.).
      */
     public String getPartition() {
         return partition;
     }
 
-    public void setPartition(String partition) {
-        this.partition = partition;
-    }
-
     /**
-     * @return the token -  a unique identifier for the experiment.
+     * @return The unique identifier of the experiment.
      */
     public String getToken() {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     /**
-     * @return the type of the experiment.
+     * @return The type of the experiment (Feature or LevelPack).
      */
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
+    /**
+     *
+     * @return The array of comma separated event names for which A/B test data should be send.
+     */
     public List<String> getCustomEvents() {
         return customEvents;
-    }
-
-    public void setCustomEvents(List<String> customEvents) {
-        this.customEvents = customEvents;
     }
 }

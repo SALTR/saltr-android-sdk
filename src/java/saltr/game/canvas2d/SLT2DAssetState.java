@@ -6,13 +6,19 @@ package saltr.game.canvas2d;
 import saltr.game.SLTAssetState;
 
 /**
- * Represents a state of a 2D asset
+ * The SLT2DAssetState class represents the 2D asset state and provides the state related properties.
  */
 public class SLT2DAssetState extends SLTAssetState {
 
     private Integer pivotX;
     private Integer pivotY;
 
+    /**
+     * @param token      The unique identifier of the state.
+     * @param properties The current state related properties.
+     * @param pivotX     The X coordinate of the pivot relative to the top left corner, in pixels.
+     * @param pivotY     The Y coordinate of the pivot relative to the top left corner, in pixels.
+     */
     public SLT2DAssetState(String token, Object properties, Integer pivotX, Integer pivotY) {
         super(token, properties);
 
@@ -21,7 +27,7 @@ public class SLT2DAssetState extends SLTAssetState {
     }
 
     /**
-     * @return the X coordinate of the pivot relative to the top left corner, in pixels.
+     * @return The X coordinate of the pivot relative to the top left corner, in pixels.
      */
     public Integer getPivotX() {
         return pivotX;
@@ -29,7 +35,7 @@ public class SLT2DAssetState extends SLTAssetState {
 
 
     /**
-     * @return the Y coordinate of the pivot relative to the top left corner, in pixels.
+     * @return The Y coordinate of the pivot relative to the top left corner, in pixels.
      */
     public Integer getPivotY() {
         return pivotY;

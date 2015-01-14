@@ -11,22 +11,39 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The SLTRepository class represents the mobile repository.
+ */
 public class SLTRepository extends ContextWrapper implements ISLTRepository {
 
     private String applicationDirectory;
     private String cacheDirectory;
 
+    /**
+     * Class constructor.
+     */
     public SLTRepository(Context base) {
         super(base);
         applicationDirectory = getApplicationInfo().dataDir;
         cacheDirectory = getCacheDir().getPath();
     }
 
+    /**
+     * Provides an object from cache.
+     *
+     * @param name The name of the object.
+     * @return The requested object.
+     */
     @Override
     public Object getObjectFromCache(String name) {
         return getInternal(cacheDirectory + File.separator + name);
     }
 
+    /**
+     * Provides the object's version.
+     * @param name The name of the object.
+     * @return The version of the requested object.
+     */
     @Override
     public String getObjectVersion(String name) {
         String path = cacheDirectory + File.separator + name.replace("", "") + "_VERSION_";
@@ -38,6 +55,12 @@ public class SLTRepository extends ContextWrapper implements ISLTRepository {
         return map.get("_VERSION_").toString();
     }
 
+    /**
+     * Caches an object.
+     * @param name The name of the object.
+     * @param version The version of the object.
+     * @param object The object to store.
+     */
     @Override
     public void cacheObject(String name, String version, Object object) {
         String path = cacheDirectory + File.separator + name;
@@ -48,17 +71,32 @@ public class SLTRepository extends ContextWrapper implements ISLTRepository {
         saveInternal(path, map);
     }
 
+    /**
+     * Provides an object from application.
+     * @param name The name of the object.
+     * @return The requested object.
+     */
     @Override
     public Object getObjectFromApplication(String name) {
         String path = applicationDirectory + File.separator + name;
         return getInternal(path);
     }
 
+    /**
+     * Stores an object.
+     * @param name The name of the object.
+     * @param object The object to store.
+     */
     @Override
     public void saveObject(String name, Object object) {
 
     }
 
+    /**
+     * Provides an object from storage.
+     * @param name The name of the object.
+     * @return The requested object.
+     */
     @Override
     public Object getObjectFromStorage(String name) {
         return null;

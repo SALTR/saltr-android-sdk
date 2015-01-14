@@ -11,10 +11,24 @@ import saltr.response.level.SLTResponseLevelContentData;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The SLTLevelParser class represents the level parser.
+ */
 public abstract class SLTLevelParser {
 
+    /**
+     * Parses the level content.
+     *
+     * @param boardNodes The board nodes.
+     * @param assetMap   The asset map.
+     * @return The parsed boards.
+     */
     public abstract Map<String, SLTBoard> parseLevelContent(Map<String, SLTResponseBoard> boardNodes, Map<String, SLTAsset> assetMap);
 
+    /**
+     * Parses the level assets.
+     * @return The parsed assets.
+     */
     public Map<String, SLTAsset> parseLevelAssets(SLTResponseLevelContentData rootNode) {
         Map<String, SLTResponseAsset> assetNodes = rootNode.getAssets();
         Map<String, SLTAsset> assetMap = new HashMap<String, SLTAsset>();

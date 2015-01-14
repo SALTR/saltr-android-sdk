@@ -13,23 +13,24 @@ import saltr.response.level.SLTResponseLevelContentData;
 import java.util.Map;
 
 /**
- * Represents a level - a uniquely identifiable collection of boards and user defined properties.
+ * The SLTLevel class represents the game's level.
  */
 public class SLTLevel implements Comparable<SLTLevel> {
     /**
-     * Used for parsing data retrieved from saltr.
+     * Specifies that there is no level specified for the game.
      */
     public static final String LEVEL_TYPE_NONE = "noLevels";
     /**
-     * A level with "matching" boards and assets.
+     * Specifies the level type for matching game.
      */
     public static final String LEVEL_TYPE_MATCHING = "matching";
     /**
-     * A level with 2D boards and assets.
+     * Specifies the level type for Canvas2D game.
      */
     public static final String LEVEL_TYPE_2DCANVAS = "canvas2D";
     protected Map<String, SLTBoard> boards;
     private String id;
+    private String variationId;
     private String levelType;
     private int index;
     private int localIndex;
@@ -40,9 +41,20 @@ public class SLTLevel implements Comparable<SLTLevel> {
     private Boolean contentReady;
     private Map<String, SLTAsset> assetMap;
 
-
-    public SLTLevel(String id, String levelType, int index, int localIndex, int packIndex, String contentUrl, Map<String, Object> properties, String version) {
+    /**
+     * @param id          The identifier of the level.
+     * @param variationId The variation identifier of the level.
+     * @param levelType   The type of the level.
+     * @param index       The global index of the level.
+     * @param localIndex  The local index of the level in the pack.
+     * @param packIndex   The index of the pack the level is in.
+     * @param contentUrl  The content URL of the level.
+     * @param properties  The properties of the level.
+     * @param version     The current version of the level.
+     */
+    public SLTLevel(String id, String variationId, String levelType, int index, int localIndex, int packIndex, String contentUrl, Map<String, Object> properties, String version) {
         this.id = id;
+        this.variationId = variationId;
         this.levelType = levelType;
         this.index = index;
         this.localIndex = localIndex;
@@ -53,6 +65,11 @@ public class SLTLevel implements Comparable<SLTLevel> {
         this.contentReady = false;
     }
 
+    /**
+     * Provides the level parser for the given level type.
+     * @param levelType The type of the level.
+     * @return The level type corresponding level parser.
+     */
     public static SLTLevelParser getParser(String levelType) {
         if (levelType.equals(LEVEL_TYPE_MATCHING)) {
             return SLTMatchingLevelParser.getInstance();
@@ -64,65 +81,74 @@ public class SLTLevel implements Comparable<SLTLevel> {
     }
 
     /**
-     * @return the index of the level in all levels.
+     *
+     * @return The variation identifier of the level.
+     */
+    public String getVariationId() {
+        return variationId;
+    }
+
+    /**
+     * @return The global index of the level.
      */
     public int getIndex() {
         return index;
     }
 
     /**
-     * @return the properties of the level.
+     * @return The properties of the level.
      */
     public Object getProperties() {
         return properties;
     }
 
     /**
-     * @return the URL, used to retrieve contents of the level from Saltr.
+     * @return The content URL of the level.
      */
     public String getContentUrl() {
         return contentUrl;
     }
 
     /**
-     * Gets a value indicating whether this {@link saltr.game.SLTLevel} content is ready to be read.
-     *
-     * @return <code>true</code> if content is ready; otherwise, <code>false</code>.
+     * @return The content ready state.
      */
     public Boolean getContentReady() {
         return contentReady;
     }
 
     /**
-     * @return the version.
+     * @return The current version of the level.
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * @return the index of the level within its pack.
+     * @return The local index of the level in the pack.
      */
     public int getLocalIndex() {
         return localIndex;
     }
 
     /**
-     * @return the index of the pack the level is in.
+     * @return The index of the pack the level is in.
      */
     public int getPackIndex() {
         return packIndex;
     }
 
     /**
-     * Gets a board by id.
-     * @param id Board identifier.
-     * @return the board specified by the id.
+     * Gets the board by identifier.
+     * @param id The board identifier.
+     * @return The board with provided identifier.
      */
     public SLTBoard getBoard(String id) {
         return boards.get(id);
     }
 
+    /**
+     * Updates the content of the level.
+     */
     public void updateContent(SLTResponseLevelContentData rootNode) throws SLTException {
         Map<String, SLTResponseBoard> boardsNode;
         if (rootNode.getBoards() != null) {
@@ -168,8 +194,8 @@ public class SLTLevel implements Comparable<SLTLevel> {
     }
 
     /**
-     * Regenerates contents of the board specified by boardId.
-     * @param boardId Board identifier.
+     * Regenerates content of the board by identifier.
+     * @param boardId The board identifier.
      */
     public void regenerateBoard(String boardId) {
         if (boards != null && boards.get(boardId) != null) {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class SLTResponseLevel implements Serializable {
     private String id;
+    private String variationId;
     private Integer order;
     private Integer index;
     private Integer localIndex;
@@ -15,6 +16,14 @@ public class SLTResponseLevel implements Serializable {
     private Integer version;
     private Map<String, Object> properties;
     private Long activeVariationId;
+
+    public String getVariationId() {
+        return variationId;
+    }
+
+    public void setVariationId(String variationId) {
+        this.variationId = variationId;
+    }
 
     public Integer getLocalIndex() {
         return localIndex;

@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class SLTApiCall {
+abstract class SLTApiCall {
 
     protected Gson gson;
     protected int timeout;
@@ -47,7 +47,7 @@ public abstract class SLTApiCall {
         }
     }
 
-    public abstract void onConnectionSuccess(String response);
+    abstract void onConnectionSuccess(String response);
 
-    public abstract void onConnectionFailure();
+    abstract void onConnectionFailure();
 }

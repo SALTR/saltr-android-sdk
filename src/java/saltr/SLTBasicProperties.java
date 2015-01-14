@@ -3,35 +3,71 @@
  */
 package saltr;
 
+/**
+ * The SLTBasicProperties class represents the basic user properties.
+ * This information is useful for analytics and statistics.
+ */
 public class SLTBasicProperties {
     private String age;
-    private String gender;         //Gender "F", "M", "female", "male"
 
-    private String appVersion;     // Version of the client app, e.g. 4.1.1
+    /**
+     * Gender "F", "M", "female", "male"
+     */
+    private String gender;
 
-    private String systemName;     //The name of the OS the current device is running. E.g. iPhone OS.
-    private String systemVersion;  //The version number of the OS the current device is running. E.g. 6.0.
+    /**
+     * Version of the client app, e.g. 4.1.1
+     */
+    private String appVersion;
 
-    private String browserName;    //The name of the browser the current device is running. E.g. Chrome.
-    private String browserVersion; //The version number of the browser the current device is running. E.g. 17.0.
+    /**
+     * The name of the OS the current device is running. E.g. iPhone OS.
+     */
+    private String systemName;
 
-    private String deviceName;     //A human-readable name representing the device.
-    private String deviceType;     //The Type name of the device. E.g. iPad.
+    /**
+     * The version number of the OS the current device is running. E.g. 6.0.
+     */
+    private String systemVersion;
 
-    private String locale;         //The current locale the user is in. E.g. enUS.
+    /**
+     * A human-readable name representing the device.
+     */
+    private String deviceName;
 
-    private String country;        //The country the user is in, specified by ISO 2-letter code. E.g. US for United States.
-    //Set to (locate) to detect the country based on the IP address of the caller.
+    /**
+     * The Type name of the device. E.g. iPad.
+     */
+    private String deviceType;
 
-    private String region;         //The region (state) the user is in. E.g. ca for California.
-    //Set to (locate) to detect the region based on the IP address of the caller.
+    /**
+     * The current locale the user is in. E.g. enUS.
+     */
+    private String locale;
 
-    private String city;           //The city the user is in. E.g. San Francisco.
-    //Set to (locate) to detect the city based on the IP address of the caller.
+    /**
+     * The country the user is in, specified by ISO 2-letter code. E.g. US for United States.
+     * Set to (locate) to detect the country based on the IP address of the caller.
+     */
+    private String country;
 
-    private String location;       //The location (latitude/longitude) of the user. E.g. 37.775,-122.4183.
-    //Set to (locate) to detect the location based on the IP address of the caller.
+    /**
+     * The region (state) the user is in. E.g. ca for California.
+     * Set to (locate) to detect the region based on the IP address of the caller.
+     */
+    private String region;
 
+    /**
+     * The city the user is in. E.g. San Francisco.
+     * Set to (locate) to detect the city based on the IP address of the caller.
+     */
+    private String city;
+
+    /**
+     * The location (latitude/longitude) of the user. E.g. 37.775,-122.4183.
+     * Set to (locate) to detect the location based on the IP address of the caller.
+     */
+    private String location;
 
     public String getAge() {
         return age;
@@ -71,22 +107,6 @@ public class SLTBasicProperties {
 
     public void setSystemVersion(String systemVersion) {
         this.systemVersion = systemVersion;
-    }
-
-    public String getBrowserName() {
-        return browserName;
-    }
-
-    public void setBrowserName(String browserName) {
-        this.browserName = browserName;
-    }
-
-    public String getBrowserVersion() {
-        return browserVersion;
-    }
-
-    public void setBrowserVersion(String browserVersion) {
-        this.browserVersion = browserVersion;
     }
 
     public String getDeviceName() {

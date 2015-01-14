@@ -43,7 +43,7 @@ public class SLTDeserializer {
                 int packIndex = levelPackNode.getIndex();
                 for (SLTResponseLevel levelNode : levelNodes) {
                     index++;
-                    levels.add(new SLTLevel(levelNode.getId(), levelType, index, levelNode.getIndex(), packIndex, levelNode.getUrl(),
+                    levels.add(new SLTLevel(levelNode.getId(), levelNode.getVariationId(), levelType, index, levelNode.getIndex(), packIndex, levelNode.getUrl(),
                             levelNode.getProperties(), levelNode.getVersion().toString()));
                 }
                 Collections.sort(levels);

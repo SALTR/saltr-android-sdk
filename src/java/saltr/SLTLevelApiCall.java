@@ -9,16 +9,16 @@ import saltr.response.level.SLTResponseLevelContentData;
 
 import java.net.MalformedURLException;
 
-public class SLTLevelApiCall extends SLTApiCall {
+class SLTLevelApiCall extends SLTApiCall {
     private SLTILevelContentDelegate delegate;
     private SLTLevel level;
 
-    public SLTLevelApiCall(int timeout, SLTLevel level) {
+    SLTLevelApiCall(int timeout, SLTLevel level) {
         super(timeout);
         this.level = level;
     }
 
-    public void call(SLTILevelContentDelegate delegate) {
+    void call(SLTILevelContentDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = new SLTHttpsConnection();
         try {
@@ -30,7 +30,7 @@ public class SLTLevelApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionSuccess(String response) {
+    void onConnectionSuccess(String response) {
         try {
             SLTResponseLevelContentData data = gson.fromJson(response, SLTResponseLevelContentData.class);
             if (data == null) {
@@ -46,7 +46,7 @@ public class SLTLevelApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionFailure() {
+    void onConnectionFailure() {
         delegate.onFailure(level);
     }
 }

@@ -9,13 +9,13 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SLTAddPropertyApiCall extends SLTApiCall {
+class SLTAddPropertyApiCall extends SLTApiCall {
     private String clientKey;
     private String socialId;
     private Object basicProperties;
     private Object customProperties;
 
-    public SLTAddPropertyApiCall(int timeout, String clientKey, String socialId, Object basicProperties, Object customProperties) {
+    SLTAddPropertyApiCall(int timeout, String clientKey, String socialId, Object basicProperties, Object customProperties) {
         super(timeout);
         this.clientKey = clientKey;
         this.socialId = socialId;
@@ -24,16 +24,16 @@ public class SLTAddPropertyApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionSuccess(String response) {
+    void onConnectionSuccess(String response) {
 
     }
 
     @Override
-    public void onConnectionFailure() {
+    void onConnectionFailure() {
 
     }
 
-    public void call() {
+    void call() {
         if (basicProperties == null && customProperties == null) {
             return;
         }

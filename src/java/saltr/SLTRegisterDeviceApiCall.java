@@ -13,7 +13,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SLTRegisterDeviceApiCall extends SLTApiCall {
+class SLTRegisterDeviceApiCall extends SLTApiCall {
     private SLTRegisterDeviceDelegate delegate;
     private String email;
     private String clientKey;
@@ -22,7 +22,7 @@ public class SLTRegisterDeviceApiCall extends SLTApiCall {
     private String model;
     private String os;
 
-    public SLTRegisterDeviceApiCall(int timeout, boolean devMode, String email, String clientKey, String deviceId, String model, String os) {
+    SLTRegisterDeviceApiCall(int timeout, boolean devMode, String email, String clientKey, String deviceId, String model, String os) {
         super(timeout);
         this.email = email;
         this.clientKey = clientKey;
@@ -46,11 +46,11 @@ public class SLTRegisterDeviceApiCall extends SLTApiCall {
     }
 
     @Override
-    public void onConnectionFailure() {
+    void onConnectionFailure() {
         delegate.onFailure();
     }
 
-    public void call(SLTRegisterDeviceDelegate delegate) {
+    void call(SLTRegisterDeviceDelegate delegate) {
         this.delegate = delegate;
         SLTHttpsConnection connection = createRegisterDevice();
         call(connection);
