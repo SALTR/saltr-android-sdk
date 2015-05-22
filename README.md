@@ -1,6 +1,6 @@
 #SALTR Android SDK
-* Modified: May 22th, 2015
-* AS3 SDK Version: 1.3.6 
+* Modified: Jan 14th, 2015
+* Android SDK Version: 1.1.1 
 
 Other Supported Platforms:
 * [Unity Plug-in Version: 1.4.0](https://github.com/SALTR/saltr-unity-sdk)
