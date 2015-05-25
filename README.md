@@ -38,6 +38,8 @@ The entry point in SDK is `SLTSaltr.java` class.
 
 Note: All classes in the package start with `SLT` prefix.
 
+##API Reference
+Here is the [API Reference for the SDK](http://plexonic.github.io/api-reference-android/).
 
 ##Introduction
 
